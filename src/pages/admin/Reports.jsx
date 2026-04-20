@@ -75,7 +75,6 @@ const Reports = () => {
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Enrollment</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">12,847</p>
-              <p className="text-sm text-success-600">+12% from last month</p>
             </div>
             <TrendingUp className="w-8 h-8 text-primary-500" />
           </div>
@@ -85,7 +84,6 @@ const Reports = () => {
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Completion Rate</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">78%</p>
-              <p className="text-sm text-success-600">+3% from last month</p>
             </div>
             <BarChart3 className="w-8 h-8 text-success-500" />
           </div>
@@ -95,7 +93,6 @@ const Reports = () => {
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Avg. Attendance</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">92%</p>
-              <p className="text-sm text-warning-600">-2% from last month</p>
             </div>
             <Calendar className="w-8 h-8 text-warning-500" />
           </div>
@@ -105,7 +102,6 @@ const Reports = () => {
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Active Schools</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">142</p>
-              <p className="text-sm text-success-600">+5 new this month</p>
             </div>
             <PieChartIcon className="w-8 h-8 text-accent-500" />
           </div>

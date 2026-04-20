@@ -50,14 +50,15 @@ const Table = ({
   }
 
   return (
-    <div className={`overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}>
-      <table className={`w-full ${sizeClasses[size]}`}>
-        <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div className={`overflow-hidden rounded-[1.5rem] border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900/40 ${className}`}>
+      <div className="overflow-x-auto">
+        <table className={`w-full ${sizeClasses[size]}`}>
+          <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`px-4 py-3 font-semibold text-gray-700 dark:text-gray-300 text-left ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'} ${col.sortable ? 'cursor-pointer select-none' : ''}`}
+                className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'} ${col.sortable ? 'cursor-pointer select-none' : ''}`}
                 style={{ width: col.width }}
                 onClick={() => handleSort(col)}
                 aria-sort={sortColumn === col.key ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
@@ -77,30 +78,31 @@ const Table = ({
               </th>
             ))}
           </tr>
-        </thead>
-        <tbody>
-          {data.map((row, rowIndex) => {
-            if (renderRow) {
-              return renderRow(row, rowIndex);
-            }
-            return (
-              <tr
-                key={keyExtractor ? keyExtractor(row, rowIndex) : row.id ?? rowIndex}
-                className={`${striped && rowIndex % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800/50' : ''} ${hover ? 'hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors' : ''} border-b border-gray-200 dark:border-gray-700 last:border-b-0`}
-              >
-                {columns.map((col) => (
-                  <td
-                    key={col.key}
-                    className={`px-4 py-3 text-gray-800 dark:text-gray-200 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}
-                  >
-                    {col.render ? col.render(row[col.key], row) : row[col.key]}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((row, rowIndex) => {
+              if (renderRow) {
+                return renderRow(row, rowIndex);
+              }
+              return (
+                <tr
+                  key={keyExtractor ? keyExtractor(row, rowIndex) : row.id ?? rowIndex}
+                  className={`${striped && rowIndex % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800/50' : ''} ${hover ? 'hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors' : ''} border-b border-gray-200 dark:border-gray-700 last:border-b-0`}
+                >
+                  {columns.map((col) => (
+                    <td
+                      key={col.key}
+                      className={`px-4 py-3 text-gray-800 dark:text-gray-200 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}
+                    >
+                      {col.render ? col.render(row[col.key], row) : row[col.key]}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

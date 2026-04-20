@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -9,46 +9,67 @@ import {
   ChevronLeft,
   ChevronRight,
   BarChart3,
-  UserCog,
   Home,
   LogOut,
+  Shield,
+  Building2,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import Button from '../common/Button';
 
 /**
  * Sidebar navigation component with role-based menu items
  */
-const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false);
+const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const dashboardPath = user?.role ? `/${user.role}/dashboard` : '/';
 
   // Role-specific navigation items
-  const getNavItems = () => {
+  const getNavSections = () => {
     const commonItems = [
-      { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
+      {
+        title: 'Workspace',
+        items: [{ path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> }],
+      },
     ];
 
     const adminItems = [
-      ...commonItems,
-      { path: '/admin/manage-users', label: 'Manage Users', icon: <Users className="w-5 h-5" /> },
-      { path: '/admin/manage-schools', label: 'Manage Schools', icon: <School className="w-5 h-5" /> },
-      { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <UserCog className="w-5 h-5" /> },
-      { path: '/admin/reports', label: 'Reports', icon: <BarChart3 className="w-5 h-5" /> },
-      { path: '/admin/settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
+      {
+        title: 'Control Center',
+        items: [
+          { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
+          { path: '/admin/manage-users', label: 'Manage Users', icon: <Users className="h-5 w-5" /> },
+          { path: '/admin/manage-schools', label: 'Manage Schools', icon: <School className="h-5 w-5" /> },
+          { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <Building2 className="h-5 w-5" /> },
+        ],
+      },
+      {
+        title: 'Governance',
+        items: [
+          { path: '/admin/roles', label: 'Role & Permission', icon: <Shield className="h-5 w-5" /> },
+          { path: '/admin/reports', label: 'Reports', icon: <BarChart3 className="h-5 w-5" /> },
+          { path: '/admin/settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
+        ],
+      },
     ];
 
     const vtpItems = [
       ...commonItems,
-      { path: '/vtp/my-courses', label: 'My Courses', icon: <BookOpen className="w-5 h-5" /> },
+      {
+        title: 'Learning',
+        items: [{ path: '/vtp/my-courses', label: 'My Courses', icon: <BookOpen className="h-5 w-5" /> }],
+      },
     ];
 
     const principalItems = [
       ...commonItems,
-      { path: '/principal/school-overview', label: 'School Overview', icon: <Home className="w-5 h-5" /> },
-      { path: '/principal/staff-management', label: 'Staff Management', icon: <Users className="w-5 h-5" /> },
+      {
+        title: 'Administration',
+        items: [
+          { path: '/principal/school-overview', label: 'School Overview', icon: <Home className="h-5 w-5" /> },
+          { path: '/principal/staff-management', label: 'Staff Management', icon: <Users className="h-5 w-5" /> },
+        ],
+      },
     ];
 
     switch (user?.role) {
@@ -63,123 +84,95 @@ const Sidebar = () => {
     }
   };
 
-  const navItems = getNavItems();
-
-  const toggleSidebar = () => {
-    setCollapsed(!collapsed);
+  const handleLogout = () => {
+    logout();
+    onClose?.();
   };
 
   return (
     <aside
-      className={`flex flex-col h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'}`}
+      className="flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-gray-200 bg-white text-gray-900 shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-white"
     >
-      {/* Logo */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-        {!collapsed && (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">K</span>
+      <div className="border-b border-gray-200 px-3 py-3 dark:border-gray-800">
+        <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between gap-2'}`}>
+          <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500 text-white">
+              <span className="text-base font-bold">K</span>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Kushal</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Chhattisgarh</p>
-            </div>
-          </div>
-        )}
-        {collapsed && (
-          <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mx-auto">
-            <span className="text-white font-bold text-lg">K</span>
-          </div>
-        )}
-        <button
-          onClick={toggleSidebar}
-          className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {collapsed ? (
-            <ChevronRight className="w-4 h-4 text-gray-500" />
-          ) : (
-            <ChevronLeft className="w-4 h-4 text-gray-500" />
-          )}
-        </button>
-      </div>
-
-      {/* User profile */}
-      <div className={`p-4 border-b border-gray-200 dark:border-gray-700 ${collapsed ? 'text-center' : ''}`}>
-        {!collapsed ? (
-          <>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-                <span className="text-primary-600 dark:text-primary-400 font-semibold">
-                  {user?.name?.charAt(0) || 'U'}
-                </span>
-              </div>
+            {!collapsed && (
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">{user?.name || 'User'}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{user?.role || 'Role'}</p>
+                <h1 className="font-heading text-lg font-semibold text-gray-900 dark:text-white">Kushal Panel</h1>
               </div>
-            </div>
-          </>
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mx-auto">
-            <span className="text-primary-600 dark:text-primary-400 font-semibold">
-              {user?.name?.charAt(0) || 'U'}
-            </span>
+            )}
           </div>
-        )}
+          <button
+            onClick={onToggleCollapse}
+            className="hidden rounded-xl border border-gray-200 bg-white p-2 text-gray-500 transition hover:bg-gray-50 hover:text-gray-900 lg:inline-flex dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 overflow-y-auto">
-        <ul className="space-y-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname.startsWith(item.path);
-            return (
-              <li key={item.path}>
-                <NavLink
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${isActive
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`
-                  }
-                  title={collapsed ? item.label : ''}
-                >
-                  <span className={`${isActive ? 'text-primary-500' : 'text-gray-500'}`}>
-                    {item.icon}
-                  </span>
-                  {!collapsed && <span>{item.label}</span>}
-                </NavLink>
-              </li>
-            );
-          })}
-        </ul>
+      <nav className="flex-1 space-y-2 overflow-y-auto px-2 py-2.5">
+        {getNavSections().map((section) => (
+          <div key={section.title}>
+            <ul className="space-y-1.5">
+              {section.items.map((item) => {
+                const isActive =
+                  location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
+
+                return (
+                  <li key={item.path}>
+                    <NavLink
+                      to={item.path}
+                      onClick={onClose}
+                      title={collapsed ? item.label : undefined}
+                      className={() =>
+                        `group flex items-center rounded-2xl px-3 py-3 transition-all ${
+                          collapsed ? 'justify-center' : 'gap-2'
+                        } ${
+                          isActive
+                            ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
+                        }`
+                      }
+                    >
+                      <span
+                        className={`flex h-10 w-10 items-center justify-center rounded-2xl transition ${
+                          isActive
+                            ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-950 dark:text-primary-300'
+                            : 'bg-gray-100 text-gray-500 group-hover:bg-white group-hover:text-primary-600 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:bg-gray-900 dark:group-hover:text-primary-300'
+                        }`}
+                      >
+                        {item.icon}
+                      </span>
+                      {!collapsed && (
+                        <div className="min-w-0 flex-1">
+                          <span className="block truncate font-medium">{item.label}</span>
+                        </div>
+                      )}
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </nav>
 
-      {/* Logout button */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        {!collapsed ? (
-          <Button
-            variant="ghost"
-            size="md"
-            className="w-full justify-start"
-            onClick={logout}
-          >
-            <LogOut className="w-5 h-5" />
-            <span>Logout</span>
-          </Button>
-        ) : (
-          <Button
-            variant="ghost"
-            size="md"
-            className="w-full justify-center"
-            onClick={logout}
-            title="Logout"
-          >
-            <LogOut className="w-5 h-5" />
-          </Button>
-        )}
+      <div className="border-t border-gray-200 p-2.5 dark:border-gray-800">
+        <button
+          onClick={handleLogout}
+          title={collapsed ? 'Logout' : undefined}
+          className={`flex w-full items-center rounded-2xl border border-gray-200 bg-white px-3 py-2.5 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white ${
+            collapsed ? 'justify-center' : 'gap-3'
+          }`}
+        >
+          <LogOut className="h-5 w-5" />
+          {!collapsed && <span className="font-medium">Logout</span>}
+        </button>
       </div>
     </aside>
   );

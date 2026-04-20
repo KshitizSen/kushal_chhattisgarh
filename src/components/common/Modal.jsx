@@ -52,24 +52,24 @@ const Modal = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/50 p-4 backdrop-blur-sm animate-fade-in"
       onClick={handleOverlayClick}
       aria-modal="true"
       role="dialog"
       aria-labelledby="modal-title"
     >
       <div
-        className={`bg-white dark:bg-gray-800 rounded-2xl shadow-card-hover w-full ${sizeClasses[size]} animate-slide-up`}
+        className={`w-full ${sizeClasses[size]} animate-slide-up rounded-[1.75rem] border border-white/80 bg-white/95 shadow-[0_32px_80px_rgba(15,23,42,0.18)] dark:border-gray-800 dark:bg-gray-900/95`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h3 id="modal-title" className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between border-b border-gray-200/80 p-6 dark:border-gray-800">
+          <h3 id="modal-title" className="font-heading text-xl font-semibold text-gray-900 dark:text-white">
             {title}
           </h3>
           {showCloseButton && (
             <button
               onClick={onClose}
-              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="rounded-full p-1 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
               aria-label="Close modal"
             >
               <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
@@ -82,7 +82,7 @@ const Modal = ({
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-end gap-3 border-t border-gray-200/80 p-6 dark:border-gray-800">
             {footer}
           </div>
         )}

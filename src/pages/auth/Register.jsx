@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
@@ -52,7 +52,6 @@ const Register = () => {
   const {
     register,
     handleSubmit,
-    watch,
     control,
     formState: { errors },
   } = useForm({
@@ -66,14 +65,18 @@ const Register = () => {
     },
   });
 
-  const passwordValue = watch('password');
+  const passwordValue = useWatch({
+    control,
+    name: 'password',
+    defaultValue: '',
+  });
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
       // Simulate API call — replace with real authService.register()
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      toast.success('Account created successfully! Please sign in.');
+      toast.success(`Account created for ${data.name}. Please sign in.`);
       navigate('/login');
     } catch {
       toast.error('Registration failed. Please try again.');

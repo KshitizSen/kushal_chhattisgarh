@@ -113,7 +113,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card title="Monthly Enrollment Trend" padding="lg">
           <LineChart
             data={enrollmentData}
@@ -136,7 +136,7 @@ const AdminDashboard = () => {
             height="250px"
           />
         </Card>
-      </div>
+      </div> */}
 
       {/* Recent Users Table */}
       <Card

@@ -3,67 +3,63 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import Footer from './Footer';
-import { Toaster } from 'react-hot-toast';
 
 /**
  * Main layout wrapper for authenticated pages
  */
 const MainLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Sidebar - hidden on mobile */}
-      <div className={`hidden lg:block ${sidebarOpen ? 'lg:w-64' : 'lg:w-20'} transition-all duration-300`}>
-        <Sidebar />
-      </div>
-
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setSidebarOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-64">
-            <Sidebar />
+    <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+      <div className="flex min-h-screen">
+        {/* Sidebar - desktop */}
+        <div
+          className={`hidden flex-shrink-0 transition-all duration-300 lg:block ${
+            sidebarCollapsed ? 'lg:w-24' : 'lg:w-72'
+          }`}
+        >
+          <div
+            className={`fixed inset-y-0 left-0 z-20 hidden p-3 lg:block ${
+              sidebarCollapsed ? 'w-24' : 'w-72'
+            }`}
+          >
+            <Sidebar
+              collapsed={sidebarCollapsed}
+              onToggleCollapse={() => setSidebarCollapsed((current) => !current)}
+            />
           </div>
         </div>
-      )}
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col">
-        <Header onMenuToggle={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-7xl mx-auto">
-            <Outlet />
+        {/* Sidebar - mobile */}
+        {mobileSidebarOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div
+              className="absolute inset-0 bg-gray-950/40 backdrop-blur-sm"
+              onClick={() => setMobileSidebarOpen(false)}
+            />
+            <div className="absolute inset-y-0 left-0 w-[min(18rem,85vw)] p-3">
+              <Sidebar
+                collapsed={false}
+                onClose={() => setMobileSidebarOpen(false)}
+                onToggleCollapse={() => {}}
+              />
+            </div>
           </div>
-        </main>
-        <Footer />
-      </div>
+        )}
 
-      {/* Toast notifications */}
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-          success: {
-            duration: 3000,
-            iconTheme: {
-              primary: '#10b981',
-              secondary: '#fff',
-            },
-          },
-          error: {
-            duration: 4000,
-            iconTheme: {
-              primary: '#ef4444',
-              secondary: '#fff',
-            },
-          },
-        }}
-      />
+        {/* Main content */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Header onMenuToggle={() => setMobileSidebarOpen(true)} />
+          <main className="flex-1 px-4 pb-6 pt-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl">
+              <Outlet />
+            </div>
+          </main>
+          <Footer />
+        </div>
+      </div>
     </div>
   );
 };

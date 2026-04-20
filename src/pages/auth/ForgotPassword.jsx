@@ -37,7 +37,7 @@ const ForgotPassword = () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setIsSubmitted(true);
-      toast.success('Reset link sent to your email!');
+      toast.success(`Reset link sent to ${data.email}`);
     } catch {
       toast.error('Failed to send reset link. Please try again.');
     } finally {

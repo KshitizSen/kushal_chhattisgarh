@@ -69,7 +69,7 @@ const Login = () => {
       };
 
       login(mockUser);
-      toast.success(`Welcome back, ${mockUser.name}!`);
+      // toast.success(`Welcome back, ${mockUser.name}!`);
       navigate(ROLE_DASHBOARDS[data.role] || '/');
     } catch {
       toast.error('Invalid credentials. Please try again.');
