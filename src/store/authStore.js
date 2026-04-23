@@ -1,55 +1,58 @@
 import { create } from 'zustand';
+import { clearAuthSession, readAuthSession, saveAuthSession } from '../utils/authSession';
 
-const useAuthStore = create((set) => ({
+const loggedOutState = {
   isAuthenticated: false,
   user: null,
   role: null,
   token: null,
-  
-  login: (userData, token = 'demo-token') => {
-    const authToken = token || 'demo-token';
+  refreshToken: null,
+};
+
+const useAuthStore = create((set) => ({
+  initialized: false,
+  ...loggedOutState,
+
+  login: (userData, token, refreshToken = null) => {
+    saveAuthSession({ token, refreshToken, user: userData });
+
     set({
+      initialized: true,
       isAuthenticated: true,
       user: userData,
       role: userData.role,
-      token: authToken
+      token,
+      refreshToken,
     });
-    localStorage.setItem('authToken', authToken);
-    localStorage.setItem('userData', JSON.stringify(userData));
   },
-  
+
   logout: () => {
+    clearAuthSession();
     set({
-      isAuthenticated: false,
-      user: null,
-      role: null,
-      token: null
+      initialized: true,
+      ...loggedOutState,
     });
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
   },
-  
+
   initialize: () => {
-    const token = localStorage.getItem('authToken');
-    const rawUserData = localStorage.getItem('userData');
+    const session = readAuthSession();
 
-    try {
-      const userData = rawUserData ? JSON.parse(rawUserData) : null;
-      const hasValidToken = token && token !== 'undefined' && token !== 'null';
-
-      if (hasValidToken && userData) {
-        set({
-          isAuthenticated: true,
-          user: userData,
-          role: userData.role,
-          token,
-        });
-      }
-    } catch {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
+    if (session) {
+      set({
+        initialized: true,
+        ...session,
+      });
+      return;
     }
-  }
+
+    clearAuthSession();
+    set({
+      initialized: true,
+      ...loggedOutState,
+    });
+  },
 }));
+
+useAuthStore.getState().initialize();
 
 export default useAuthStore;

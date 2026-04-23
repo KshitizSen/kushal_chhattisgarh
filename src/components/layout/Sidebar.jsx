@@ -4,17 +4,18 @@ import {
   LayoutDashboard,
   Users,
   School,
-  BookOpen,
+  CalendarDays,
+  BellRing,
   Settings,
   ChevronLeft,
   ChevronRight,
   BarChart3,
   Home,
   LogOut,
-  Shield,
   Building2,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { getDashboardPath } from '../../utils/constants';
 
 /**
  * Sidebar navigation component with role-based menu items
@@ -22,7 +23,7 @@ import { useAuth } from '../../hooks/useAuth';
 const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
-  const dashboardPath = user?.role ? `/${user.role}/dashboard` : '/';
+  const dashboardPath = getDashboardPath(user?.role);
 
   // Role-specific navigation items
   const getNavSections = () => {
@@ -46,7 +47,6 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
       {
         title: 'Governance',
         items: [
-          { path: '/admin/roles', label: 'Role & Permission', icon: <Shield className="h-5 w-5" /> },
           { path: '/admin/reports', label: 'Reports', icon: <BarChart3 className="h-5 w-5" /> },
           { path: '/admin/settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
         ],
@@ -56,8 +56,12 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
     const vtpItems = [
       ...commonItems,
       {
-        title: 'Learning',
-        items: [{ path: '/vtp/my-courses', label: 'My Courses', icon: <BookOpen className="h-5 w-5" /> }],
+        title: 'Operations',
+        items: [
+          { path: '/vtp/vt-details', label: 'VT Details', icon: <Users className="h-5 w-5" /> },
+          { path: '/vtp/manage-holidays', label: 'Manage Holidays', icon: <CalendarDays className="h-5 w-5" /> },
+          { path: '/vtp/notifications', label: 'VT Notifications', icon: <BellRing className="h-5 w-5" /> },
+        ],
       },
     ];
 

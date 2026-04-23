@@ -6,7 +6,6 @@ import ManageSchools from '../pages/admin/ManageSchools';
 import ManageVTP from '../pages/admin/ManageVTP';
 import Reports from '../pages/admin/Reports';
 import Settings from '../pages/admin/Settings';
-import ManageRoles from '../pages/admin/ManageRoles';
 import ProtectedRoute from './ProtectedRoute';
 
 const AdminRoutes = () => {
@@ -43,14 +42,6 @@ const AdminRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <ManageVTP />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="roles" 
-        element={
-          <ProtectedRoute allowedRoles={allowedRoles}>
-            <ManageRoles />
           </ProtectedRoute>
         } 
       />

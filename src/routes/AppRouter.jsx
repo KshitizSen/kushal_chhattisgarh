@@ -9,6 +9,7 @@ import VTPRoutes from './VTPRoutes';
 import PrincipalRoutes from './PrincipalRoutes';
 import ProtectedRoute from './ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
+import { getDashboardPath } from '../utils/constants';
 
 const AppRouter = () => {
   const { isAuthenticated, role } = useAuth();
@@ -30,7 +31,7 @@ const AppRouter = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to={role ? `/${role}/dashboard` : '/login'} replace />} />
+          <Route index element={<Navigate to={getDashboardPath(role)} replace />} />
           <Route path="admin/*" element={<AdminRoutes />} />
           <Route path="vtp/*" element={<VTPRoutes />} />
           <Route path="principal/*" element={<PrincipalRoutes />} />

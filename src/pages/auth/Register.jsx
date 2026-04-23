@@ -91,11 +91,11 @@ const Register = () => {
         title="Create account"
         subtitle="Join the Kushal Chhattisgarh platform"
         footer={
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-violet-400 hover:text-violet-300 font-semibold transition-colors"
+              className="font-semibold text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             >
               Sign in
             </Link>
@@ -133,11 +133,11 @@ const Register = () => {
               autoComplete="new-password"
               rightElement={
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-white/30 hover:text-white/60 transition-colors p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="rounded p-1 text-gray-400 transition-colors hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:text-gray-500 dark:hover:text-gray-300"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
                   ) : (
@@ -161,7 +161,7 @@ const Register = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirm(!showConfirm)}
-                className="text-white/30 hover:text-white/60 transition-colors p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+                className="rounded p-1 text-gray-400 transition-colors hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:text-gray-500 dark:hover:text-gray-300"
                 aria-label={showConfirm ? 'Hide password' : 'Show password'}
               >
                 {showConfirm ? (
@@ -197,10 +197,10 @@ const Register = () => {
               w-full h-12 rounded-xl font-semibold text-sm tracking-wide
               flex items-center justify-center gap-2.5
               transition-all duration-300 mt-2
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
               ${isLoading
-                ? 'bg-violet-600/50 text-white/50 cursor-not-allowed'
-                : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:shadow-glow-violet cursor-pointer'
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'
+                : 'bg-gradient-to-r from-primary-600 to-accent-600 text-white shadow-lg shadow-primary-500/20 hover:from-primary-700 hover:to-accent-700 cursor-pointer'
               }
             `}
           >

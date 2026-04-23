@@ -56,7 +56,7 @@ const ForgotPassword = () => {
       >
         <Link
           to="/login"
-          className="inline-flex items-center gap-2 text-xs text-white/40 hover:text-white/70 transition-colors font-medium"
+          className="inline-flex items-center gap-2 text-xs font-medium text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to login
@@ -70,11 +70,11 @@ const ForgotPassword = () => {
             title="Forgot password?"
             subtitle="Enter your email and we'll send you a link to reset your password."
             footer={
-              <p className="text-sm text-white/40">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Remember your password?{' '}
                 <Link
                   to="/login"
-                  className="text-violet-400 hover:text-violet-300 font-semibold transition-colors"
+                  className="font-semibold text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
                 >
                   Sign in
                 </Link>
@@ -100,10 +100,10 @@ const ForgotPassword = () => {
                   w-full h-12 rounded-xl font-semibold text-sm tracking-wide
                   flex items-center justify-center gap-2.5
                   transition-all duration-300
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
                   ${isLoading
-                    ? 'bg-violet-600/50 text-white/50 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:shadow-glow-violet cursor-pointer'
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'
+                    : 'bg-gradient-to-r from-primary-600 to-accent-600 text-white shadow-lg shadow-primary-500/20 hover:from-primary-700 hover:to-accent-700 cursor-pointer'
                   }
                 `}
               >
@@ -125,11 +125,11 @@ const ForgotPassword = () => {
           <AuthCard
             key="success"
             footer={
-              <p className="text-sm text-white/40">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Need help?{' '}
                 <a
                   href="mailto:support@kushalchhattisgarh.gov.in"
-                  className="text-violet-400 hover:text-violet-300 font-semibold transition-colors"
+                  className="font-semibold text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
                 >
                   Contact support
                 </a>
@@ -142,15 +142,15 @@ const ForgotPassword = () => {
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="text-center space-y-5"
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-2">
-                <CheckCircle className="w-8 h-8 text-emerald-400" />
+              <div className="mb-2 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+                <CheckCircle className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
               </div>
 
               <div>
-                <h2 className="text-2xl font-heading font-bold text-white mb-2">
+                <h2 className="mb-2 text-2xl font-heading font-bold text-gray-950 dark:text-white">
                   Check your email
                 </h2>
-                <p className="text-sm text-white/45 leading-relaxed">
+                <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400">
                   We've sent a password reset link to your email address. Please check your inbox and spam folder.
                 </p>
               </div>
@@ -160,10 +160,7 @@ const ForgotPassword = () => {
                   whileHover={{ scale: 1.015 }}
                   whileTap={{ scale: 0.985 }}
                   onClick={() => setIsSubmitted(false)}
-                  className="w-full h-12 rounded-xl font-semibold text-sm tracking-wide
-                    bg-gradient-to-r from-violet-600 to-indigo-600 text-white 
-                    hover:shadow-glow-violet transition-all duration-300 cursor-pointer
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+                  className="h-12 w-full rounded-xl bg-gradient-to-r from-primary-600 to-accent-600 text-sm font-semibold tracking-wide text-white shadow-lg shadow-primary-500/20 transition-all duration-300 hover:from-primary-700 hover:to-accent-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30"
                 >
                   Resend Email
                 </motion.button>
@@ -173,10 +170,7 @@ const ForgotPassword = () => {
                     whileHover={{ scale: 1.015 }}
                     whileTap={{ scale: 0.985 }}
                     type="button"
-                    className="w-full h-12 rounded-xl font-semibold text-sm tracking-wide
-                      bg-white/[0.06] border border-white/[0.1] text-white/70 
-                      hover:bg-white/[0.1] hover:text-white transition-all duration-300 cursor-pointer
-                      focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+                    className="h-12 w-full rounded-xl border border-gray-200 bg-white text-sm font-semibold tracking-wide text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
                   >
                     Back to Login
                   </motion.button>

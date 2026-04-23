@@ -34,9 +34,9 @@ const Card = ({
 
   const paddingClasses = {
     none: '',
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8',
+    sm: 'p-3',
+    md: 'p-4',
+    lg: 'p-6',
   };
 
   const hoverClass = hover ? 'hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(15,23,42,0.12)]' : '';
@@ -45,15 +45,15 @@ const Card = ({
   return (
     <div className={combinedClasses} {...rest}>
       {header || (title && (
-        <div className="mb-4 border-b border-gray-200/80 pb-4 dark:border-gray-800">
-          <h3 className="font-heading text-xl font-semibold text-gray-900 dark:text-white">{title}</h3>
+        <div className="mb-3 border-b border-gray-200/80 pb-3 dark:border-gray-800">
+          <h3 className="font-heading text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
         </div>
       ))}
 
       <div>{children}</div>
 
       {footer && (
-        <div className="mt-6 border-t border-gray-200/80 pt-6 dark:border-gray-800">
+        <div className="mt-4 border-t border-gray-200/80 pt-4 dark:border-gray-800">
           {footer}
         </div>
       )}
@@ -62,13 +62,13 @@ const Card = ({
 };
 
 export const CardHeader = ({ children, className = '' }) => (
-  <div className={`mb-4 border-b border-gray-200/80 pb-4 dark:border-gray-800 ${className}`}>
+  <div className={`mb-3 border-b border-gray-200/80 pb-3 dark:border-gray-800 ${className}`}>
     {children}
   </div>
 );
 
 export const CardTitle = ({ children, className = '' }) => (
-  <h3 className={`font-heading text-xl font-semibold text-gray-900 dark:text-white ${className}`}>
+  <h3 className={`font-heading text-lg font-semibold text-gray-900 dark:text-white ${className}`}>
     {children}
   </h3>
 );
@@ -78,7 +78,7 @@ export const CardContent = ({ children, className = '' }) => (
 );
 
 export const CardFooter = ({ children, className = '' }) => (
-  <div className={`mt-6 border-t border-gray-200/80 pt-6 dark:border-gray-800 ${className}`}>
+  <div className={`mt-4 border-t border-gray-200/80 pt-4 dark:border-gray-800 ${className}`}>
     {children}
   </div>
 );
@@ -88,13 +88,13 @@ export const StatCard = ({ title, value, change, icon, trend = 'up', description
   const trendLabel = trend === 'up' ? 'Up' : 'Down';
 
   return (
-    <Card variant="elevated" hover padding="md">
-      <div className="flex items-start justify-between gap-4">
+    <Card variant="elevated" hover padding="sm">
+      <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+          <p className="mt-1.5 text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
           {change && (
-            <div className="mt-2 flex items-center gap-1">
+            <div className="mt-1.5 flex items-center gap-1">
               {/* <span className={`text-sm font-medium ${trendColor}`}>
                 {trendLabel} {change}
               </span> */}
@@ -102,11 +102,11 @@ export const StatCard = ({ title, value, change, icon, trend = 'up', description
             </div>
           )}
           {description && (
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{description}</p>
+            <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">{description}</p>
           )}
         </div>
         {icon && (
-          <div className="rounded-2xl bg-primary-50 p-3 text-primary-500 dark:bg-primary-900/20">
+          <div className="rounded-2xl bg-primary-50 p-2.5 text-primary-500 dark:bg-primary-900/20">
             {icon}
           </div>
         )}

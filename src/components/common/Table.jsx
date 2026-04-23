@@ -43,7 +43,7 @@ const Table = ({
 
   if (data.length === 0) {
     return emptyState || (
-      <div className="text-center py-12 border border-gray-200 dark:border-gray-700 rounded-lg">
+      <div className="rounded-lg border border-gray-200 py-8 text-center dark:border-gray-700">
         <div className="text-gray-400 dark:text-gray-500">No data available</div>
       </div>
     );
@@ -58,7 +58,7 @@ const Table = ({
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'} ${col.sortable ? 'cursor-pointer select-none' : ''}`}
+                className={`px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'} ${col.sortable ? 'cursor-pointer select-none' : ''}`}
                 style={{ width: col.width }}
                 onClick={() => handleSort(col)}
                 aria-sort={sortColumn === col.key ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
@@ -92,7 +92,7 @@ const Table = ({
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className={`px-4 py-3 text-gray-800 dark:text-gray-200 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}
+                      className={`px-3 py-2.5 text-gray-800 dark:text-gray-200 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}
                     >
                       {col.render ? col.render(row[col.key], row) : row[col.key]}
                     </td>
@@ -111,7 +111,7 @@ const Table = ({
  * Action column component for tables
  */
 export const ActionCell = ({ children }) => (
-  <div className="flex items-center gap-2">{children}</div>
+  <div className="flex items-center gap-1.5">{children}</div>
 );
 
 export { Table };

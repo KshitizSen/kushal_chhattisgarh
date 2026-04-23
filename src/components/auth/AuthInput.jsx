@@ -40,7 +40,11 @@ const AuthInput = forwardRef(({
         {/* Leading icon */}
         {Icon && (
           <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-200 z-10 ${
-            isFocused ? 'text-violet-400' : error ? 'text-red-400' : 'text-white/30'
+            isFocused
+              ? 'text-primary-600 dark:text-primary-400'
+              : error
+                ? 'text-red-500'
+                : 'text-gray-400 dark:text-gray-500'
           }`}>
             <Icon className="w-[18px] h-[18px]" />
           </div>
@@ -80,10 +84,10 @@ const AuthInput = forwardRef(({
               : 'top-1/2 -translate-y-1/2 text-sm'
             }
             ${isFocused
-              ? 'text-violet-400'
+              ? 'text-primary-600 dark:text-primary-400'
               : error
-                ? 'text-red-400'
-                : 'text-white/35'
+                ? 'text-red-500'
+                : 'text-gray-400 dark:text-gray-500'
             }
           `}
         >

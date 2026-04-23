@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Filter, UserPlus, Edit, Trash2, MoreVertical, Download } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Search, UserPlus, Edit, Trash2, MoreVertical, Download } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,21 +11,44 @@ import Badge, { StatusBadge } from '../../components/common/Badge';
 import Modal, { ModalFooter } from '../../components/common/Modal';
 import Card from '../../components/common/Card';
 import Pagination from '../../components/common/Pagination';
+import {
+  STATIC_ADMIN_ROLE_IDS,
+  STATIC_ADMIN_ROLES,
+  getStaticRoleLabel,
+} from '../../utils/staticRoles';
 
-// User schema for validation
 const userSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  role: z.enum(['admin', 'vtp', 'principal']),
+  role: z.enum(STATIC_ADMIN_ROLE_IDS),
   school: z.string().optional(),
   status: z.enum(['active', 'inactive', 'pending']),
 });
+
+const getRoleBadgeVariant = (roleId) => {
+  switch (String(roleId)) {
+    case '1':
+      return 'primary';
+    case '2':
+      return 'warning';
+    case '3':
+      return 'accent';
+    case '4':
+      return 'secondary';
+    case '5':
+      return 'gray';
+    default:
+      return 'gray';
+  }
+};
 
 const ManageUsers = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   const {
     register,
@@ -37,22 +60,21 @@ const ManageUsers = () => {
     defaultValues: {
       name: '',
       email: '',
-      role: 'principal',
+      role: '5',
       school: '',
       status: 'active',
     },
   });
 
-  // Mock users data
   const users = [
-    { id: 1, name: 'Rajesh Kumar', email: 'rajesh@example.com', role: 'Principal', school: 'Govt. High School', status: 'active', joinDate: '2024-03-15' },
-    { id: 2, name: 'Priya Sharma', email: 'priya@example.com', role: 'VTP', school: 'Skill Development Center', status: 'active', joinDate: '2024-03-10' },
-    { id: 3, name: 'Amit Patel', email: 'amit@example.com', role: 'Admin', school: 'District Office', status: 'inactive', joinDate: '2024-03-05' },
-    { id: 4, name: 'Sneha Verma', email: 'sneha@example.com', role: 'Principal', school: 'Model School', status: 'pending', joinDate: '2024-03-01' },
-    { id: 5, name: 'Vikram Singh', email: 'vikram@example.com', role: 'VTP', school: 'Vocational Institute', status: 'active', joinDate: '2024-02-28' },
-    { id: 6, name: 'Anjali Gupta', email: 'anjali@example.com', role: 'Principal', school: 'Central School', status: 'active', joinDate: '2024-02-25' },
-    { id: 7, name: 'Rahul Mehta', email: 'rahul@example.com', role: 'VTP', school: 'Technical Institute', status: 'inactive', joinDate: '2024-02-20' },
-    { id: 8, name: 'Kavita Joshi', email: 'kavita@example.com', role: 'Admin', school: 'State Office', status: 'active', joinDate: '2024-02-15' },
+    { id: 1, name: 'Rajesh Kumar', email: 'rajesh@example.com', role: '5', school: 'Govt. High School', status: 'active', joinDate: '2024-03-15' },
+    { id: 2, name: 'Priya Sharma', email: 'priya@example.com', role: '4', school: 'Skill Development Center', status: 'active', joinDate: '2024-03-10' },
+    { id: 3, name: 'Amit Patel', email: 'amit@example.com', role: '1', school: 'District Office', status: 'inactive', joinDate: '2024-03-05' },
+    { id: 4, name: 'Sneha Verma', email: 'sneha@example.com', role: '5', school: 'Model School', status: 'pending', joinDate: '2024-03-01' },
+    { id: 5, name: 'Vikram Singh', email: 'vikram@example.com', role: '4', school: 'Vocational Institute', status: 'active', joinDate: '2024-02-28' },
+    { id: 6, name: 'Anjali Gupta', email: 'anjali@example.com', role: '2', school: 'Central School', status: 'active', joinDate: '2024-02-25' },
+    { id: 7, name: 'Rahul Mehta', email: 'rahul@example.com', role: '3', school: 'Technical Institute', status: 'inactive', joinDate: '2024-02-20' },
+    { id: 8, name: 'Kavita Joshi', email: 'kavita@example.com', role: '1', school: 'State Office', status: 'active', joinDate: '2024-02-15' },
   ];
 
   const columns = [
@@ -70,7 +92,7 @@ const ManageUsers = () => {
     reset({
       name: '',
       email: '',
-      role: 'principal',
+      role: '5',
       school: '',
       status: 'active',
     });
@@ -99,20 +121,30 @@ const ManageUsers = () => {
     reset();
   };
 
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.school.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) => {
+      const roleLabel = getStaticRoleLabel(user.role).toLowerCase();
+      const query = searchQuery.toLowerCase();
+      const matchesSearch =
+        user.name.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query) ||
+        user.school.toLowerCase().includes(query) ||
+        roleLabel.includes(query);
+
+      const matchesRole = roleFilter ? user.role === roleFilter : true;
+      const matchesStatus = statusFilter ? user.status === statusFilter : true;
+
+      return matchesSearch && matchesRole && matchesStatus;
+    });
+  }, [roleFilter, searchQuery, statusFilter, users]);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Manage Users</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage system users, roles, and permissions
+            Manage system users with the fixed admin-side role master list.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -125,27 +157,36 @@ const ManageUsers = () => {
         </div>
       </div>
 
-      {/* Filters and Search */}
       <Card padding="md">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="md:col-span-2">
             <Input
-              placeholder="Search users by name, email, or school..."
+              placeholder="Search users by name, email, school, or role..."
               leftIcon={<Search className="w-4 h-4" />}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <div>
-            <select className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <select
+              value={roleFilter}
+              onChange={(event) => setRoleFilter(event.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 dark:border-gray-600 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
               <option value="">All Roles</option>
-              <option value="admin">Admin</option>
-              <option value="vtp">VTP</option>
-              <option value="principal">Principal</option>
+              {STATIC_ADMIN_ROLES.map((role) => (
+                <option key={role.id} value={role.id}>
+                  {getStaticRoleLabel(role.id)}
+                </option>
+              ))}
             </select>
           </div>
           <div>
-            <select className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <select
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 dark:border-gray-600 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
               <option value="">All Status</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -155,7 +196,6 @@ const ManageUsers = () => {
         </div>
       </Card>
 
-      {/* Users Table */}
       <Card padding="none">
         <Table
           columns={columns}
@@ -164,8 +204,8 @@ const ManageUsers = () => {
             <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
               <td className="px-6 py-4">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mr-3">
-                    <span className="text-primary-600 dark:text-primary-400 font-medium">
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
+                    <span className="font-medium text-primary-600 dark:text-primary-400">
                       {user.name.charAt(0)}
                     </span>
                   </div>
@@ -177,11 +217,8 @@ const ManageUsers = () => {
               </td>
               <td className="px-6 py-4">{user.email}</td>
               <td className="px-6 py-4">
-                <Badge
-                  variant={user.role === 'Admin' ? 'primary' : user.role === 'VTP' ? 'secondary' : 'accent'}
-                  size="sm"
-                >
-                  {user.role}
+                <Badge variant={getRoleBadgeVariant(user.role)} size="sm">
+                  {getStaticRoleLabel(user.role)}
                 </Badge>
               </td>
               <td className="px-6 py-4">{user.school}</td>
@@ -193,19 +230,19 @@ const ManageUsers = () => {
                 <div className="flex items-center justify-end gap-2">
                   <button
                     onClick={() => handleEditUser(user)}
-                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700"
                     title="Edit"
                   >
                     <Edit className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   </button>
                   <button
                     onClick={() => handleDeleteUser(user)}
-                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700"
                     title="Delete"
                   >
                     <Trash2 className="w-4 h-4 text-danger-600 dark:text-danger-400" />
                   </button>
-                  <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                  <button className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700">
                     <MoreVertical className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   </button>
                 </div>
@@ -215,8 +252,7 @@ const ManageUsers = () => {
         />
       </Card>
 
-      {/* Pagination */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <p className="text-gray-600 dark:text-gray-400">
           Showing {filteredUsers.length} of {users.length} users
         </p>
@@ -229,7 +265,6 @@ const ManageUsers = () => {
         />
       </div>
 
-      {/* Add/Edit User Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -237,7 +272,7 @@ const ManageUsers = () => {
         size="lg"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Input
               label="Full Name"
               placeholder="Enter full name"
@@ -254,27 +289,29 @@ const ManageUsers = () => {
               required
             />
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Role
               </label>
               <select
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 dark:border-gray-600 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 {...register('role')}
               >
-                <option value="admin">Administrator</option>
-                <option value="vtp">Vocational Teacher (VTP)</option>
-                <option value="principal">Principal/Head Master</option>
+                {STATIC_ADMIN_ROLES.map((role) => (
+                  <option key={role.id} value={role.id}>
+                    {getStaticRoleLabel(role.id)}
+                  </option>
+                ))}
               </select>
               {errors.role && (
                 <p className="mt-1 text-sm text-danger-500">{errors.role.message}</p>
               )}
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Status
               </label>
               <select
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 dark:border-gray-600 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 {...register('status')}
               >
                 <option value="active">Active</option>
