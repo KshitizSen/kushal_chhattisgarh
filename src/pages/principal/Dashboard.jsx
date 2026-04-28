@@ -451,9 +451,9 @@ const PrincipalDashboard = () => {
                   <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
                   <span>Approve Pending VTs</span>
                 </div>
-                {pendingCount > 0 && (
+                {vtCounts.pending > 0 && (
                   <Badge variant="warning" size="sm">
-                    {pendingCount}
+                    {vtCounts.pending}
                   </Badge>
                 )}
               </div>
