@@ -1,14 +1,17 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import useAuthStore from '../store/authStore';
 
-const ProtectedRoute = ({ children, isAuthenticated, allowedRoles = [] }) => {
+const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const location = useLocation();
-  const auth = useAuth();
-  const authenticated = isAuthenticated ?? auth.isAuthenticated;
-  const { role } = auth;
+  const { isAuthenticated, role, initialized } = useAuthStore();
 
-  if (!authenticated) {
+  // Wait until the store has hydrated from localStorage before deciding
+  if (!initialized) {
+    return null; // or a spinner
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

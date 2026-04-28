@@ -13,6 +13,13 @@ import {
   LogOut,
   Shield,
   Building2,
+  UserCheck,
+  Clock,
+  CalendarCheck,
+  Briefcase,
+  CalendarDays,
+  FileText,
+  CheckCircle,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -62,12 +69,34 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
     ];
 
     const principalItems = [
-      ...commonItems,
       {
-        title: 'Administration',
+        title: 'Overview',
         items: [
+          { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
+          { path: '/principal/teacher-approval', label: 'VT Approvals', icon: <UserCheck className="h-5 w-5" /> },
+          { path: '/principal/attendance', label: 'Attendance', icon: <CalendarCheck className="h-5 w-5" /> },
+        ],
+      },
+      {
+        title: 'Staff Management',
+        items: [
+          { path: '/principal/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
+          { path: '/principal/school-timing', label: 'School Timing', icon: <Clock className="h-5 w-5" /> },
           { path: '/principal/school-overview', label: 'School Overview', icon: <Home className="h-5 w-5" /> },
-          { path: '/principal/staff-management', label: 'Staff Management', icon: <Users className="h-5 w-5" /> },
+        ],
+      },
+      {
+        title: 'Operations',
+        items: [
+          { path: '/principal/staff-management', label: 'All Staff', icon: <Users className="h-5 w-5" /> },
+          { path: '/principal/activities', label: 'Activities', icon: <Briefcase className="h-5 w-5" /> },
+          { path: '/principal/holidays', label: 'Holidays', icon: <School className="h-5 w-5" /> },
+        ],
+      },
+      {
+        title: 'Reports',
+        items: [
+          { path: '/principal/reports', label: 'Reports & Analytics', icon: <BarChart3 className="h-5 w-5" /> },
         ],
       },
     ];
@@ -130,21 +159,18 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
                       onClick={onClose}
                       title={collapsed ? item.label : undefined}
                       className={() =>
-                        `group flex items-center rounded-2xl px-3 py-3 transition-all ${
-                          collapsed ? 'justify-center' : 'gap-2'
-                        } ${
-                          isActive
-                            ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
+                        `group flex items-center rounded-2xl px-3 py-3 transition-all ${collapsed ? 'justify-center' : 'gap-2'
+                        } ${isActive
+                          ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
                         }`
                       }
                     >
                       <span
-                        className={`flex h-10 w-10 items-center justify-center rounded-2xl transition ${
-                          isActive
-                            ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-950 dark:text-primary-300'
-                            : 'bg-gray-100 text-gray-500 group-hover:bg-white group-hover:text-primary-600 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:bg-gray-900 dark:group-hover:text-primary-300'
-                        }`}
+                        className={`flex h-10 w-10 items-center justify-center rounded-2xl transition ${isActive
+                          ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-950 dark:text-primary-300'
+                          : 'bg-gray-100 text-gray-500 group-hover:bg-white group-hover:text-primary-600 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:bg-gray-900 dark:group-hover:text-primary-300'
+                          }`}
                       >
                         {item.icon}
                       </span>
@@ -166,9 +192,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         <button
           onClick={handleLogout}
           title={collapsed ? 'Logout' : undefined}
-          className={`flex w-full items-center rounded-2xl border border-gray-200 bg-white px-3 py-2.5 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white ${
-            collapsed ? 'justify-center' : 'gap-3'
-          }`}
+          className={`flex w-full items-center rounded-2xl border border-gray-200 bg-white px-3 py-2.5 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white ${collapsed ? 'justify-center' : 'gap-3'
+            }`}
         >
           <LogOut className="h-5 w-5" />
           {!collapsed && <span className="font-medium">Logout</span>}

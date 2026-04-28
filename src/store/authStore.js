@@ -1,55 +1,53 @@
 import { create } from 'zustand';
 
+// ─── Helper: hydrate from localStorage synchronously ───
+const getInitialState = () => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const rawUser = localStorage.getItem('userData');
+    const userData = rawUser ? JSON.parse(rawUser) : null;
+    const hasValidToken = token && token !== 'undefined' && token !== 'null' && token !== 'demo-token';
+    if (hasValidToken && userData) {
+      return { isAuthenticated: true, user: userData, role: userData.role, token, initialized: true };
+    }
+  } catch {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+  }
+  return { isAuthenticated: false, user: null, role: null, token: null, initialized: true };
+};
+
 const useAuthStore = create((set) => ({
-  isAuthenticated: false,
-  user: null,
-  role: null,
-  token: null,
-  
-  login: (userData, token = 'demo-token') => {
-    const authToken = token || 'demo-token';
+  ...getInitialState(),
+
+  login: (userData) => {
+    // Prefer the JWT stored in userData.access_token
+    const authToken = userData.access_token;
     set({
       isAuthenticated: true,
       user: userData,
       role: userData.role,
-      token: authToken
+      token: authToken,
+      initialized: true,
     });
     localStorage.setItem('authToken', authToken);
     localStorage.setItem('userData', JSON.stringify(userData));
   },
-  
+
   logout: () => {
     set({
       isAuthenticated: false,
       user: null,
       role: null,
-      token: null
+      token: null,
+      initialized: true,
     });
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
   },
-  
-  initialize: () => {
-    const token = localStorage.getItem('authToken');
-    const rawUserData = localStorage.getItem('userData');
 
-    try {
-      const userData = rawUserData ? JSON.parse(rawUserData) : null;
-      const hasValidToken = token && token !== 'undefined' && token !== 'null';
-
-      if (hasValidToken && userData) {
-        set({
-          isAuthenticated: true,
-          user: userData,
-          role: userData.role,
-          token,
-        });
-      }
-    } catch {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
-    }
-  }
+  // Kept for backward compatibility but now a no-op (state is hydrated synchronously)
+  initialize: () => {},
 }));
 
 export default useAuthStore;

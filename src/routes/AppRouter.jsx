@@ -8,16 +8,22 @@ import AdminRoutes from './AdminRoutes';
 import VTPRoutes from './VTPRoutes';
 import PrincipalRoutes from './PrincipalRoutes';
 import ProtectedRoute from './ProtectedRoute';
-import { useAuth } from '../hooks/useAuth';
+import useAuthStore from '../store/authStore';
 
 const AppRouter = () => {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, initialized } = useAuthStore();
+
+  // Don't render routes until store is hydrated from localStorage
+  if (!initialized) return null;
 
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
+        {/* Public Routes – redirect to dashboard if already logged in */}
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to={`/${role}/dashboard`} replace /> : <Login />}
+        />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
@@ -25,7 +31,7 @@ const AppRouter = () => {
         <Route
           path="/"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <ProtectedRoute>
               <MainLayout />
             </ProtectedRoute>
           }

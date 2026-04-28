@@ -1,74 +1,154 @@
-import React from 'react';
-import { 
-  Users, 
-  School, 
-  Calendar, 
-  TrendingUp, 
+import React, { useEffect, useState } from 'react';
+import {
+  Users,
+  School,
+  Calendar,
+  TrendingUp,
   BookOpen,
   Award,
   BarChart3,
   FileText,
   Clock,
-  CheckCircle
+  CheckCircle,
+  UserCheck,
+  UserX,
+  AlertCircle,
+  ArrowRight,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { StatCard } from '../../components/common/Card';
 import BarChart from '../../components/charts/BarChart';
 import LineChart from '../../components/charts/LineChart';
 import PieChart from '../../components/charts/PieChart';
 import Table from '../../components/common/Table';
+import Button from '../../components/common/Button';
+import Badge from '../../components/common/Badge';
+import api from '../../services/api';
 
 const PrincipalDashboard = () => {
-  // Mock data for principal dashboard
+  const navigate = useNavigate();
+
+  // ── VT counts from GET /vt/list?status=all ────────────────────────────
+  const [vtCounts, setVtCounts] = useState({ total: 0, pending: 0, accepted: 0, rejected: 0 });
+  const [vtLoading, setVtLoading] = useState(true);
+
+  // ── Today's attendance from POST /attendance/headmaster ───────────────
+  const [attCounts, setAttCounts] = useState({ present: 0, late: 0, absent: 0 });
+  const [attLoading, setAttLoading] = useState(true);
+
+  const loading = vtLoading || attLoading;
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+    // ── 1. VT counts ──────────────────────────────────────────────────────
+    const fetchVtCounts = async () => {
+      try {
+        const res = await api.get('/vt/list?status=all');
+        if (res.data?.status && res.data?.counts) {
+          setVtCounts({
+            total:    res.data.counts.total    ?? 0,
+            pending:  res.data.counts.pending  ?? 0,
+            accepted: res.data.counts.accepted ?? 0,
+            rejected: res.data.counts.rejected ?? 0,
+          });
+        }
+      } catch {
+        // keep defaults
+      } finally {
+        setVtLoading(false);
+      }
+    };
+
+    // ── 2. Today's attendance counts ──────────────────────────────────────
+    const fetchTodayAttendance = async () => {
+      try {
+        const res = await api.post('/attendance/headmaster', {
+          filter_type:  'date',
+          filter_value: today,
+          limit:        200,
+          page:         1,
+        });
+        if (res.data?.status) {
+          const records = res.data.data || [];
+          const s = { present: 0, late: 0, absent: 0 };
+          records.forEach((r) => {
+            if (r.status === 'present') s.present++;
+            else if (r.status === 'late') s.late++;
+            else if (r.status === 'absent') s.absent++;
+          });
+          setAttCounts(s);
+        }
+      } catch {
+        // keep defaults
+      } finally {
+        setAttLoading(false);
+      }
+    };
+
+    fetchVtCounts();
+    fetchTodayAttendance();
+  }, []);
+
+
+  // ── Stat cards ────────────────────────────────────────────────────────
   const stats = [
     {
-      title: 'Total Students',
-      value: '1,245',
-      change: '+8%',
-      icon: <Users className="h-6 w-6" />,
-      color: 'bg-blue-500',
-      trend: 'up'
+      title:   'Total VTs',
+      value:   loading ? '…' : vtCounts.total,
+      change:  `${vtCounts.accepted} accepted`,
+      icon:    <Users className="h-6 w-6" />,
+      color:   'bg-blue-500',
+      trend:   'neutral',
+      onClick: () => navigate('/principal/staff-management'),
     },
     {
-      title: 'Teaching Staff',
-      value: '48',
-      change: '+3',
-      icon: <School className="h-6 w-6" />,
-      color: 'bg-green-500',
-      trend: 'up'
+      title:   'Pending Approvals',
+      value:   loading ? '…' : vtCounts.pending,
+      change:  vtCounts.pending > 0 ? 'Needs action' : 'All clear',
+      icon:    <AlertCircle className="h-6 w-6" />,
+      color:   'bg-orange-500',
+      trend:   vtCounts.pending > 0 ? 'up' : 'neutral',
+      onClick: () => navigate('/principal/teacher-approval'),
     },
     {
-      title: 'Classes Today',
-      value: '56',
-      change: '12 ongoing',
-      icon: <Calendar className="h-6 w-6" />,
-      color: 'bg-purple-500',
-      trend: 'neutral'
+      title:   'Today Present',
+      value:   loading ? '…' : attCounts.present,
+      change:  'Checked in today',
+      icon:    <UserCheck className="h-6 w-6" />,
+      color:   'bg-green-500',
+      trend:   'up',
+      onClick: () => navigate('/principal/attendance'),
     },
     {
-      title: 'Attendance Rate',
-      value: '94%',
-      change: '+2%',
-      icon: <TrendingUp className="h-6 w-6" />,
-      color: 'bg-orange-500',
-      trend: 'up'
+      title:   'Late Teachers',
+      value:   loading ? '…' : attCounts.late,
+      change:  'After grace time',
+      icon:    <Clock className="h-6 w-6" />,
+      color:   'bg-yellow-500',
+      trend:   attCounts.late > 0 ? 'down' : 'neutral',
+      onClick: () => navigate('/principal/attendance'),
     },
     {
-      title: 'Pending Requests',
-      value: '24',
-      change: '-8',
-      icon: <Clock className="h-6 w-6" />,
-      color: 'bg-red-500',
-      trend: 'down'
+      title:   'Absent Today',
+      value:   loading ? '…' : attCounts.absent,
+      change:  'Not checked in',
+      icon:    <UserX className="h-6 w-6" />,
+      color:   'bg-red-500',
+      trend:   attCounts.absent > 0 ? 'down' : 'neutral',
+      onClick: () => navigate('/principal/attendance'),
     },
     {
-      title: 'Certifications',
-      value: '342',
-      change: '+42',
-      icon: <Award className="h-6 w-6" />,
-      color: 'bg-indigo-500',
-      trend: 'up'
-    }
+      title:   'Activities',
+      value:   12,
+      change:  'This month',
+      icon:    <BookOpen className="h-6 w-6" />,
+      color:   'bg-purple-500',
+      trend:   'up',
+      onClick: () => navigate('/principal/activities'),
+    },
   ];
+
 
   const attendanceTrendData = [
     { month: 'Jan', attendance: 88 },
@@ -143,17 +223,16 @@ const PrincipalDashboard = () => {
     { key: 'staff', header: 'Staff Member' },
     { key: 'department', header: 'Department' },
     { key: 'date', header: 'Date' },
-    { 
-      key: 'status', 
+    {
+      key: 'status',
       header: 'Status',
       render: (value) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${value === 'pending' ? 'bg-yellow-100 text-yellow-800' :
           value === 'review' ? 'bg-blue-100 text-blue-800' :
-          'bg-green-100 text-green-800'
-        }`}>
-          {value === 'pending' ? 'Pending' : 
-           value === 'review' ? 'Under Review' : 'Approved'}
+            'bg-green-100 text-green-800'
+          }`}>
+          {value === 'pending' ? 'Pending' :
+            value === 'review' ? 'Under Review' : 'Approved'}
         </span>
       )
     }
@@ -171,29 +250,40 @@ const PrincipalDashboard = () => {
           </p>
         </div>
         <div className="flex space-x-3">
-          <button className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center">
-            <FileText className="h-4 w-4 mr-2" />
+          <Button
+            variant="primary"
+            leftIcon={<FileText className="h-4 w-4" />}
+            onClick={() => navigate('/principal/reports')}
+          >
             Generate Report
-          </button>
-          <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center">
-            <Calendar className="h-4 w-4 mr-2" />
+          </Button>
+          <Button
+            variant="ghost"
+            leftIcon={<Calendar className="h-4 w-4" />}
+            onClick={() => navigate('/principal/holidays')}
+          >
             School Calendar
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {stats.map((stat, index) => (
-          <StatCard
+          <div
             key={index}
-            title={stat.title}
-            value={stat.value}
-            change={stat.change}
-            icon={stat.icon}
-            color={stat.color}
-            trend={stat.trend}
-          />
+            onClick={stat.onClick}
+            className="cursor-pointer"
+          >
+            <StatCard
+              title={stat.title}
+              value={stat.value}
+              change={stat.change}
+              icon={stat.icon}
+              color={stat.color}
+              trend={stat.trend}
+            />
+          </div>
         ))}
       </div>
 
@@ -270,7 +360,7 @@ const PrincipalDashboard = () => {
             {performanceData.map((item, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div 
+                  <div
                     className="h-3 w-3 rounded-full mr-2"
                     style={{ backgroundColor: item.color }}
                   />
@@ -352,22 +442,47 @@ const PrincipalDashboard = () => {
             Quick Actions
           </h3>
           <div className="space-y-3">
-            <button className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
-                <span>Approve Pending Requests</span>
+            <button
+              onClick={() => navigate('/principal/teacher-approval')}
+              className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+                  <span>Approve Pending VTs</span>
+                </div>
+                {pendingCount > 0 && (
+                  <Badge variant="warning" size="sm">
+                    {pendingCount}
+                  </Badge>
+                )}
               </div>
             </button>
-            <button className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <button
+              onClick={() => navigate('/principal/attendance')}
+              className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div className="flex items-center">
+                <Clock className="h-5 w-5 text-orange-600 mr-3" />
+                <span>Mark Attendance</span>
+              </div>
+            </button>
+            <button
+              onClick={() => navigate('/principal/activities')}
+              className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div className="flex items-center">
+                <BookOpen className="h-5 w-5 text-purple-600 mr-3" />
+                <span>Assign Activity</span>
+              </div>
+            </button>
+            <button
+              onClick={() => navigate('/principal/reports')}
+              className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
               <div className="flex items-center">
                 <FileText className="h-5 w-5 text-blue-600 mr-3" />
-                <span>View School Reports</span>
-              </div>
-            </button>
-            <button className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-purple-600 mr-3" />
-                <span>Schedule Meeting</span>
+                <span>View VT Reports</span>
               </div>
             </button>
           </div>
