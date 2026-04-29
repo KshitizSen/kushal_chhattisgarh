@@ -68,7 +68,7 @@ const loginSchema = z
   .object({
     email: z.string().min(1, 'Required field'),
     password: z.string().min(1, 'Required field'),
-    role: z.enum(['admin', 'vtp', 'principal'], {
+    role: z.enum(['admin', 'vtp', 'principal', 'deo'], {
       required_error: 'Please select a role',
     }),
   })

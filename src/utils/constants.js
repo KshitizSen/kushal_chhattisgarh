@@ -1,13 +1,15 @@
 export const ROLES = {
   ADMIN: 'admin',
   VTP: 'vtp',
-  PRINCIPAL: 'principal'
+  PRINCIPAL: 'principal',
+  DEO: 'deo'
 };
 
 export const ROLE_DASHBOARDS = {
   admin: '/admin/dashboard',
   vtp: '/vtp/dashboard',
   principal: '/principal/dashboard',
+  deo: '/deo/dashboard',
 };
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
@@ -29,5 +31,9 @@ export const NAV_ITEMS = {
     { path: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
     { path: 'school-overview', label: 'School Overview', icon: 'School' },
     { path: 'staff-management', label: 'Staff Management', icon: 'Users' }
+  ],
+  deo: [
+    { path: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
+    { path: 'data-entry', label: 'Data Entry', icon: 'FileText' }
   ]
 };

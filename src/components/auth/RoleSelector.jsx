@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, GraduationCap, Landmark } from 'lucide-react';
+import { Shield, GraduationCap, Landmark, Users } from 'lucide-react';
 
 const roles = [
   { value: 'admin', label: 'Admin', description: 'Administrator', icon: Shield },
   { value: 'vtp', label: 'VTP', description: 'Vocational Teacher', icon: GraduationCap },
   { value: 'principal', label: 'Principal', description: 'School Head', icon: Landmark },
+  { value: 'deo', label: 'DEO', description: 'District Edu. Officer', icon: Users },
 ];
 
 const RoleSelector = ({ value, onChange, error }) => {
@@ -15,15 +16,15 @@ const RoleSelector = ({ value, onChange, error }) => {
         Login As
       </label>
 
-      <div className="relative grid grid-cols-3 gap-2 p-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08]">
+      <div className="relative grid grid-cols-4 gap-2 p-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08]">
         {/* Animated sliding indicator */}
         {value && (
           <motion.div
             layoutId="role-indicator"
             className="absolute top-1.5 bottom-1.5 rounded-lg bg-gradient-to-br from-violet-600/80 to-indigo-600/80 shadow-lg shadow-violet-500/20"
             style={{
-              width: `calc(${100 / 3}% - 0.5rem)`,
-              left: `calc(${roles.findIndex(r => r.value === value) * (100 / 3)}% + 0.375rem)`,
+              width: `calc(${100 / roles.length}% - 0.5rem)`,
+              left: `calc(${roles.findIndex(r => r.value === value) * (100 / roles.length)}% + 0.375rem)`,
             }}
             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
           />
@@ -49,13 +50,11 @@ const RoleSelector = ({ value, onChange, error }) => {
               aria-checked={isActive}
               aria-label={`Login as ${role.description}`}
             >
-              <RoleIcon className={`w-4 h-4 mb-1.5 transition-all duration-200 ${
-                isActive ? 'scale-110' : ''
-              }`} />
+              <RoleIcon className={`w-4 h-4 mb-1.5 transition-all duration-200 ${isActive ? 'scale-110' : ''
+                }`} />
               <span className="text-xs font-bold tracking-wide">{role.label}</span>
-              <span className={`text-[9px] mt-0.5 transition-colors duration-200 ${
-                isActive ? 'text-white/70' : 'text-white/25'
-              }`}>
+              <span className={`text-[9px] mt-0.5 transition-colors duration-200 ${isActive ? 'text-white/70' : 'text-white/25'
+                }`}>
                 {role.description}
               </span>
             </button>
