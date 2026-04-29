@@ -101,6 +101,15 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
       },
     ];
 
+    const deoItems = [
+      {
+        title: 'Overview',
+        items: [
+          { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
+        ],
+      },
+    ];
+
     switch (user?.role) {
       case 'admin':
         return adminItems;
@@ -108,6 +117,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         return vtpItems;
       case 'principal':
         return principalItems;
+      case 'deo':
+        return deoItems;
       default:
         return commonItems;
     }

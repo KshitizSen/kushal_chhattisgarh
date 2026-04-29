@@ -7,6 +7,7 @@ import ForgotPassword from '../pages/auth/ForgotPassword';
 import AdminRoutes from './AdminRoutes';
 import VTPRoutes from './VTPRoutes';
 import PrincipalRoutes from './PrincipalRoutes';
+import DEORoutes from './DEORoutes';
 import ProtectedRoute from './ProtectedRoute';
 import useAuthStore from '../store/authStore';
 
@@ -40,6 +41,7 @@ const AppRouter = () => {
           <Route path="admin/*" element={<AdminRoutes />} />
           <Route path="vtp/*" element={<VTPRoutes />} />
           <Route path="principal/*" element={<PrincipalRoutes />} />
+          <Route path="deo/*" element={<DEORoutes />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Route>
 
