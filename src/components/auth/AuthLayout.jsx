@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { School, ShieldCheck, BookOpen, Sparkles } from 'lucide-react';
-import vtpIcon from '../../assets/icons/vtp_icon.png';
+import vtpIcon from '../../assets/images/cglogo.png';
+import vtp2 from '../../assets/images/vtdark.png';
 
 const features = [
   {
@@ -12,7 +13,7 @@ const features = [
   {
     icon: BookOpen,
     title: 'Smart Analytics',
-    description: 'Real-time dashboards & detailed reports',
+    description: 'Dashboards & detailed reports',
   },
   {
     icon: Sparkles,
@@ -45,7 +46,7 @@ const AuthLayout = ({ children }) => {
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 rounded-xl overflow-hidden shadow-glow-violet">
-              <img src={vtpIcon} alt="Kushal CG" className="w-full h-full object-cover" />
+              <img src={vtpIcon} alt="Chhattisgarh government logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <h1 className="text-xl font-heading font-bold text-white tracking-tight">
@@ -65,17 +66,33 @@ const AuthLayout = ({ children }) => {
           transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
           className="space-y-6"
         >
-          <h2 className="text-4xl xl:text-5xl font-heading font-extrabold text-white leading-tight">
+          <h6 className="text-2xl sm:text-3xl xl:text-4xl font-heading font-extrabold text-white leading-tight">
             Empowering{' '}
             <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
               Vocational
             </span>{' '}
             Education
-          </h2>
-          <p className="text-lg text-white/50 leading-relaxed max-w-md">
+          </h6>
+          <p className="text-md text-white/50 leading-relaxed max-w-md">
             A unified platform for managing training programs, tracking progress,
             and building skills across Chhattisgarh.
           </p>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: [1, 1.03, 1] }}
+            transition={{ 
+              opacity: { duration: 0.8, delay: 0.4 },
+              scale: { repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.4 }
+            }}
+            className="mt-6 sm:mt-8 origin-left"
+          >
+            <img
+              src={vtp2}
+              alt="Platform Overview"
+              className="w-full max-w-[300px] sm:max-w-[500px] rounded-xl opacity-90 shadow-2xl object-contain mix-blend-luminosity hover:mix-blend-normal transition-all duration-300"
+            />
+          </motion.div>
 
           {/* Feature list */}
           <div className="space-y-4 pt-4">
