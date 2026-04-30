@@ -13,6 +13,8 @@ import {
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import usePrincipalStore from '../../store/principalStore';
+import useAuthStore from '../../store/authStore';
+import api from '../../services/api';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
@@ -83,19 +85,49 @@ const SchoolTiming = () => {
     }));
   };
 
+  const user = useAuthStore((s) => s.user);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Convert 24h "HH:MM" → "HH:MM am/pm" for the API payload
+  const to12h = (time24) => {
+    if (!time24) return '';
+    const [h, m] = time24.split(':').map(Number);
+    const ampm = h >= 12 ? 'pm' : 'am';
+    const h12  = h % 12 || 12;
+    return `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
+  };
+
   const handleSave = async () => {
     if (!validate()) {
       toast.error('Please fix the validation errors');
       return;
     }
 
-    const result = await saveSchoolTiming(formData);
+    const udise_code = user?.udise_code;
+    if (!udise_code) {
+      toast.error('UDISE code not found in your profile. Please re-login.');
+      return;
+    }
 
-    if (result.success) {
-      toast.success('School timing saved successfully');
+    setIsSaving(true);
+    try {
+      const payload = {
+        udise_code,
+        sch_open_time:  to12h(formData.startTime),
+        sch_close_time: to12h(formData.endTime),
+        grace_time:     Number(formData.graceTime),
+      };
+
+
+      await api.patch('/headmaster/school-time', payload);
+
+      toast.success('School timing saved successfully!');
       setHasChanges(false);
-    } else {
-      toast.error(result.error || 'Failed to save school timing');
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to save school timing';
+      toast.error(msg);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -259,11 +291,10 @@ const SchoolTiming = () => {
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => handleChange('startTime', e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                    validationErrors.startTime
-                      ? 'border-red-300 focus:ring-red-500'
-                      : 'border-gray-200 dark:border-gray-700'
-                  }`}
+                  className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent [&::-webkit-calendar-picker-indicator]:opacity-0 ${validationErrors.startTime
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-200 dark:border-gray-700'
+                    }`}
                 />
                 <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
               </div>
@@ -284,11 +315,10 @@ const SchoolTiming = () => {
                   type="time"
                   value={formData.endTime}
                   onChange={(e) => handleChange('endTime', e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                    validationErrors.endTime
-                      ? 'border-red-300 focus:ring-red-500'
-                      : 'border-gray-200 dark:border-gray-700'
-                  }`}
+                  className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent [&::-webkit-calendar-picker-indicator]:opacity-0 ${validationErrors.endTime
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-200 dark:border-gray-700'
+                    }`}
                 />
                 <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
               </div>
@@ -415,11 +445,12 @@ const SchoolTiming = () => {
             variant="primary"
             leftIcon={<Save className="h-4 w-4" />}
             onClick={handleSave}
-            loading={timingLoading}
-            disabled={!hasChanges}
+            loading={isSaving}
+            disabled={!hasChanges || isSaving}
           >
             Save Changes
           </Button>
+
         </div>
       </Card>
 
@@ -438,10 +469,10 @@ const SchoolTiming = () => {
                 • School timing settings apply to all vocational teachers
               </li>
               <li>• Changes will take effect from the next working day</li>
-              <li>• Teachers are marked late after grace period expires</li>
-              <li>
+              {/* <li>• Teachers are marked late after grace period expires</li> */}
+              {/* <li>
                 • Half-day is calculated based on the midpoint of school hours
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
