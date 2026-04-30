@@ -34,6 +34,9 @@ export const NAV_ITEMS = {
   ],
   deo: [
     { path: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
-    { path: 'data-entry', label: 'Data Entry', icon: 'FileText' }
+    { path: 'attendance', label: 'Attendance', icon: 'CalendarCheck' },
+    { path: 'vtps', label: "VTP's", icon: 'Building2' },
+    { path: 'vt-schools', label: 'VT School', icon: 'School' },
+    { path: 'vt-teachers', label: 'VT Teacher', icon: 'Users' }
   ]
 };

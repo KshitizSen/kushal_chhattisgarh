@@ -73,6 +73,11 @@ export const StatusBadge = ({ status, showIcon = true }) => {
     review: { label: 'Review', variant: 'info', icon: '•' },
     'on-leave': { label: 'On Leave', variant: 'warning', icon: '◐' },
     probation: { label: 'Probation', variant: 'info', icon: '◌' },
+    present: { label: 'Present', variant: 'success', icon: '✓' },
+    late: { label: 'Late', variant: 'warning', icon: '⏳' },
+    absent: { label: 'Absent', variant: 'danger', icon: '✕' },
+    leave: { label: 'Leave', variant: 'info', icon: '◐' },
+    half_day: { label: 'Half Day', variant: 'warning', icon: '◐' },
   };
 
   const config = statusConfig[status] || statusConfig.inactive;

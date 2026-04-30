@@ -57,6 +57,7 @@ const AdminDashboard = () => {
   ];
 
   // Chart data
+  // Chart data
   const enrollmentData = [
     { month: 'Jan', enrollments: 400, completions: 240 },
     { month: 'Feb', enrollments: 300, completions: 139 },
