@@ -103,6 +103,25 @@ const principalService = {
       responseType: 'blob',
     });
   },
+
+  // Leave Balance (EL - Earned Leave)
+  getSchoolLeaveBalances: (year) => {
+    return api.get('/leave-balance/school', { params: { year } });
+  },
+
+  getTeacherLeaveBalance: (teacherId, year) => {
+    return api.get(`/leave-balance/teacher/${teacherId}`, { params: { year } });
+  },
+
+  approveLeaveWithDeduction: (leaveId) => {
+    return api.post(`/leave-balance/approve-with-deduction/${leaveId}`, {
+      status: 'approved',
+    });
+  },
+
+  checkLeaveApproval: (leaveId) => {
+    return api.get(`/leave-balance/check/${leaveId}`);
+  },
 };
 
 export default principalService;

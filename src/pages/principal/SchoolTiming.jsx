@@ -93,7 +93,7 @@ const SchoolTiming = () => {
     if (!time24) return '';
     const [h, m] = time24.split(':').map(Number);
     const ampm = h >= 12 ? 'pm' : 'am';
-    const h12  = h % 12 || 12;
+    const h12 = h % 12 || 12;
     return `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
   };
 
@@ -113,11 +113,10 @@ const SchoolTiming = () => {
     try {
       const payload = {
         udise_code,
-        sch_open_time:  to12h(formData.startTime),
+        sch_open_time: to12h(formData.startTime),
         sch_close_time: to12h(formData.endTime),
-        grace_time:     Number(formData.graceTime),
+        grace_time: Number(formData.graceTime),
       };
-
 
       await api.patch('/headmaster/school-time', payload);
 

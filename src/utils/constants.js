@@ -34,6 +34,6 @@ export const NAV_ITEMS = {
   ],
   deo: [
     { path: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
-    { path: 'data-entry', label: 'Data Entry', icon: 'FileText' }
+    { path: 'district-education-officer', label: 'District Education Officer', icon: 'FileText' }
   ]
 };

@@ -53,6 +53,21 @@ const usePrincipalStore = create(
         leaveLoading: false,
         leaveError: null,
 
+        // Leave Balance (EL - Earned Leave)
+        schoolLeaveBalances: [],
+        leaveBalanceSummary: {
+          totalTeachers: 0,
+          healthyBalance: 0,
+          lowBalance: 0,
+          zeroBalance: 0,
+          averageBalance: 0,
+          totalEarnedSchool: 0,
+          totalUsedSchool: 0,
+        },
+        selectedTeacherBalance: null,
+        leaveBalanceLoading: false,
+        leaveBalanceError: null,
+
         // Holidays
         holidays: [],
         holidaysLoading: false,
@@ -306,6 +321,56 @@ const usePrincipalStore = create(
             await principalService.rejectLeave(leaveId, reason);
             await get().fetchLeaveRequests();
             return { success: true };
+          } catch (error) {
+            return { success: false, error: error.message };
+          }
+        },
+
+        // Leave Balance Actions
+        fetchSchoolLeaveBalances: async (year = new Date().getFullYear()) => {
+          set({ leaveBalanceLoading: true, leaveBalanceError: null });
+          try {
+            const response = await principalService.getSchoolLeaveBalances(year);
+            set({
+              schoolLeaveBalances: response.data.teachers,
+              leaveBalanceSummary: response.data.summary,
+              leaveBalanceLoading: false,
+            });
+          } catch (error) {
+            set({
+              leaveBalanceLoading: false,
+              leaveBalanceError: error.message,
+            });
+          }
+        },
+
+        fetchTeacherLeaveBalance: async (teacherId, year = new Date().getFullYear()) => {
+          try {
+            const response = await principalService.getTeacherLeaveBalance(teacherId, year);
+            set({
+              selectedTeacherBalance: response.data,
+            });
+            return { success: true, data: response.data };
+          } catch (error) {
+            return { success: false, error: error.message };
+          }
+        },
+
+        approveLeaveWithDeduction: async (leaveId) => {
+          try {
+            const response = await principalService.approveLeaveWithDeduction(leaveId);
+            await get().fetchLeaveRequests();
+            await get().fetchSchoolLeaveBalances();
+            return { success: true, data: response.data };
+          } catch (error) {
+            return { success: false, error: error.message };
+          }
+        },
+
+        checkLeaveApprovalStatus: async (leaveId) => {
+          try {
+            const response = await principalService.checkLeaveApproval(leaveId);
+            return { success: true, data: response.data };
           } catch (error) {
             return { success: false, error: error.message };
           }
