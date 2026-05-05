@@ -133,8 +133,8 @@ const Header = ({ onMenuToggle }) => {
 
               <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900">
                 <div className="hidden text-right sm:block">
-                  <p className="font-medium text-gray-900 dark:text-white">{user?.name || 'User Name'}</p>
-                  <p className="text-sm capitalize text-gray-500 dark:text-gray-400">{user?.role || 'Role'}</p>
+                  {/* <p className="font-medium text-gray-900 dark:text-white">{user?.name || 'User Name'}</p> */}
+                  <p className="text-sm capitalize text-gray-700 dark:text-gray-400">{user?.role || 'Role'}</p>
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
                   <User className="h-5 w-5" />

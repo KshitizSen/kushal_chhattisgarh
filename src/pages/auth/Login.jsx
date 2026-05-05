@@ -125,7 +125,7 @@ const Login = () => {
 
       const payload = isPrincipal
         ? { teacher_code: data.email, mobile: data.password, role: apiRole }
-        : { email: data.email, password: data.password, role: apiRole };
+        : { email: data.email, mobile: data.password, role: apiRole };
 
       const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
       const response = await api.post(`${baseUrl}/auth/login`, payload);
