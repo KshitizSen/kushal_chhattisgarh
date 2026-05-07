@@ -1,5 +1,7 @@
-import React, { useMemo, useState } from 'react';
+/* eslint-disable react-hooks/set-state-in-effect */
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  AlertCircle,
   Building2,
   CalendarCheck,
   Clock,
@@ -12,9 +14,12 @@ import {
   Users,
 } from 'lucide-react';
 import Badge, { StatusBadge } from '../../components/common/Badge';
+import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import Input from '../../components/common/Input';
+import Pagination from '../../components/common/Pagination';
 import Table from '../../components/common/Table';
+import api from '../../services/api';
 
 const attendanceRows = [
   {
@@ -91,13 +96,6 @@ const vtpRows = [
   { id: 4, name: 'Rural Training Network', contact: 'Seema Yadav', phone: '9876543213', email: 'seema@rtn.org', schools: 3, teachers: 6, district: 'Raipur', status: 'inactive' },
 ];
 
-const schoolRows = [
-  { id: 1, school_name: 'GOVT HSS KAPADAH', udise: '22081301906', block_name: 'Pandariya', district_name: 'Kabirdham', principal: 'Dr. Rajesh Kumar', vtp: 'Kushal Skill Foundation', teachers: 2, status: 'active' },
-  { id: 2, school_name: 'GOVT HS PANDARIYA', udise: '22081302001', block_name: 'Pandariya', district_name: 'Kabirdham', principal: 'Sneha Verma', vtp: 'Kushal Skill Foundation', teachers: 1, status: 'active' },
-  { id: 3, school_name: 'GOVT HS LORMI', udise: '22081401503', block_name: 'Lormi', district_name: 'Mungeli', principal: 'Anjali Gupta', vtp: 'Chhattisgarh Vocational Services', teachers: 2, status: 'pending' },
-  { id: 4, school_name: 'GOVT HSS SAHASPUR', udise: '22081501201', block_name: 'Sahaspur', district_name: 'Kabirdham', principal: 'Vikram Singh', vtp: 'Future Skills Partner', teachers: 1, status: 'active' },
-];
-
 const teacherRows = [
   { id: 1, vt_name: 'Bhagvatee Sahu', trade: 'Apparel & Home Furnishing', school_name: 'GOVT HSS KAPADAH', vtp: 'Kushal Skill Foundation', phone: '8103741144', email: 'bhagvatee@example.com', status: 'approved' },
   { id: 2, vt_name: 'Ramesh Kumar', trade: 'IT/ITeS', school_name: 'GOVT HSS KAPADAH', vtp: 'Kushal Skill Foundation', phone: '9876543210', email: 'ramesh@example.com', status: 'pending' },
@@ -108,6 +106,13 @@ const teacherRows = [
 
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString('en-IN') : '-');
 const formatTime = (value) => (value ? new Date(value).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }) : '-');
+
+const DEFAULT_PAGINATION = {
+  totalItems: 0,
+  totalPages: 1,
+  currentPage: 1,
+  limit: 50,
+};
 
 const calcWorkHours = (checkIn, checkOut) => {
   if (!checkIn || !checkOut) return '-';
@@ -131,7 +136,7 @@ const personCell = (name, subtitle) => (
 const schoolCell = (name, row) => (
   <div>
     <p className="font-medium text-gray-900 dark:text-white">{name || '-'}</p>
-    <p className="text-xs text-gray-500">{row.udise ? `UDISE: ${row.udise}` : `${row.block_name}, ${row.district_name}`}</p>
+    <p className="text-xs text-gray-500">{row.udise_code ? `UDISE: ${row.udise_code}` : `${row.block_name}, ${row.district_name}`}</p>
   </div>
 );
 
@@ -207,17 +212,19 @@ const pageConfig = {
   },
   schools: {
     title: 'VT School',
-    subtitle: 'Schools mapped with vocational trades and VTPs',
-    searchPlaceholder: 'Search school by name, UDISE, block, principal or VTP...',
+    subtitle: 'Pending school reports for DEO review',
+    searchPlaceholder: 'Search school by name, UDISE, block or district...',
     icon: School,
-    rows: schoolRows,
+    api: {
+      endpoint: '/deo/school-reports',
+      params: { status: 'pending' },
+    },
     columns: [
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'block_name', header: 'Block', render: (value, row) => <div><p>{value}</p><p className="text-xs text-gray-500">{row.district_name}</p></div> },
-      { key: 'principal', header: 'Principal' },
-      { key: 'vtp', header: 'VTP' },
-      { key: 'teachers', header: 'VT Teachers' },
-      { key: 'status', header: 'Status', render: (value) => <StatusBadge status={value} /> },
+      { key: 'hm_approval_status', header: 'HM Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
+      { key: 'vtp_approval_status', header: 'VTP Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
+      { key: 'deo_approval_status', header: 'DEO Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
     ],
   },
   teachers: {
@@ -241,18 +248,79 @@ const DeoTablePage = ({ type }) => {
   const config = pageConfig[type] || pageConfig.attendance;
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [apiRows, setApiRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
+  const [currentPage, setCurrentPage] = useState(1);
   const Icon = config.icon;
+  const isApiPage = Boolean(config.api);
+  const rows = isApiPage ? apiRows : config.rows;
 
-  const statuses = useMemo(() => [...new Set(config.rows.map((row) => row.status).filter(Boolean))], [config.rows]);
+  const fetchRows = useCallback(async () => {
+    if (!config.api) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await api.get(config.api.endpoint, {
+        params: {
+          ...config.api.params,
+          page: currentPage,
+          limit: pagination.limit,
+        },
+      });
+
+      const responseRows = response.data?.data || [];
+      setApiRows(
+        responseRows.map((row) => ({
+          ...row,
+          id: row.report_id || row.udise_code,
+          deo_approval_status: row.deo_approval_status || 'pending',
+          hm_approval_status: row.hm_approval_status || 'pending',
+          vtp_approval_status: row.vtp_approval_status || 'pending',
+        }))
+      );
+      setPagination(response.data?.pagination || DEFAULT_PAGINATION);
+    } catch (fetchError) {
+      console.error(`Failed to fetch ${config.title}:`, fetchError);
+      setApiRows([]);
+      setPagination(DEFAULT_PAGINATION);
+      setError(`${config.title} list could not be loaded.`);
+    } finally {
+      setLoading(false);
+    }
+  }, [config.api, config.title, currentPage, pagination.limit]);
+
+  useEffect(() => {
+    fetchRows();
+  }, [fetchRows]);
+
+  useEffect(() => {
+    setSearchQuery('');
+    setStatusFilter('');
+    setCurrentPage(1);
+    setApiRows([]);
+    setPagination(DEFAULT_PAGINATION);
+    setError('');
+  }, [type]);
+
+  const statuses = useMemo(() => {
+    const key = isApiPage ? 'deo_approval_status' : 'status';
+    return [...new Set(rows.map((row) => row[key]).filter(Boolean))];
+  }, [isApiPage, rows]);
 
   const filteredRows = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    return config.rows.filter((row) => {
+    const statusKey = isApiPage ? 'deo_approval_status' : 'status';
+
+    return rows.filter((row) => {
       const matchesSearch = !query || Object.values(row).some((value) => String(value ?? '').toLowerCase().includes(query));
-      const matchesStatus = !statusFilter || row.status === statusFilter;
+      const matchesStatus = !statusFilter || row[statusKey] === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }, [config.rows, searchQuery, statusFilter]);
+  }, [isApiPage, rows, searchQuery, statusFilter]);
 
   return (
     <div className="space-y-6">
@@ -297,18 +365,39 @@ const DeoTablePage = ({ type }) => {
       <Card variant="elevated">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{config.title} List</h2>
-          <Badge variant="primary" outline>{filteredRows.length} Records</Badge>
+          <Badge variant="primary" outline>{isApiPage ? pagination.totalItems : filteredRows.length} Records</Badge>
         </div>
+        {error && (
+          <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-900/20 dark:text-red-300">
+            <span className="inline-flex items-center gap-2">
+              <AlertCircle className="h-4 w-4" />
+              {error}
+            </span>
+            <Button variant="ghost" size="sm" onClick={fetchRows}>Retry</Button>
+          </div>
+        )}
         <Table
           data={filteredRows}
           columns={config.columns}
+          keyExtractor={(row, index) => row.id || row.udise_code || index}
           emptyState={
             <div className="py-12 text-center">
               <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-              <p className="text-gray-500 dark:text-gray-400">No records found</p>
+              <p className="text-gray-500 dark:text-gray-400">{loading ? 'Loading records...' : 'No records found'}</p>
             </div>
           }
         />
+        {isApiPage && (
+          <div className="mt-4">
+            <Pagination
+              currentPage={pagination.currentPage || currentPage}
+              totalPages={pagination.totalPages || 1}
+              pageSize={pagination.limit || DEFAULT_PAGINATION.limit}
+              totalItems={pagination.totalItems || 0}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </Card>
     </div>
   );

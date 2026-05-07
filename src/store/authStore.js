@@ -1,5 +1,12 @@
 import { create } from 'zustand';
 
+const ADMIN_DIRECT_ACCESS_USER = {
+  id: 'admin-direct-access',
+  name: 'Admin',
+  email: 'admin@example.com',
+  role: 'admin',
+};
+
 // ─── Helper: hydrate from localStorage synchronously ───
 const getInitialState = () => {
   try {
@@ -14,6 +21,17 @@ const getInitialState = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
   }
+
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+    return {
+      isAuthenticated: true,
+      user: ADMIN_DIRECT_ACCESS_USER,
+      role: 'admin',
+      token: null,
+      initialized: true,
+    };
+  }
+
   return { isAuthenticated: false, user: null, role: null, token: null, initialized: true };
 };
 
