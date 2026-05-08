@@ -1,5 +1,5 @@
-import React from 'react';
-import { Users, School, BookOpen, TrendingUp, Calendar, Download, MoreVertical } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { AlertCircle, BookOpen, Building2, Calendar, Download, MoreVertical, School, ShieldCheck, Users } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import Card, { StatCard } from '../../components/common/Card';
 import Table from '../../components/common/Table';
@@ -7,45 +7,74 @@ import Badge, { StatusBadge } from '../../components/common/Badge';
 import Button from '../../components/common/Button';
 import BarChart from '../../components/charts/BarChart';
 import LineChart from '../../components/charts/LineChart';
+import { getAdminDashboardCounts } from '../../services/adminService';
+
+const defaultDashboardCounts = {
+  total_schools: 0,
+  total_vc: 0,
+  total_deo: 0,
+  total_vt_staff: 0,
+  total_trades: 0,
+};
+
+const formatCount = (value) => Number(value || 0).toLocaleString('en-IN');
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const [dashboardCounts, setDashboardCounts] = useState(defaultDashboardCounts);
+  const [isCountsLoading, setIsCountsLoading] = useState(false);
+  const [countsError, setCountsError] = useState('');
 
-  // Stat cards data
-  const stats = [
+  useEffect(() => {
+    const fetchDashboardCounts = async () => {
+      try {
+        setIsCountsLoading(true);
+        setCountsError('');
+        const result = await getAdminDashboardCounts();
+        setDashboardCounts({ ...defaultDashboardCounts, ...(result.data || {}) });
+      } catch (error) {
+        setCountsError(error.response?.data?.message || 'Dashboard counts could not be loaded.');
+        setDashboardCounts(defaultDashboardCounts);
+      } finally {
+        setIsCountsLoading(false);
+      }
+    };
+
+    fetchDashboardCounts();
+  }, []);
+
+  const stats = useMemo(() => [
     {
-      title: 'Total Users',
-      value: '2,847',
-      change: '+12%',
-      trend: 'up',
-      icon: <Users className="w-6 h-6" />,
-      description: 'Active users across system',
-    },
-    {
-      title: 'Schools',
-      value: '156',
-      change: '+5%',
-      trend: 'up',
+      title: 'Total Schools',
+      value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_schools),
       icon: <School className="w-6 h-6" />,
-      description: 'Registered schools',
+      description: 'VT enabled schools',
     },
     {
-      title: 'VTP Providers',
-      value: '42',
-      change: '+8%',
-      trend: 'up',
+      title: 'Total VC',
+      value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_vc),
+      icon: <Building2 className="w-6 h-6" />,
+      description: 'Vocational coordinators',
+    },
+    {
+      title: 'Total DEO',
+      value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_deo),
+      icon: <ShieldCheck className="w-6 h-6" />,
+      description: 'District education officers',
+    },
+    {
+      title: 'VT Staff',
+      value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_vt_staff),
+      icon: <Users className="w-6 h-6" />,
+      description: 'Vocational teacher staff',
+    },
+    {
+      title: 'Total Trades',
+      value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_trades),
       icon: <BookOpen className="w-6 h-6" />,
-      description: 'Vocational training partners',
+      description: 'Distinct vocational trades',
     },
-    {
-      title: 'Completion Rate',
-      value: '78%',
-      change: '+3%',
-      trend: 'up',
-      icon: <TrendingUp className="w-6 h-6" />,
-      description: 'Course completion average',
-    },
-  ];
+  ], [dashboardCounts, isCountsLoading]);
 
   // Recent users table data
   const recentUsers = [
@@ -106,7 +135,14 @@ const AdminDashboard = () => {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {countsError && (
+        <div className="flex items-center gap-3 rounded-[1.5rem] border border-red-200 bg-red-50 px-5 py-4 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200">
+          <AlertCircle className="h-5 w-5 flex-shrink-0" />
+          <p className="text-sm">{countsError}</p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
         {stats.map((stat, index) => (
           <StatCard key={index} {...stat} />
         ))}

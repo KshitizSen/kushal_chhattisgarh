@@ -21,6 +21,7 @@ import {
   FileText,
   CheckCircle,
   ShieldCheck,
+  Route,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -49,6 +50,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: '/admin/manage-users', label: 'Manage Users', icon: <Users className="h-5 w-5" /> },
           { path: '/admin/manage-schools', label: 'Manage Schools', icon: <School className="h-5 w-5" /> },
           { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <Building2 className="h-5 w-5" /> },
+          { path: '/admin/manage-deo', label: 'Manage DEO', icon: <UserCheck className="h-5 w-5" /> },
+          { path: '/admin/attendance-tracking', label: 'Attendance Tracking', icon: <Route className="h-5 w-5" /> },
         ],
       },
       {

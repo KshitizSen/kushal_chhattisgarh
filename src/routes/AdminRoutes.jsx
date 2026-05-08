@@ -4,9 +4,11 @@ import Dashboard from '../pages/admin/Dashboard';
 import ManageUsers from '../pages/admin/ManageUsers';
 import ManageSchools from '../pages/admin/ManageSchools';
 import ManageVTP from '../pages/admin/ManageVTP';
+import ManageDEO from '../pages/admin/ManageDEO';
 import Reports from '../pages/admin/Reports';
 import Settings from '../pages/admin/Settings';
 import ManageRoles from '../pages/admin/ManageRoles';
+import AttendanceTracking from '../pages/admin/AttendanceTracking';
 import ProtectedRoute from './ProtectedRoute';
 
 const AdminRoutes = () => {
@@ -43,6 +45,22 @@ const AdminRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <ManageVTP />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="manage-deo" 
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <ManageDEO />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="attendance-tracking" 
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <AttendanceTracking />
           </ProtectedRoute>
         } 
       />

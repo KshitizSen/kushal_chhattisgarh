@@ -134,6 +134,13 @@ const STATUS = {
   not_generated: { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', dot: 'bg-gray-400' },
 };
 
+const ATTENDANCE_STATUS = {
+  A: { label: 'Absent', className: 'bg-orange-50 text-orange-700 ring-orange-100 dark:bg-orange-900/20 dark:text-orange-300 dark:ring-orange-900/40' },
+  P: { label: 'Present', className: 'bg-green-50 text-green-700 ring-green-100 dark:bg-green-900/20 dark:text-green-300 dark:ring-green-900/40' },
+  GH: { label: 'Government Holiday', className: 'bg-blue-50 text-blue-700 ring-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:ring-blue-900/40' },
+  H: { label: 'Holiday', className: 'bg-gray-100 text-gray-700 ring-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700' },
+};
+
 const DEFAULT_PAGINATION = {
   totalItems: 0,
   totalPages: 1,
@@ -164,6 +171,52 @@ const buildYearOptions = () => {
   return Array.from({ length: 7 }, (_, index) => String(currentYear - 5 + index));
 };
 
+const getMonthLabel = (monthValue) => MONTH_OPTIONS.find((month) => month.value === String(monthValue))?.label || monthValue;
+
+const getMonthlySummaryParam = (year, month) => `${year}-${String(month).padStart(2, '0')}`;
+
+const formatReportDate = (year, month, day) => {
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  if (Number.isNaN(date.getTime())) return `${day}/${month}/${year}`;
+  return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
+const normalizeAttendanceStatus = (value) => {
+  const status = typeof value === 'string' ? value.toUpperCase() : value?.status?.toUpperCase();
+  if (status === 'PRESENT') return 'P';
+  if (status === 'ABSENT') return 'A';
+  if (status === 'HOLIDAY') return 'H';
+  if (status === 'GOVERNMENT_HOLIDAY') return 'GH';
+  return status || 'A';
+};
+
+const formatAttendanceTime = (value) => {
+  if (!value) return '-';
+  if (typeof value === 'string' && /^\d{1,2}:\d{2}(\s?[AP]M)?$/i.test(value.trim())) {
+    return value.trim();
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+};
+
+const buildAttendanceRows = (attendance = {}, year, month) => (
+  Object.entries(attendance)
+    .sort(([dayA], [dayB]) => Number(dayA) - Number(dayB))
+    .map(([day, value], index) => {
+      const record = typeof value === 'string' ? { status: value } : value || {};
+      return {
+        serial: index + 1,
+        day,
+        date: formatReportDate(year, month, day),
+        status: normalizeAttendanceStatus(record),
+        checkIn: formatAttendanceTime(record.check_in || record.checkIn || record.check_in_time),
+        checkOut: formatAttendanceTime(record.check_out || record.checkOut || record.check_out_time),
+      };
+    })
+);
+
 const StatusPill = ({ status }) => {
   const config = STATUS[status] || STATUS.pending;
   const label = status ? status.replace(/_/g, ' ') : 'pending';
@@ -172,6 +225,16 @@ const StatusPill = ({ status }) => {
     <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${config.bg} ${config.text}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />
       <span className="capitalize">{label}</span>
+    </span>
+  );
+};
+
+const AttendanceStatusPill = ({ status }) => {
+  const config = ATTENDANCE_STATUS[status] || ATTENDANCE_STATUS.A;
+
+  return (
+    <span className={`inline-flex min-w-10 justify-center rounded-full px-2.5 py-1 text-xs font-bold ring-1 ${config.className}`}>
+      {status}
     </span>
   );
 };
@@ -217,6 +280,14 @@ const Attendance = () => {
   const [remarks, setRemarks] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [attendanceReportModal, setAttendanceReportModal] = useState({
+    open: false,
+    vt: null,
+    school: null,
+    report: null,
+    loading: false,
+    error: '',
+  });
   const yearOptions = useMemo(() => buildYearOptions(), []);
 
   const fetchDashboardCounts = useCallback(async () => {
@@ -294,6 +365,12 @@ const Attendance = () => {
     fetchSchoolReports();
   }, [fetchSchoolReports]);
 
+  useEffect(() => {
+    setSchoolVts({});
+    setSchoolVtsLoading({});
+    setSchoolVtsError({});
+  }, [selectedMonth, selectedYear]);
+
   const counts = useMemo(() => {
     const reports = dashboardCounts?.reports || {};
     return {
@@ -346,7 +423,11 @@ const Attendance = () => {
 
     try {
       const response = await api.get('/deo/schools-vts', {
-        params: { udise_code: udiseCode },
+        params: {
+          udise_code: udiseCode,
+          month: Number(selectedMonth),
+          year: Number(selectedYear),
+        },
       });
       const selectedSchool = response.data?.data?.find((item) => String(item.udise_code) === udiseCode) || response.data?.data?.[0];
       const vts = selectedSchool?.vts || [];
@@ -355,12 +436,17 @@ const Attendance = () => {
         ...prev,
         [udiseCode]: vts.map((vt) => ({
           id: vt.vt_staff_id || vt.user_id || `${udiseCode}-${vt.vt_mob || vt.vt_name}`,
+          userId: vt.user_id,
+          vtStaffId: vt.vt_staff_id,
           name: vt.vt_name || 'VT name not available',
           trade: vt.trade || 'Trade not available',
           phone: vt.vt_mob || 'Mobile not available',
           email: vt.vt_email,
           vtpName: vt.vtp_name,
-          reportStatus: school.reportStatus,
+          hmApprovalStatus: vt.hm_approval_status || school.hmApprovalStatus || 'pending',
+          vtpApprovalStatus: vt.vtp_approval_status || school.vtpApprovalStatus || 'pending',
+          deoApprovalStatus: vt.deo_approval_status || school.reportStatus || 'pending',
+          reportStatus: vt.deo_approval_status || school.reportStatus || 'pending',
         })),
       }));
     } catch (error) {
@@ -370,7 +456,7 @@ const Attendance = () => {
     } finally {
       setSchoolVtsLoading((prev) => ({ ...prev, [udiseCode]: false }));
     }
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   const handleToggleSchool = (school) => {
     const udiseCode = String(school.udise);
@@ -391,20 +477,31 @@ const Attendance = () => {
     const { target } = actionModal;
     if (!target) return;
 
+    const vtIdentifier = actionModal.level === 'vt'
+      ? target.vt?.userId || target.vt?.vtStaffId
+      : null;
+
     setActionLoading(true);
     setActionError('');
     try {
-      await api.post('/reports/approve', {
+      const payload = {
         udise_code: Number(target.udise),
         month: Number(selectedMonth),
         year: Number(selectedYear),
         status,
         remarks: remarks.trim(),
-      });
+      };
+
+      if (vtIdentifier) {
+        payload.vtUserId = Number(vtIdentifier);
+      }
+
+      await api.post('/reports/approve', payload);
 
       setActionModal({ open: false, type: null, target: null, level: null });
       setRemarks('');
       setExpandedSchool(null);
+      setSchoolVts({});
       refreshPageData();
     } catch (error) {
       console.error('Failed to update report approval:', error);
@@ -419,6 +516,69 @@ const Attendance = () => {
     setRemarks('');
     setActionError('');
   };
+
+  const openAttendanceReport = async (school, vt) => {
+    const vtIdentifier = vt.userId || vt.vtStaffId;
+
+    setAttendanceReportModal({
+      open: true,
+      vt,
+      school,
+      report: null,
+      loading: true,
+      error: '',
+    });
+
+    if (!vtIdentifier) {
+      setAttendanceReportModal((prev) => ({
+        ...prev,
+        loading: false,
+        error: 'Attendance report is unavailable because this vocational teacher is not linked with a user account.',
+      }));
+      return;
+    }
+
+    try {
+      const response = await api.get('/reports/monthly-summary', {
+        params: {
+          udise_code: school.udise,
+          month: getMonthlySummaryParam(selectedYear, selectedMonth),
+          vtUserId: vtIdentifier,
+        },
+      });
+
+      const report = response.data?.data?.[0] || null;
+      setAttendanceReportModal((prev) => ({
+        ...prev,
+        report,
+        loading: false,
+        error: report ? '' : 'No attendance report found for this vocational teacher.',
+      }));
+    } catch (error) {
+      console.error('Failed to fetch monthly attendance report:', error);
+      setAttendanceReportModal((prev) => ({
+        ...prev,
+        loading: false,
+        error: error.response?.data?.message || 'Attendance report could not be loaded.',
+      }));
+    }
+  };
+
+  const closeAttendanceReport = () => {
+    setAttendanceReportModal({
+      open: false,
+      vt: null,
+      school: null,
+      report: null,
+      loading: false,
+      error: '',
+    });
+  };
+
+  const attendanceRows = useMemo(
+    () => buildAttendanceRows(attendanceReportModal.report?.attendance, selectedYear, selectedMonth),
+    [attendanceReportModal.report, selectedMonth, selectedYear]
+  );
 
   return (
     <div className="space-y-5">
@@ -663,13 +823,13 @@ const Attendance = () => {
                                       <span className="block truncate text-xs text-gray-500">{vt.trade} | {vt.phone}</span>
                                     </span>
                                   </div>
-                                  <StatusPill status={vt.reportStatus} />
+                                  <StatusPill status={vt.deoApprovalStatus} />
                                   <div className="flex items-center gap-1">
-                                    <ActionIcon icon={FileText} label="Reports" onClick={() => {}} />
+                                    <ActionIcon icon={FileText} label="Reports" onClick={() => openAttendanceReport(school, vt)} />
                                     <ActionIcon icon={Eye} label="View" onClick={() => {}} />
                                     <ActionIcon icon={Download} label="Download" onClick={() => {}} />
-                                    <ActionIcon icon={CheckCircle} label="Approve" variant="approve" onClick={() => openAction('approve', school, 'school')} />
-                                    <ActionIcon icon={XCircle} label="Reject" variant="reject" onClick={() => openAction('reject', school, 'school')} />
+                                    <ActionIcon icon={CheckCircle} label="Approve" variant="approve" onClick={() => openAction('approve', { ...school, vt }, 'vt')} />
+                                    <ActionIcon icon={XCircle} label="Reject" variant="reject" onClick={() => openAction('reject', { ...school, vt }, 'vt')} />
                                   </div>
                                 </div>
                               ))
@@ -744,6 +904,12 @@ const Attendance = () => {
               </p>
               <p className="mt-1 text-sm text-gray-500">
                 School: <strong>{actionModal.target?.name}</strong>
+                {actionModal.target?.vt?.name && (
+                  <>
+                    <br />
+                    VT: <strong>{actionModal.target.vt.name}</strong>
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -762,6 +928,81 @@ const Attendance = () => {
           {actionError && (
             <div className="rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200">
               {actionError}
+            </div>
+          )}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={attendanceReportModal.open}
+        onClose={closeAttendanceReport}
+        title="Attendance Report"
+        size="xl"
+        footer={
+          <Button variant="ghost" onClick={closeAttendanceReport}>
+            Close
+          </Button>
+        }
+      >
+        <div className="space-y-5">
+          <div className="flex flex-col gap-3 rounded-[1.25rem] border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950/50 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                {attendanceReportModal.report?.name || attendanceReportModal.vt?.name || 'Vocational Teacher'}
+              </p>
+              <p className="mt-1 text-sm text-gray-500">
+                {attendanceReportModal.school?.name} | UDISE {attendanceReportModal.school?.udise}
+              </p>
+              <p className="mt-1 text-xs font-medium text-gray-500">
+                {getMonthLabel(selectedMonth)} {selectedYear}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(ATTENDANCE_STATUS).map(([status, config]) => (
+                <span key={status} className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                  <AttendanceStatusPill status={status} />
+                  {config.label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {attendanceReportModal.loading ? (
+            <div className="flex items-center justify-center gap-2 rounded-[1.25rem] border border-gray-200 py-12 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
+              <RefreshCw className="h-4 w-4 animate-spin" />
+              Loading attendance report...
+            </div>
+          ) : attendanceReportModal.error ? (
+            <div className="flex items-center gap-3 rounded-[1.25rem] border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200">
+              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+              {attendanceReportModal.error}
+            </div>
+          ) : (
+            <div className="overflow-hidden rounded-[1.25rem] border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[680px]">
+                  <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950">
+                    <tr>
+                      <th className="w-20 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">Sr. No.</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">Date</th>
+                      <th className="w-28 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">Status</th>
+                      <th className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">Check-in</th>
+                      <th className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">Checkout</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendanceRows.map((row) => (
+                      <tr key={row.day} className="border-b border-gray-100 last:border-b-0 dark:border-gray-800">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300">{row.serial}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{row.date}</td>
+                        <td className="px-4 py-3"><AttendanceStatusPill status={row.status} /></td>
+                        <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{row.checkIn}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{row.checkOut}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>
