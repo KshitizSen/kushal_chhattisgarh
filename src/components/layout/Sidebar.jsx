@@ -20,6 +20,7 @@ import {
   CalendarDays,
   FileText,
   CheckCircle,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -63,8 +64,11 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
     const vtpItems = [
       ...commonItems,
       {
-        title: 'Learning',
-        items: [{ path: '/vtp/my-courses', label: 'My Courses', icon: <BookOpen className="h-5 w-5" /> }],
+        title: 'Approvals',
+        items: [
+          { path: '/vtp/vt-approvals', label: 'VT Approvals', icon: <ShieldCheck className="h-5 w-5" /> },
+          { path: '/vtp/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
+        ],
       },
     ];
 

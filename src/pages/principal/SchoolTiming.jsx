@@ -65,8 +65,8 @@ const SchoolTiming = () => {
     if (start && end && start >= end) {
       errors.endTime = 'End time must be after start time';
     }
-    if (formData.graceTime < 0 || formData.graceTime > 60) {
-      errors.graceTime = 'Grace time must be between 0 and 60 minutes';
+    if (formData.graceTime < 0 || formData.graceTime > 30) {
+      errors.graceTime = 'Grace time must be between 0 and 30 minutes';
     }
 
     setValidationErrors(errors);
@@ -340,7 +340,7 @@ const SchoolTiming = () => {
                 <input
                   type="range"
                   min="0"
-                  max="60"
+                  max="30"
                   step="5"
                   value={formData.graceTime}
                   onChange={(e) =>
@@ -350,8 +350,8 @@ const SchoolTiming = () => {
                 />
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                   <span>0 min</span>
+                  <span>15 min</span>
                   <span>30 min</span>
-                  <span>60 min</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-900/20 rounded-xl">

@@ -41,12 +41,12 @@ const principalService = {
   },
 
   // School Timing
-  getSchoolTiming: () => {
-    return api.get('/principal/school-timing');
+  getSchoolTiming: (udise_code) => {
+    return api.get('/headmaster/school-time', { params: { udise_code } });
   },
 
-  saveSchoolTiming: (timing) => {
-    return api.put('/principal/school-timing', timing);
+  saveSchoolTiming: (payload) => {
+    return api.patch('/headmaster/school-time', payload);
   },
 
   // Activities

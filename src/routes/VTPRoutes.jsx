@@ -1,11 +1,12 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/vtp/Dashboard';
-import MyCourses from '../pages/vtp/MyCourses';
+import VtApprovals from '../pages/vtp/VtApprovals';
+import LeaveManagement from '../pages/vtp/LeaveManagement';
 import ProtectedRoute from './ProtectedRoute';
 
 const VTPRoutes = () => {
-  const allowedRoles = ['vtp'];
+  const allowedRoles = ['vtp', 'vocational_teacher_provider'];
 
   return (
     <Routes>
@@ -17,13 +18,21 @@ const VTPRoutes = () => {
           </ProtectedRoute>
         } 
       />
-      <Route 
-        path="my-courses" 
+      <Route
+        path="vt-approvals"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
-            <MyCourses />
+            <VtApprovals />
           </ProtectedRoute>
-        } 
+        }
+      />
+      <Route
+        path="leave-management"
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <LeaveManagement />
+          </ProtectedRoute>
+        }
       />
       <Route path="*" element={<Navigate to="/vtp/dashboard" replace />} />
     </Routes>

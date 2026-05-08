@@ -25,7 +25,7 @@ export const NAV_ITEMS = {
   ],
   vtp: [
     { path: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
-    { path: 'my-courses', label: 'My Courses', icon: 'BookOpen' }
+    { path: 'vt-approvals', label: 'VT Approvals', icon: 'ShieldCheck' }
   ],
   principal: [
     { path: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
