@@ -217,9 +217,12 @@ const LeaveManagement = () => {
         <div className="flex flex-col gap-1">
           <StatusBadge status={value} />
           {row.leave_approved && (
-            <Badge variant="success" size="xs" className="justify-center">
-              Fully Approved
-            </Badge>
+            <div className="flex items-center justify-center gap-1 mt-0.5 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 px-2 py-0.5 border border-emerald-200 dark:from-emerald-900/30 dark:to-teal-900/30 dark:border-emerald-800 shadow-sm">
+              <CheckCircle className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                Finalized
+              </span>
+            </div>
           )}
         </div>
       ),

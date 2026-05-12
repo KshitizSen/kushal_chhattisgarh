@@ -10,14 +10,7 @@ const VTPRoutes = () => {
 
   return (
     <Routes>
-      <Route 
-        path="dashboard" 
-        element={
-          <ProtectedRoute allowedRoles={allowedRoles}>
-            <Dashboard />
-          </ProtectedRoute>
-        } 
-      />
+
       <Route
         path="vt-approvals"
         element={
@@ -34,7 +27,7 @@ const VTPRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/vtp/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/vtp/vt-approvals" replace />} />
     </Routes>
   );
 };
