@@ -4,6 +4,7 @@ import Attendance from '../pages/deo/Attendance';
 import VTPs from '../pages/deo/VTPs';
 import VTSchools from '../pages/deo/VTSchools';
 import VTTeachers from '../pages/deo/VTTeachers';
+import MonthlyReports from '../pages/deo/MonthlyReports';
 import ProtectedRoute from './ProtectedRoute';
 
 const DEORoutes = () => {
@@ -48,6 +49,14 @@ const DEORoutes = () => {
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <VTTeachers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="monthly-reports"
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <MonthlyReports />
           </ProtectedRoute>
         }
       />

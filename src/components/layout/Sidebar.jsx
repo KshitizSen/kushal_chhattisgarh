@@ -72,6 +72,12 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: '/vtp/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
         ],
       },
+      {
+        title: 'Reports',
+        items: [
+          { path: '/vtp/monthly-reports', label: 'Monthly Reports', icon: <FileText className="h-5 w-5" /> },
+        ],
+      },
     ];
 
     const principalItems = [
@@ -102,7 +108,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
       {
         title: 'Reports',
         items: [
-          { path: '/principal/reports', label: 'Reports & Analytics', icon: <BarChart3 className="h-5 w-5" /> },
+          { path: '/principal/reports', label: 'Monthly Reports', icon: <FileText className="h-5 w-5" /> },
         ],
       },
     ];
@@ -116,6 +122,12 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: '/deo/vtps', label: "VTP's", icon: <Building2 className="h-5 w-5" /> },
           { path: '/deo/vt-schools', label: 'VT School', icon: <School className="h-5 w-5" /> },
           { path: '/deo/vt-teachers', label: 'VT Teacher', icon: <Users className="h-5 w-5" /> },
+        ],
+      },
+      {
+        title: 'Reports',
+        items: [
+          { path: '/deo/monthly-reports', label: 'Monthly Reports', icon: <FileText className="h-5 w-5" /> },
         ],
       },
     ];
