@@ -9,6 +9,7 @@ import Activities from '../pages/principal/Activities';
 import LeaveManagement from '../pages/principal/LeaveManagement';
 import Holidays from '../pages/principal/Holidays';
 import Reports from '../pages/principal/Reports';
+import AttendanceRequests from '../pages/principal/AttendanceRequests';
 import ProtectedRoute from './ProtectedRoute';
 
 const PrincipalRoutes = () => {
@@ -93,6 +94,14 @@ const PrincipalRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <Reports />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="attendance-requests"
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <AttendanceRequests />
           </ProtectedRoute>
         }
       />

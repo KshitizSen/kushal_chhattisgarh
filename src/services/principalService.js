@@ -122,6 +122,23 @@ const principalService = {
   checkLeaveApproval: (leaveId) => {
     return api.get(`/leave-balance/check/${leaveId}`);
   },
+
+  // Attendance Requests (OnDuty & Regularization)
+  getOnDutyRequests: (payload) => {
+    return api.post('/od/headmaster', payload);
+  },
+
+  updateOnDutyStatus: (id, status) => {
+    return api.patch(`/od/${id}/status`, { status });
+  },
+
+  getRegularizationRequests: (payload) => {
+    return api.post('/regularization/list', payload);
+  },
+
+  updateRegularizationStatus: (id, status) => {
+    return api.patch(`/regularization/${id}/status`, { status });
+  },
 };
 
 export default principalService;
