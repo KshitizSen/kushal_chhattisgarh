@@ -96,7 +96,7 @@ const Header = ({ onMenuToggle }) => {
           <div className="flex flex-wrap items-center gap-3 lg:justify-end">
             {/* <div className="relative min-w-[220px] flex-1 lg:min-w-[260px] lg:flex-none">
                 <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">
-                  <Search className="h-4 w-4" />
+                  <Search className="h-4 w-4"  />
                 </div>
                 <input
                   type="search"
