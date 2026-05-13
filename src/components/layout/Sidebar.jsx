@@ -46,7 +46,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         title: 'Control Center',
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
-          { path: '/admin/manage-users', label: 'Manage Users', icon: <Users className="h-5 w-5" /> },
+          // { path: '/admin/manage-users', label: 'Manage Users', icon: <Users className="h-5 w-5" /> },
           { path: '/admin/manage-schools', label: 'Manage Schools', icon: <School className="h-5 w-5" /> },
           { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <Building2 className="h-5 w-5" /> },
           { path: '/admin/manage-deo', label: 'Manage DEO', icon: <UserCheck className="h-5 w-5" /> },

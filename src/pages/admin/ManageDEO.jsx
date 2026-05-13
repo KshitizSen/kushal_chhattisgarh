@@ -47,6 +47,7 @@ const ManageDEO = () => {
   }, [currentPage, searchQuery]);
 
   const columns = useMemo(() => [
+    { key: 'deo_name', label: 'Se no' },
     { key: 'deo_name', label: 'DEO Name' },
     { key: 'district_name', label: 'District' },
     { key: 'designation', label: 'Designation' },
@@ -110,11 +111,13 @@ const ManageDEO = () => {
           <Table
             columns={columns}
             data={deos}
-            renderRow={(deo) => (
+            renderRow={(deo, index) => (
               <tr key={deo.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                 <td className="px-4 py-3">
+                  <p className="font-medium text-gray-900 dark:text-white">{index + 1}</p>
+                </td>
+                <td className="px-4 py-3">
                   <p className="font-medium text-gray-900 dark:text-white">{displayValue(deo.deo_name)}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">ID: {displayValue(deo.id)}</p>
                 </td>
                 <td className="px-4 py-3">
                   <p>{displayValue(deo.district_name)}</p>

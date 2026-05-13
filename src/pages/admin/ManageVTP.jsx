@@ -57,6 +57,7 @@ const ManageVTP = () => {
   const inactiveCount = vtps.filter((vtp) => vtp.status === 'inactive').length;
 
   const columns = useMemo(() => [
+    { key: 'vtp_name', label: 'Se no' },
     { key: 'vtp_name', label: 'VTP Name' },
     { key: 'vc_name', label: 'VC Name' },
     { key: 'mobile', label: 'Mobile' },
@@ -121,11 +122,13 @@ const ManageVTP = () => {
           <Table
             columns={columns}
             data={vtps}
-            renderRow={(vtp) => (
+            renderRow={(vtp, index) => (
               <tr key={vtp.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                 <td className="px-4 py-3">
+                  <p className="font-medium text-gray-900 dark:text-white">{index + 1}</p>
+                </td>
+                <td className="px-4 py-3">
                   <p className="font-medium text-gray-900 dark:text-white">{displayValue(vtp.vtp_name)}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">ID: {displayValue(vtp.id)}</p>
                 </td>
                 <td className="px-4 py-3">{displayValue(vtp.vc_name)}</td>
                 <td className="px-4 py-3">

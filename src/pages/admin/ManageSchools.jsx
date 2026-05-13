@@ -47,7 +47,8 @@ const ManageSchools = () => {
   }, [currentPage, searchQuery]);
 
   const columns = useMemo(() => [
-    { key: 'school_name', label: 'School' },
+    { key: 'school_name', label: 'Se no' },
+    { key: 'school_name', label: 'School', width: '70%' },
     { key: 'udise_sch_code', label: 'UDISE' },
     { key: 'edu_state_name', label: 'State' },
     { key: 'district_name', label: 'District' },
@@ -114,11 +115,13 @@ const ManageSchools = () => {
           <Table
             columns={columns}
             data={schools}
-            renderRow={(school) => (
+            renderRow={(school, index) => (
               <tr key={school.id || school.udise_sch_code} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                 <td className="px-4 py-3">
+                  <p className="font-medium text-gray-900 dark:text-white">{index + 1}</p>
+                </td>
+                <td className="px-4 py-3">
                   <p className="font-medium text-gray-900 dark:text-white">{displayValue(school.school_name)}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">ID: {displayValue(school.id)}</p>
                 </td>
                 <td className="px-4 py-3">{displayValue(school.udise_sch_code)}</td>
                 <td className="px-4 py-3">
