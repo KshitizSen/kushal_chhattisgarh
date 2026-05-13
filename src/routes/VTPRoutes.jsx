@@ -1,31 +1,41 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/vtp/Dashboard';
-import MyCourses from '../pages/vtp/MyCourses';
+import VtApprovals from '../pages/vtp/VtApprovals';
+import LeaveManagement from '../pages/vtp/LeaveManagement';
+import MonthlyAttendanceReports from '../pages/vtp/MonthlyAttendanceReports';
 import ProtectedRoute from './ProtectedRoute';
 
 const VTPRoutes = () => {
-  const allowedRoles = ['vtp'];
+  const allowedRoles = ['vtp', 'vocational_teacher_provider'];
 
   return (
     <Routes>
-      <Route 
-        path="dashboard" 
+      <Route
+        path="vt-approvals"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
-            <Dashboard />
+            <VtApprovals />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="my-courses" 
+      <Route
+        path="leave-management"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
-            <MyCourses />
+            <LeaveManagement />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route path="*" element={<Navigate to="/vtp/dashboard" replace />} />
+      <Route
+        path="monthly-reports"
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <MonthlyAttendanceReports />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/vtp/vt-approvals" replace />} />
     </Routes>
   );
 };

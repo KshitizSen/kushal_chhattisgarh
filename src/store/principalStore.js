@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import principalService from '../services/principalService';
+import useAuthStore from './authStore';
 
 const usePrincipalStore = create(
   devtools(
@@ -226,9 +227,20 @@ const usePrincipalStore = create(
         fetchSchoolTiming: async () => {
           set({ timingLoading: true });
           try {
-            const response = await principalService.getSchoolTiming();
+            const udise_code = useAuthStore.getState().user?.udise_code;
+            if (!udise_code) {
+              set({ timingLoading: false });
+              return;
+            }
+            const response = await principalService.getSchoolTiming(udise_code);
+            // Backend returns { status, data: { startTime, endTime, graceTime, ... } }
+            const timing = response.data?.data || response.data;
             set({
-              schoolTiming: response.data,
+              schoolTiming: {
+                startTime: timing.startTime || '08:00',
+                endTime:   timing.endTime   || '16:00',
+                graceTime: timing.graceTime ?? 15,
+              },
               timingLoading: false,
             });
           } catch (error) {
