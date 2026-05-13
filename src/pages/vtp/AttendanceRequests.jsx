@@ -10,11 +10,11 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
-  ClipboardList,
+  Eye,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import principalService from '../../services/principalService';
+import vtpService from '../../services/vtpService';
 import useAuthStore from '../../store/authStore';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
@@ -34,11 +34,16 @@ const fmtDate = (iso) =>
     })
     : '—';
 
-const calcDays = (from, to) => {
-  if (!from || !to) return '—';
-  const diff = (new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24) + 1;
-  return `${diff} day${diff !== 1 ? 's' : ''}`;
-};
+const fmtDateTime = (iso) =>
+  iso
+    ? new Date(iso).toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+    : '—';
 
 // ── Component ─────────────────────────────────────────────────────────────────
 const AttendanceRequests = () => {
@@ -59,27 +64,22 @@ const AttendanceRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-
-  // ── Tab state ─────────────────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState('onduty'); // 'onduty' | 'regularization'
 
   // ── Build payload ─────────────────────────────────────────────────────
   const buildPayload = useCallback((limit = 20, p = page, status = statusFilter) => {
     const payload = { limit, page: p };
     if (status) payload.status = status;
-    if (user?.udise_code) payload.udise_code = user.udise_code;
     return payload;
-  }, [page, statusFilter, user]);
+  }, [page, statusFilter]);
 
   // ── Fetch list ────────────────────────────────────────────────────────
   const fetchRequests = useCallback(async () => {
     setLoading(true);
     try {
       const payload = buildPayload();
-      const res = activeTab === 'onduty'
-        ? await principalService.getOnDutyRequests(payload)
-        : await principalService.getRegularizationRequests(payload);
+      const res = await vtpService.getOnDutyRequests(payload);
 
       if (res.data?.status || res.data?.success) {
         const data = res.data.data || [];
@@ -99,9 +99,9 @@ const AttendanceRequests = () => {
         } else {
           const s = { pending: 0, approved: 0, rejected: 0 };
           data.forEach((r) => {
-            if (r.status === 'pending') s.pending++;
-            if (r.status === 'approved') s.approved++;
-            if (r.status === 'rejected') s.rejected++;
+            if (r.vtp_status === 'pending') s.pending++;
+            if (r.vtp_status === 'approved') s.approved++;
+            if (r.vtp_status === 'rejected') s.rejected++;
           });
           setCounts({ ...s, total: pag.totalRecords ?? pag.total ?? res.data.total ?? 0 });
         }
@@ -113,41 +113,32 @@ const AttendanceRequests = () => {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, buildPayload, statusFilter]);
+  }, [buildPayload, statusFilter]);
 
   // ── Fetch all-status counts ───────────────────────────────────────────
   const fetchCounts = useCallback(async () => {
     try {
       const payload = buildPayload(100, 1, '');
-      const res = activeTab === 'onduty'
-        ? await principalService.getOnDutyRequests(payload)
-        : await principalService.getRegularizationRequests(payload);
+      const res = await vtpService.getOnDutyRequests(payload);
 
       if (res.data?.status || res.data?.success) {
         const all = res.data.data || [];
         const s = { pending: 0, approved: 0, rejected: 0 };
         all.forEach((r) => {
-          if (r.status === 'pending') s.pending++;
-          if (r.status === 'approved') s.approved++;
-          if (r.status === 'rejected') s.rejected++;
+          if (r.vtp_status === 'pending') s.pending++;
+          if (r.vtp_status === 'approved') s.approved++;
+          if (r.vtp_status === 'rejected') s.rejected++;
         });
 
         const pag = res.data.pagination || {};
         setCounts({ ...s, total: pag.totalRecords ?? pag.total ?? res.data.total ?? 0 });
       }
     } catch (_) { /* silently ignore count fetch errors */ }
-  }, [activeTab, buildPayload]);
+  }, [buildPayload]);
 
   useEffect(() => {
     fetchRequests();
   }, [fetchRequests]);
-
-  // Reset to page 1 and clear status filter when tab changes
-  useEffect(() => {
-    setPage(1);
-    setStatusFilter('');
-    setSearchQuery('');
-  }, [activeTab]);
 
   // Reset to page 1 when filter changes
   useEffect(() => {
@@ -157,13 +148,17 @@ const AttendanceRequests = () => {
   // ── Client-side search ────────────────────────────────────────────────
   const filteredRequests = requests.filter((r) => {
     const q = searchQuery.toLowerCase();
-    const name = r.teacher_name || r.vt_name || r.user_name || '';
+    const name = r.user_name || r.vt_name || '';
     const reason = r.reason || '';
-    const phone = r.vt_phone || r.phone || '';
+    const phone = r.mobile || r.phone || '';
+    const udise = r.udise_code || '';
+    const trade = r.trade || '';
     return (
       name.toLowerCase().includes(q) ||
       reason.toLowerCase().includes(q) ||
-      phone.toString().includes(q)
+      phone.toString().includes(q) ||
+      udise.toString().includes(q) ||
+      trade.toLowerCase().includes(q)
     );
   });
 
@@ -172,13 +167,8 @@ const AttendanceRequests = () => {
     if (!selectedRequest) return;
     setActionLoading(true);
     try {
-      const id = selectedRequest.id || selectedRequest.od_id || selectedRequest.reg_id;
-
-      if (activeTab === 'onduty') {
-        await principalService.updateOnDutyStatus(id, 'approved');
-      } else {
-        await principalService.updateRegularizationStatus(id, 'approved');
-      }
+      const id = selectedRequest.id || selectedRequest.od_id;
+      await vtpService.updateOnDutyStatus(id, 'approved');
 
       toast.success(`Request approved successfully`);
       setIsApproveModalOpen(false);
@@ -197,13 +187,8 @@ const AttendanceRequests = () => {
     if (!selectedRequest) return;
     setActionLoading(true);
     try {
-      const id = selectedRequest.id || selectedRequest.od_id || selectedRequest.reg_id;
-
-      if (activeTab === 'onduty') {
-        await principalService.updateOnDutyStatus(id, 'rejected');
-      } else {
-        await principalService.updateRegularizationStatus(id, 'rejected');
-      }
+      const id = selectedRequest.id || selectedRequest.od_id;
+      await vtpService.updateOnDutyStatus(id, 'rejected');
 
       toast.success(`Request rejected successfully`);
       setIsRejectModalOpen(false);
@@ -217,14 +202,23 @@ const AttendanceRequests = () => {
     }
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'approved': return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400';
+      case 'rejected': return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400';
+      case 'pending': return 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/30 dark:text-gray-400';
+    }
+  };
+
   // ── Table columns ─────────────────────────────────────────────────────
   const columns = [
     {
-      key: 'teacher_name',
+      key: 'user_name',
       header: 'Teacher',
       render: (value, row) => {
-        const name = value || row.vt_name || row.user_name || '—';
-        const phone = row.vt_phone || row.mobile || '—';
+        const name = row.user_name || row.vt_name || '—';
+        const phone = row.mobile || row.phone || '—';
         return (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-semibold flex-shrink-0">
@@ -241,39 +235,26 @@ const AttendanceRequests = () => {
     {
       key: 'type',
       header: 'Type',
-      render: (value, row) => (
+      render: (_, row) => (
         <Badge variant="primary" size="sm" outline>
-          {activeTab === 'onduty' ? (row.od_type || 'On Duty') : 'Regularization'}
+          {row.od_type || 'On Duty'}
         </Badge>
       ),
     },
     {
       key: 'date',
-      header: activeTab === 'onduty' ? 'Duration' : 'Date',
-      render: (value, row) => {
-        if (activeTab === 'onduty') {
-          return (
-            <div className="flex flex-col">
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                {fmtDate(row.from_date)} → {fmtDate(row.to_date)}
-              </span>
-              <span className="text-xs text-gray-500">{calcDays(row.from_date, row.to_date)}</span>
-            </div>
-          );
-        } else {
-          return (
-            <span className="text-sm text-gray-700 dark:text-gray-300">
-              {fmtDate(row.date)}
-            </span>
-          );
-        }
-      },
+      header: 'Duration',
+      render: (_, row) => (
+        <span className="text-sm text-gray-700 dark:text-gray-300">
+          {fmtDate(row.from_date)} → {fmtDate(row.to_date)}
+        </span>
+      ),
     },
     {
       key: 'reason',
       header: 'Reason',
       render: (value) => (
-        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 max-w-xs">
+        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 max-w-[150px]" title={value}>
           {value || '—'}
         </p>
       ),
@@ -291,59 +272,50 @@ const AttendanceRequests = () => {
     {
       key: 'hm_status',
       header: 'HM Status',
-      render: (_, row) => <StatusBadge status={row.hm_status || row.status || 'pending'} />,
+      render: (_, row) => <StatusBadge status={row.hm_status || 'pending'} />,
     },
     {
       key: 'vtp_status',
       header: 'VTP Status',
-      render: (_, row) => (
-        activeTab === 'onduty' ? (
-          <StatusBadge status={row.vtp_status || 'pending'} />
-        ) : (
-          <span className="text-xs text-gray-500">—</span>
-        )
-      ),
+      render: (_, row) => <StatusBadge status={row.vtp_status || 'pending'} />,
     },
     {
       key: 'actions',
       header: 'Actions',
-      render: (_, row) => {
-        const actionStatus = (activeTab === 'onduty' ? (row.hm_status || row.status) : row.status) || 'pending';
-        
-        return (
-          <div className="flex flex-col gap-1.5">
-            {actionStatus === 'pending' ? (
-              <>
-                <Button
-                  variant="success"
-                  size="sm"
-                  leftIcon={<CheckCircle className="h-3.5 w-3.5" />}
-                  onClick={() => { setSelectedRequest(row); setIsApproveModalOpen(true); }}
-                >
-                  Approve
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  leftIcon={<XCircle className="h-3.5 w-3.5" />}
-                  onClick={() => { setSelectedRequest(row); setIsRejectModalOpen(true); }}
-                >
-                  Reject
-                </Button>
-              </>
-            ) : (
-              <Badge variant={actionStatus === 'approved' ? 'success' : 'danger'} outline size="sm">
-                {actionStatus === 'approved' ? (
-                  <CheckCircle className="h-3 w-3 mr-1 inline" />
-                ) : (
-                  <XCircle className="h-3 w-3 mr-1 inline" />
-                )}
-                <span className="capitalize">{actionStatus}</span>
-              </Badge>
-            )}
-          </div>
-        );
-      },
+      render: (_, row) => (
+        <div className="flex flex-col gap-1.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => { setSelectedRequest(row); setIsViewModalOpen(true); }}
+          >
+            View
+          </Button>
+          {row.vtp_status === 'pending' && (
+            <div className="flex gap-1.5">
+              <Button
+                variant="success"
+                size="sm"
+                className="flex-1"
+                leftIcon={<CheckCircle className="h-3.5 w-3.5" />}
+                onClick={() => { setSelectedRequest(row); setIsApproveModalOpen(true); }}
+              >
+                Approve
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                className="flex-1"
+                leftIcon={<XCircle className="h-3.5 w-3.5" />}
+                onClick={() => { setSelectedRequest(row); setIsRejectModalOpen(true); }}
+              >
+                Reject
+              </Button>
+            </div>
+          )}
+        </div>
+      ),
     },
   ];
 
@@ -356,7 +328,7 @@ const AttendanceRequests = () => {
             Attendance Requests
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage and approve VT teacher attendance requests
+            Manage and approve OnDuty attendance requests
           </p>
         </div>
         <Button
@@ -379,6 +351,7 @@ const AttendanceRequests = () => {
           <Card
             key={label}
             variant="elevated"
+            padding="sm"
             className={`bg-gradient-to-br from-${color}-50 to-${color}-100 dark:from-${color}-900/20 dark:to-${color}-900/10 cursor-pointer`}
             onClick={() => setStatusFilter(
               color === 'yellow' ? 'pending' : color === 'green' ? 'approved' : 'rejected'
@@ -389,8 +362,8 @@ const AttendanceRequests = () => {
                 <p className={`text-sm font-medium text-${color}-700 dark:text-${color}-300`}>{label}</p>
                 <p className={`text-3xl font-bold text-${color}-600 dark:text-${color}-400`}>{value}</p>
               </div>
-              <div className={`p-3 rounded-2xl bg-${color}-100 dark:bg-${color}-900/30`}>
-                <Icon className={`h-6 w-6 text-${color}-600 dark:text-${color}-400`} />
+              <div className={`p-2.5 rounded-2xl bg-${color}-100 dark:bg-${color}-900/30`}>
+                <Icon className={`h-5 w-5 text-${color}-600 dark:text-${color}-400`} />
               </div>
             </div>
           </Card>
@@ -412,30 +385,6 @@ const AttendanceRequests = () => {
         </motion.div>
       )}
 
-      {/* Tab Navigation */}
-      <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
-        <button
-          onClick={() => setActiveTab('onduty')}
-          className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${activeTab === 'onduty'
-            ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
-            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
-            }`}
-        >
-          <ClipboardList className="h-4 w-4" />
-          OnDuty Requests
-        </button>
-        <button
-          onClick={() => setActiveTab('regularization')}
-          className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${activeTab === 'regularization'
-            ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
-            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
-            }`}
-        >
-          <CalendarDays className="h-4 w-4" />
-          Regularization Requests
-        </button>
-      </div>
-
       {/* Filters */}
       <Card variant="elevated">
         <div className="flex flex-col sm:flex-row gap-4">
@@ -452,7 +401,7 @@ const AttendanceRequests = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-primary-500"
+              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-primary-500 text-sm"
             >
               <option value="">All Status</option>
               <option value="pending">Pending</option>
@@ -475,7 +424,7 @@ const AttendanceRequests = () => {
       <Card variant="elevated">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {activeTab === 'onduty' ? 'OnDuty Requests' : 'Regularization Requests'}
+            OnDuty Requests
             {statusFilter && (
               <span className="ml-2 text-sm font-normal text-gray-500 capitalize">
                 ({statusFilter})
@@ -489,7 +438,7 @@ const AttendanceRequests = () => {
 
         {loading ? (
           <div className="py-12 text-center">
-            <Loader text={`Loading ${activeTab === 'onduty' ? 'OnDuty' : 'Regularization'} requests...`} />
+            <Loader text="Loading requests..." />
           </div>
         ) : (
           <Table
@@ -530,6 +479,129 @@ const AttendanceRequests = () => {
         )}
       </Card>
 
+      {/* ── View Details Modal ────────────────────────────────────────────── */}
+      <Modal
+        isOpen={isViewModalOpen}
+        onClose={() => { setIsViewModalOpen(false); setSelectedRequest(null); }}
+        title="OnDuty Request Details"
+        size="lg"
+      >
+        {selectedRequest && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl space-y-3">
+                <h3 className="font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">VT Details</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Name:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{selectedRequest.user_name || selectedRequest.vt_name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Mobile:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{selectedRequest.mobile || selectedRequest.phone}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">School UDISE:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{selectedRequest.udise_code}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Trade:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{selectedRequest.trade}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl space-y-3">
+                <h3 className="font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Request Info</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">OD Type:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{selectedRequest.od_type || 'On Duty'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">From Date:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{fmtDate(selectedRequest.from_date)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">To Date:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{fmtDate(selectedRequest.to_date)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl space-y-2">
+              <h3 className="font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Reason</h3>
+              <p className="text-sm text-gray-700 dark:text-gray-300">{selectedRequest.reason || 'No reason provided.'}</p>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl space-y-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Approval Flow</h3>
+              <div className="space-y-4 text-sm">
+
+                {/* HM Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-900 dark:text-white">HM Status</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border capitalize ${getStatusColor(selectedRequest.hm_status)}`}>
+                        {selectedRequest.hm_status === 'approved' && '✅ '}
+                        {selectedRequest.hm_status === 'rejected' && '❌ '}
+                        {selectedRequest.hm_status === 'pending' && '⏳ '}
+                        {selectedRequest.hm_status || 'pending'}
+                      </span>
+                    </div>
+                    {selectedRequest.hm_status !== 'pending' && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        By: {selectedRequest.hm_approved_by_name || 'Headmaster'} <br />
+                        At: {fmtDateTime(selectedRequest.hm_action_at)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* VTP Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-900 dark:text-white">VTP Status</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border capitalize ${getStatusColor(selectedRequest.vtp_status)}`}>
+                        {selectedRequest.vtp_status === 'approved' && '✅ '}
+                        {selectedRequest.vtp_status === 'rejected' && '❌ '}
+                        {selectedRequest.vtp_status === 'pending' && '⏳ '}
+                        {selectedRequest.vtp_status || 'pending'}
+                      </span>
+                    </div>
+                    {selectedRequest.vtp_status !== 'pending' && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        By: {selectedRequest.vtp_approved_by_name || 'VTP Admin'} <br />
+                        At: {fmtDateTime(selectedRequest.vtp_action_at)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Final Status */}
+                <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/10 rounded-lg border border-primary-100 dark:border-primary-900/30">
+                  <span className="font-semibold text-primary-900 dark:text-primary-100">Final Status</span>
+                  <span className={`text-sm font-semibold px-2 py-0.5 rounded-full border capitalize ${getStatusColor(selectedRequest.status)}`}>
+                    {selectedRequest.status === 'approved' && '✅ '}
+                    {selectedRequest.status === 'rejected' && '❌ '}
+                    {selectedRequest.status === 'pending' && '⏳ '}
+                    {selectedRequest.status || 'pending'}
+                  </span>
+                </div>
+
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
       {/* ── Approve Modal ─────────────────────────────────────────────────── */}
       <Modal
         isOpen={isApproveModalOpen}
@@ -565,32 +637,30 @@ const AttendanceRequests = () => {
             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-2 text-sm">
               <div className="flex items-center gap-3 mb-3">
                 <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-lg">
-                  {(selectedRequest.teacher_name || selectedRequest.vt_name || selectedRequest.user_name || '?').charAt(0)}
+                  {(selectedRequest.user_name || selectedRequest.vt_name || '?').charAt(0)}
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">
-                    {selectedRequest.teacher_name || selectedRequest.vt_name || selectedRequest.user_name}
+                    {selectedRequest.user_name || selectedRequest.vt_name}
                   </p>
-                  <p className="text-xs text-gray-500">{selectedRequest.vt_phone || selectedRequest.mobile}</p>
+                  <p className="text-xs text-gray-500">{selectedRequest.mobile || selectedRequest.phone}</p>
                 </div>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Type:</span>
                 <span className="font-medium capitalize">
-                  {activeTab === 'onduty' ? (selectedRequest.od_type || 'On Duty') : 'Regularization'}
+                  {selectedRequest.od_type || 'On Duty'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">{activeTab === 'onduty' ? 'Duration:' : 'Date:'}</span>
+                <span className="text-gray-500">Duration:</span>
                 <span className="font-medium">
-                  {activeTab === 'onduty'
-                    ? `${fmtDate(selectedRequest.from_date)} → ${fmtDate(selectedRequest.to_date)}`
-                    : fmtDate(selectedRequest.date)}
+                  {`${fmtDate(selectedRequest.from_date)} → ${fmtDate(selectedRequest.to_date)}`}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Reason:</span>
-                <span className="font-medium max-w-xs text-right">{selectedRequest.reason || '—'}</span>
+                <span className="font-medium max-w-[200px] text-right truncate">{selectedRequest.reason || '—'}</span>
               </div>
             </div>
           )}
@@ -632,17 +702,17 @@ const AttendanceRequests = () => {
             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-2 text-sm">
               <div className="flex items-center gap-3 mb-3">
                 <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-lg">
-                  {(selectedRequest.teacher_name || selectedRequest.vt_name || selectedRequest.user_name || '?').charAt(0)}
+                  {(selectedRequest.user_name || selectedRequest.vt_name || '?').charAt(0)}
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">
-                    {selectedRequest.teacher_name || selectedRequest.vt_name || selectedRequest.user_name}
+                    {selectedRequest.user_name || selectedRequest.vt_name}
                   </p>
                 </div>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Reason for Request:</span>
-                <span className="font-medium max-w-xs text-right">{selectedRequest.reason || '—'}</span>
+                <span className="font-medium max-w-[200px] text-right truncate">{selectedRequest.reason || '—'}</span>
               </div>
             </div>
           )}

@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/vtp/Dashboard';
 import VtApprovals from '../pages/vtp/VtApprovals';
 import LeaveManagement from '../pages/vtp/LeaveManagement';
+import AttendanceRequests from '../pages/vtp/AttendanceRequests';
 import ProtectedRoute from './ProtectedRoute';
 
 const VTPRoutes = () => {
@@ -24,6 +25,14 @@ const VTPRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <LeaveManagement />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="attendance-requests"
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <AttendanceRequests />
           </ProtectedRoute>
         }
       />

@@ -70,6 +70,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: '/vtp/vt-approvals', label: 'VT Approvals', icon: <ShieldCheck className="h-5 w-5" /> },
           { path: '/vtp/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
+          { path: '/vtp/attendance-requests', label: 'Attendance Requests', icon: <CheckCircle className="h-5 w-5" /> },
         ],
       },
     ];
