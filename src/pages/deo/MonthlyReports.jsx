@@ -56,6 +56,16 @@ const MonthlyReports = () => {
   const [totalPages, setTotalPages]       = useState(1);
   const [totalItems, setTotalItems]       = useState(0);
 
+  // ── Location hierarchy ──────────────────────────────────────────────────────
+  const [districts, setDistricts]       = useState([]);
+  const [blocks, setBlocks]             = useState([]);
+  const [clusters, setClusters]         = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedBlock, setSelectedBlock]       = useState('');
+  const [selectedCluster, setSelectedCluster]   = useState('');
+  const [loadingBlocks, setLoadingBlocks]       = useState(false);
+  const [loadingClusters, setLoadingClusters]   = useState(false);
+
   const [downloadLoading, setDownloadLoading] = useState(null);
   const [actionLoading, setActionLoading]     = useState(false);
   const [approveModal, setApproveModal] = useState({ open: false, report: null });
@@ -70,9 +80,12 @@ const MonthlyReports = () => {
         month: selectedMonth, year: selectedYear,
         page: currentPage, limit: 15,
       };
-      if (blockFilter)  params.block_name = blockFilter;
-      if (schoolFilter) params.udise_code = schoolFilter;
+      if (blockFilter)      params.block_name   = blockFilter;
+      if (schoolFilter)     params.udise_code   = schoolFilter;
       if (statusFilter !== 'all') params.status = statusFilter;
+      if (selectedDistrict) params.district_cd  = selectedDistrict;
+      if (selectedBlock)    params.block_cd     = selectedBlock;
+      if (selectedCluster)  params.cluster_cd   = selectedCluster;
 
       const res = await api.get('/reports/monthly-vt-reports', { params });
       if (res.data?.status) {
@@ -87,7 +100,7 @@ const MonthlyReports = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedMonth, selectedYear, blockFilter, schoolFilter, statusFilter, currentPage]);
+  }, [selectedMonth, selectedYear, blockFilter, schoolFilter, statusFilter, currentPage, selectedDistrict, selectedBlock, selectedCluster]);
 
   const fetchCounts = useCallback(async () => {
     try {
@@ -98,8 +111,37 @@ const MonthlyReports = () => {
     } catch (_) {}
   }, [selectedMonth, selectedYear]);
 
+  // ── Load districts on mount ───────────────────────────────────────────────
+  useEffect(() => {
+    api.get('/reports/location-master', { params: { type: 'districts' } })
+      .then(r => { if (r.data?.status) setDistricts(r.data.data || []); })
+      .catch(() => {});
+  }, []);
+
+  // ── Load blocks when district changes ────────────────────────────────────
+  useEffect(() => {
+    if (!selectedDistrict) { setBlocks([]); setSelectedBlock(''); setClusters([]); setSelectedCluster(''); return; }
+    setLoadingBlocks(true);
+    api.get('/reports/location-master', { params: { type: 'blocks', district_cd: selectedDistrict } })
+      .then(r => { if (r.data?.status) setBlocks(r.data.data || []); })
+      .catch(() => {})
+      .finally(() => setLoadingBlocks(false));
+    setSelectedBlock(''); setClusters([]); setSelectedCluster('');
+  }, [selectedDistrict]);
+
+  // ── Load clusters when block changes ─────────────────────────────────────
+  useEffect(() => {
+    if (!selectedBlock) { setClusters([]); setSelectedCluster(''); return; }
+    setLoadingClusters(true);
+    api.get('/reports/location-master', { params: { type: 'clusters', district_cd: selectedDistrict, block_cd: selectedBlock } })
+      .then(r => { if (r.data?.status) setClusters(r.data.data || []); })
+      .catch(() => {})
+      .finally(() => setLoadingClusters(false));
+    setSelectedCluster('');
+  }, [selectedBlock, selectedDistrict]);
+
   useEffect(() => { fetchReports(); fetchCounts(); }, [fetchReports, fetchCounts]);
-  useEffect(() => { setCurrentPage(1); }, [selectedMonth, selectedYear, blockFilter, schoolFilter, statusFilter]);
+  useEffect(() => { setCurrentPage(1); }, [selectedMonth, selectedYear, blockFilter, schoolFilter, statusFilter, selectedDistrict, selectedBlock, selectedCluster]);
 
   // ── Client-side search ────────────────────────────────────────────────────
   const filteredReports = useMemo(() => {
@@ -380,6 +422,7 @@ const MonthlyReports = () => {
 
       {/* Filters */}
       <Card variant="elevated">
+        {/* Row 1: Month / Year / Status / Search */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Month:</label>
@@ -420,6 +463,60 @@ const MonthlyReports = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+
+        {/* Row 2: District / Block / Cluster (cascading) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+          {/* District */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">District</label>
+            <select
+              value={selectedDistrict}
+              onChange={(e) => setSelectedDistrict(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+            >
+              <option value="">All Districts</option>
+              {districts.map((d) => (
+                <option key={d.district_cd} value={d.district_cd}>{d.district_name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Block */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              Block {loadingBlocks && <span className="text-primary-500">(loading...)</span>}
+            </label>
+            <select
+              value={selectedBlock}
+              onChange={(e) => setSelectedBlock(e.target.value)}
+              disabled={!selectedDistrict || loadingBlocks}
+              className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="">All Blocks</option>
+              {blocks.map((b) => (
+                <option key={b.block_cd} value={b.block_cd}>{b.block_name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Cluster */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              Cluster {loadingClusters && <span className="text-primary-500">(loading...)</span>}
+            </label>
+            <select
+              value={selectedCluster}
+              onChange={(e) => setSelectedCluster(e.target.value)}
+              disabled={!selectedBlock || loadingClusters}
+              className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="">All Clusters</option>
+              {clusters.map((c) => (
+                <option key={c.cluster_cd} value={c.cluster_cd}>{c.cluster_name}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </Card>
 
