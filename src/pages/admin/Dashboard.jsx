@@ -124,14 +124,14 @@ const AdminDashboard = () => {
             Welcome back, <span className="font-semibold text-primary-600 dark:text-primary-400">{user?.name}</span>. Here's what's happening with your system today.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <Button variant="ghost" leftIcon={<Calendar className="w-4 h-4" />}>
             Last 30 days
           </Button>
           <Button variant="primary" leftIcon={<Download className="w-4 h-4" />}>
             Export Report
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Stats grid */}
@@ -175,7 +175,7 @@ const AdminDashboard = () => {
       </div> */}
 
       {/* Recent Users Table */}
-      <Card
+      {/* <Card
         title="Recent Users"
         footer={
           <div className="flex items-center justify-between">
@@ -227,10 +227,10 @@ const AdminDashboard = () => {
             </tr>
           )}
         />
-      </Card>
+      </Card> */}
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card title="Pending Approvals" variant="filled" padding="md">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -320,7 +320,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         </Card>
-      </div>
+      </div> */}
     </div>
   );
 };
