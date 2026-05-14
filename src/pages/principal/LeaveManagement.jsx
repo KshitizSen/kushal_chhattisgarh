@@ -30,10 +30,10 @@ import Loader from '../../components/common/Loader';
 const fmtDate = (iso) =>
   iso
     ? new Date(iso).toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
     : '—';
 
 const calcDays = (from, to) => {
@@ -45,26 +45,26 @@ const calcDays = (from, to) => {
 // ── Component ─────────────────────────────────────────────────────────────────
 const LeaveManagement = () => {
   // ── List & pagination state ───────────────────────────────────────────
-  const [leaves, setLeaves]             = useState([]);
-  const [counts, setCounts]             = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });
-  const [loading, setLoading]           = useState(false);
-  const [pagination, setPagination]     = useState({ total: 0, total_pages: 1, page: 1, limit: 20 });
+  const [leaves, setLeaves] = useState([]);
+  const [counts, setCounts] = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });
+  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({ total: 0, total_pages: 1, page: 1, limit: 20 });
 
   // ── Filter state ──────────────────────────────────────────────────────
-  const [searchQuery, setSearchQuery]   = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');   // '' = all
-  const [page, setPage]                 = useState(1);
+  const [page, setPage] = useState(1);
 
   // ── Action state ──────────────────────────────────────────────────────
-  const [selectedLeave, setSelectedLeave]         = useState(null);
+  const [selectedLeave, setSelectedLeave] = useState(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
-  const [isRejectModalOpen, setIsRejectModalOpen]   = useState(false);
-  const [rejectReason, setRejectReason]             = useState('');
-  const [actionLoading, setActionLoading]           = useState(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
 
   // ── Leave Balance state ───────────────────────────────────────────────
-  const [schoolBalances, setSchoolBalances]       = useState([]);
-  const [balanceSummary, setBalanceSummary]         = useState({
+  const [schoolBalances, setSchoolBalances] = useState([]);
+  const [balanceSummary, setBalanceSummary] = useState({
     totalTeachers: 0,
     healthyBalance: 0,
     lowBalance: 0,
@@ -72,8 +72,8 @@ const LeaveManagement = () => {
     averageBalance: 0,
   });
   const [selectedLeaveBalance, setSelectedLeaveBalance] = useState(null);
-  const [balanceLoading, setBalanceLoading]         = useState(false);
-  const [activeTab, setActiveTab]                   = useState('requests'); // 'requests' | 'balances'
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('requests'); // 'requests' | 'balances'
 
   // ── Fetch leave list ──────────────────────────────────────────────────
   const fetchLeaves = useCallback(async () => {
@@ -88,10 +88,10 @@ const LeaveManagement = () => {
         const data = res.data.data || [];
         setLeaves(data);
         setPagination({
-          total:       res.data.total       ?? 0,
+          total: res.data.total ?? 0,
           total_pages: res.data.total_pages ?? 1,
-          page:        res.data.page        ?? 1,
-          limit:       res.data.limit       ?? 20,
+          page: res.data.page ?? 1,
+          limit: res.data.limit ?? 20,
         });
 
         // Compute counts from the FULL dataset (fetch all statuses for summary cards)
@@ -105,7 +105,7 @@ const LeaveManagement = () => {
         } else {
           const s = { pending: 0, approved: 0, rejected: 0 };
           data.forEach((l) => {
-            if (l.status === 'pending')  s.pending++;
+            if (l.status === 'pending') s.pending++;
             if (l.status === 'approved') s.approved++;
             if (l.status === 'rejected') s.rejected++;
           });
@@ -127,9 +127,9 @@ const LeaveManagement = () => {
       const res = await api.get('/headmaster/leaves?limit=100');
       if (res.data?.success) {
         const all = res.data.data || [];
-        const s   = { pending: 0, approved: 0, rejected: 0 };
+        const s = { pending: 0, approved: 0, rejected: 0 };
         all.forEach((l) => {
-          if (l.status === 'pending')  s.pending++;
+          if (l.status === 'pending') s.pending++;
           if (l.status === 'approved') s.approved++;
           if (l.status === 'rejected') s.rejected++;
         });
@@ -372,9 +372,9 @@ const LeaveManagement = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: 'Pending Requests', value: counts.pending,  color: 'yellow', Icon: Clock },
-          { label: 'Approved',         value: counts.approved, color: 'green',  Icon: CheckCircle },
-          { label: 'Rejected',         value: counts.rejected, color: 'red',    Icon: XCircle },
+          { label: 'Pending Requests', value: counts.pending, color: 'yellow', Icon: Clock },
+          { label: 'Approved', value: counts.approved, color: 'green', Icon: CheckCircle },
+          { label: 'Rejected', value: counts.rejected, color: 'red', Icon: XCircle },
         ].map(({ label, value, color, Icon }) => (
           <Card
             key={label}
@@ -416,21 +416,19 @@ const LeaveManagement = () => {
       <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
         <button
           onClick={() => setActiveTab('requests')}
-          className={`px-4 py-2 rounded-lg font-medium transition-all ${
-            activeTab === 'requests'
+          className={`px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'requests'
               ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
-          }`}
+            }`}
         >
           Leave Requests
         </button>
         <button
           onClick={() => setActiveTab('balances')}
-          className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
-            activeTab === 'balances'
+          className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${activeTab === 'balances'
               ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
-          }`}
+            }`}
         >
           <Wallet className="h-4 w-4" />
           Leave Balances (EL)
@@ -469,215 +467,214 @@ const LeaveManagement = () => {
 
       {/* Filters - Only show in requests tab */}
       {activeTab === 'requests' && (
-      <Card variant="elevated">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <Input
-              placeholder="Search by teacher name, code, or leave type..."
-              leftIcon={<Search className="h-4 w-4" />}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-gray-400" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-            {statusFilter && (
-              <button
-                onClick={() => setStatusFilter('')}
-                className="text-xs text-primary-600 hover:underline"
+        <Card variant="elevated">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <Input
+                placeholder="Search by teacher name, code, or leave type..."
+                leftIcon={<Search className="h-4 w-4" />}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Filter className="h-5 w-5 text-gray-400" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-primary-500"
               >
-                Clear
-              </button>
-            )}
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              {statusFilter && (
+                <button
+                  onClick={() => setStatusFilter('')}
+                  className="text-xs text-primary-600 hover:underline"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
       )}
 
       {/* Leave Requests Table - Only show in requests tab */}
       {activeTab === 'requests' && (
-      <Card variant="elevated">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Leave Requests
-            {statusFilter && (
-              <span className="ml-2 text-sm font-normal text-gray-500 capitalize">
-                ({statusFilter})
+        <Card variant="elevated">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Leave Requests
+              {statusFilter && (
+                <span className="ml-2 text-sm font-normal text-gray-500 capitalize">
+                  ({statusFilter})
+                </span>
+              )}
+            </h2>
+            <Badge variant="primary" outline>
+              {pagination.total} Total
+            </Badge>
+          </div>
+
+          {loading ? (
+            <div className="py-12 text-center">
+              <Loader text="Loading leave requests..." />
+            </div>
+          ) : (
+            <Table
+              data={filteredLeaves}
+              columns={columns}
+              emptyState={
+                <div className="text-center py-12">
+                  <CalendarDays className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 dark:text-gray-400">No leave requests found</p>
+                </div>
+              }
+            />
+          )}
+
+          {/* Pagination */}
+          {pagination.total_pages > 1 && (
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <Button
+                variant="ghost" size="sm"
+                leftIcon={<ChevronLeft className="h-4 w-4" />}
+                disabled={page === 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Page {page} of {pagination.total_pages}
               </span>
-            )}
-          </h2>
-          <Badge variant="primary" outline>
-            {pagination.total} Total
-          </Badge>
-        </div>
-
-        {loading ? (
-          <div className="py-12 text-center">
-            <Loader text="Loading leave requests..." />
-          </div>
-        ) : (
-          <Table
-            data={filteredLeaves}
-            columns={columns}
-            emptyState={
-              <div className="text-center py-12">
-                <CalendarDays className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No leave requests found</p>
-              </div>
-            }
-          />
-        )}
-
-        {/* Pagination */}
-        {pagination.total_pages > 1 && (
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-            <Button
-              variant="ghost" size="sm"
-              leftIcon={<ChevronLeft className="h-4 w-4" />}
-              disabled={page === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              Previous
-            </Button>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Page {page} of {pagination.total_pages}
-            </span>
-            <Button
-              variant="ghost" size="sm"
-              rightIcon={<ChevronRight className="h-4 w-4" />}
-              disabled={page === pagination.total_pages}
-              onClick={() => setPage((p) => Math.min(pagination.total_pages, p + 1))}
-            >
-              Next
-            </Button>
-          </div>
-        )}
-      </Card>
+              <Button
+                variant="ghost" size="sm"
+                rightIcon={<ChevronRight className="h-4 w-4" />}
+                disabled={page === pagination.total_pages}
+                onClick={() => setPage((p) => Math.min(pagination.total_pages, p + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </Card>
       )}
 
       {/* Leave Balances Table - Show only in balances tab */}
       {activeTab === 'balances' && (
-      <Card variant="elevated">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Teacher Leave Balances (EL - Earned Leave)
-          </h2>
-          <Badge variant="primary" outline>
-            {schoolBalances.length} Teachers
-          </Badge>
-        </div>
-
-        {balanceLoading ? (
-          <div className="py-12 text-center">
-            <Loader text="Loading leave balances..." />
+        <Card variant="elevated">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Teacher Leave Balances (EL - Earned Leave)
+            </h2>
+            <Badge variant="primary" outline>
+              {schoolBalances.length} Teachers
+            </Badge>
           </div>
-        ) : (
-          <Table
-            data={schoolBalances}
-            columns={[
-              {
-                key: 'teacherName',
-                header: 'Teacher',
-                render: (value, row) => (
-                  <div className="flex items-center gap-3 min-w-[160px]">
-                    <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-semibold flex-shrink-0">
-                      {(value || row.vt_name || '?').charAt(0).toUpperCase()}
+
+          {balanceLoading ? (
+            <div className="py-12 text-center">
+              <Loader text="Loading leave balances..." />
+            </div>
+          ) : (
+            <Table
+              data={schoolBalances}
+              columns={[
+                {
+                  key: 'teacherName',
+                  header: 'Teacher',
+                  render: (value, row) => (
+                    <div className="flex items-center gap-3 min-w-[160px]">
+                      <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-semibold flex-shrink-0">
+                        {(value || row.vt_name || '?').charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">{value || row.vt_name || '—'}</p>
+                        <p className="text-xs text-gray-500">{row.trade || '—'}</p>
+                        {row.phone && <p className="text-xs text-gray-400">{row.phone}</p>}
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{value || row.vt_name || '—'}</p>
-                      <p className="text-xs text-gray-500">{row.trade || '—'}</p>
-                      {row.phone && <p className="text-xs text-gray-400">{row.phone}</p>}
-                    </div>
-                  </div>
-                ),
-              },
-              {
-                key: 'leaveStats',
-                header: 'Leave Requests',
-                render: (stats) => (
-                  <div className="flex flex-col gap-1 min-w-[120px]">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 font-medium">
-                        {stats?.pending || 0} Pending
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">
-                        {stats?.approved || 0} Approved
-                      </span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">
-                        {stats?.rejected || 0} Rejected
-                      </span>
-                    </div>
-                    {stats?.lastLeaveDate && (
-                      <p className="text-xs text-gray-400">
-                        Last: {fmtDate(stats.lastLeaveDate)}
-                        {stats.lastLeaveType && ` (${stats.lastLeaveType})`}
-                      </p>
-                    )}
-                  </div>
-                ),
-              },
-              {
-                key: 'balance',
-                header: 'Available EL',
-                render: (bal) => {
-                  const rem = parseFloat(bal?.remainingBalance || 0);
-                  const color = rem >= 10 ? 'success' : rem >= 5 ? 'warning' : 'danger';
-                  return (
-                    <div className="text-center">
-                      <p className={`text-2xl font-bold ${
-                        rem >= 10 ? 'text-green-600' : rem >= 5 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>{rem.toFixed(1)}</p>
-                      <p className="text-xs text-gray-400">EL</p>
-                    </div>
-                  );
+                  ),
                 },
-              },
-              {
-                key: 'balance',
-                header: 'EL Breakdown',
-                render: (bal) => (
-                  <div className="text-xs space-y-1 min-w-[140px]">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Opening:</span>
-                      <span className="font-medium">{parseFloat(bal?.openingBalance || 0).toFixed(1)}</span>
+                {
+                  key: 'leaveStats',
+                  header: 'Leave Requests',
+                  render: (stats) => (
+                    <div className="flex flex-col gap-1 min-w-[120px]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 font-medium">
+                          {stats?.pending || 0} Pending
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">
+                          {stats?.approved || 0} Approved
+                        </span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">
+                          {stats?.rejected || 0} Rejected
+                        </span>
+                      </div>
+                      {stats?.lastLeaveDate && (
+                        <p className="text-xs text-gray-400">
+                          Last: {fmtDate(stats.lastLeaveDate)}
+                          {stats.lastLeaveType && ` (${stats.lastLeaveType})`}
+                        </p>
+                      )}
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Earned:</span>
-                      <span className="font-medium text-green-600">+{parseFloat(bal?.totalEarned || 0).toFixed(1)}</span>
+                  ),
+                },
+                {
+                  key: 'balance',
+                  header: 'Available EL',
+                  render: (bal) => {
+                    const rem = parseFloat(bal?.remainingBalance || 0);
+                    const color = rem >= 10 ? 'success' : rem >= 5 ? 'warning' : 'danger';
+                    return (
+                      <div className="text-center">
+                        <p className={`text-2xl font-bold ${rem >= 10 ? 'text-green-600' : rem >= 5 ? 'text-yellow-600' : 'text-red-600'
+                          }`}>{rem.toFixed(1)}</p>
+                        <p className="text-xs text-gray-400">EL</p>
+                      </div>
+                    );
+                  },
+                },
+                {
+                  key: 'balance',
+                  header: 'EL Breakdown',
+                  render: (bal) => (
+                    <div className="text-xs space-y-1 min-w-[140px]">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Opening:</span>
+                        <span className="font-medium">{parseFloat(bal?.openingBalance || 0).toFixed(1)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Earned:</span>
+                        <span className="font-medium text-green-600">+{parseFloat(bal?.totalEarned || 0).toFixed(1)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Used:</span>
+                        <span className="font-medium text-red-600">-{parseFloat(bal?.totalUsed || 0).toFixed(1)}</span>
+                      </div>
+                      <div className="flex justify-between border-t border-gray-200 pt-1">
+                        <span className="text-gray-500">Closing:</span>
+                        <span className="font-bold">{parseFloat(bal?.remainingBalance || 0).toFixed(1)}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Used:</span>
-                      <span className="font-medium text-red-600">-{parseFloat(bal?.totalUsed || 0).toFixed(1)}</span>
-                    </div>
-                    <div className="flex justify-between border-t border-gray-200 pt-1">
-                      <span className="text-gray-500">Closing:</span>
-                      <span className="font-bold">{parseFloat(bal?.remainingBalance || 0).toFixed(1)}</span>
-                    </div>
-                  </div>
-                ),
-              },
-            ]}
-            emptyState={
-              <div className="text-center py-12">
-                <Wallet className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No VT data found for this school</p>
-              </div>
-            }
-          />
-        )}
-      </Card>
+                  ),
+                },
+              ]}
+              emptyState={
+                <div className="text-center py-12">
+                  <Wallet className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 dark:text-gray-400">No VT data found for this school</p>
+                </div>
+              }
+            />
+          )}
+        </Card>
       )}
 
       {/* ── Approve Modal ─────────────────────────────────────────────────── */}
@@ -740,22 +737,20 @@ const LeaveManagement = () => {
 
               {/* Leave Balance Check */}
               {selectedLeaveBalance && (
-                <div className={`mt-3 p-3 rounded-lg ${
-                  selectedLeaveBalance.balanceCheck?.sufficient
+                <div className={`mt-3 p-3 rounded-lg ${selectedLeaveBalance.balanceCheck?.sufficient
                     ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
                     : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
-                }`}>
+                  }`}>
                   <div className="flex items-center gap-2 mb-2">
                     {selectedLeaveBalance.balanceCheck?.sufficient ? (
                       <CheckCircle className="h-4 w-4 text-green-600" />
                     ) : (
                       <Ban className="h-4 w-4 text-red-600" />
                     )}
-                    <span className={`font-medium ${
-                      selectedLeaveBalance.balanceCheck?.sufficient
+                    <span className={`font-medium ${selectedLeaveBalance.balanceCheck?.sufficient
                         ? 'text-green-800 dark:text-green-200'
                         : 'text-red-800 dark:text-red-200'
-                    }`}>
+                      }`}>
                       {selectedLeaveBalance.balanceCheck?.sufficient
                         ? 'Sufficient Leave Balance'
                         : 'Insufficient Leave Balance'}

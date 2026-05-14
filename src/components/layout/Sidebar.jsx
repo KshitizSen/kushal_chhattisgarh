@@ -70,6 +70,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: '/vtp/vt-approvals', label: 'VT Approvals', icon: <ShieldCheck className="h-5 w-5" /> },
           { path: '/vtp/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
+          { path: '/vtp/attendance-requests', label: 'Attendance Requests', icon: <CheckCircle className="h-5 w-5" /> },
         ],
       },
       {
@@ -87,6 +88,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
           { path: '/principal/teacher-approval', label: 'VT Approvals', icon: <UserCheck className="h-5 w-5" /> },
           { path: '/principal/attendance', label: 'Attendance', icon: <CalendarCheck className="h-5 w-5" /> },
+          { path: '/principal/attendance-requests', label: 'Attendance Requests', icon: <CheckCircle className="h-5 w-5" /> },
         ],
       },
       {

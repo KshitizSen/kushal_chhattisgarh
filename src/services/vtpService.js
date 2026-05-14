@@ -31,11 +31,20 @@ const vtpService = {
   // Leave Balances (Scoped to VTP organization)
   getLeaveBalances: () => {
     // Note: This endpoint should ideally be scoped by organization on backend
-    return api.get('/leave-balance/school'); 
+    return api.get('/leave-balance/school');
   },
 
   checkLeaveBalance: (leaveId) => {
     return api.get(`/leave-balance/check/${leaveId}`);
+  },
+
+  // OnDuty Requests
+  getOnDutyRequests: (payload) => {
+    return api.post('/od/vtp', payload);
+  },
+
+  updateOnDutyStatus: (id, status) => {
+    return api.patch(`/od/vtp/${id}/status`, { status });
   }
 };
 
