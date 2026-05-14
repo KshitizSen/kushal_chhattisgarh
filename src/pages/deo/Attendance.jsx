@@ -145,8 +145,9 @@ const DEFAULT_PAGINATION = {
   totalItems: 0,
   totalPages: 1,
   currentPage: 1,
-  limit: 50,
+  limit: 10,
 };
+const PAGE_SIZE_OPTIONS = [10, 15, 30, 50];
 
 const MONTH_OPTIONS = [
   { value: '1', label: 'January' },
@@ -270,8 +271,17 @@ const Attendance = () => {
   const [countsError, setCountsError] = useState('');
   const [reportsLoading, setReportsLoading] = useState(false);
   const [reportsError, setReportsError] = useState('');
+  const [pageSize, setPageSize] = useState(10);
   const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedDistrictName, setSelectedDistrictName] = useState('');
+  const [selectedBlock, setSelectedBlock] = useState('');
+  const [selectedCluster, setSelectedCluster] = useState('');
+  const [blocks, setBlocks] = useState([]);
+  const [clusters, setClusters] = useState([]);
+  const [loadingBlocks, setLoadingBlocks] = useState(false);
+  const [loadingClusters, setLoadingClusters] = useState(false);
   const [expandedSchool, setExpandedSchool] = useState(null);
   const [schoolVts, setSchoolVts] = useState({});
   const [schoolVtsLoading, setSchoolVtsLoading] = useState({});
@@ -301,6 +311,10 @@ const Attendance = () => {
         },
       });
       setDashboardCounts(response.data?.data || null);
+      if (response.data?.district?.district_cd) {
+        setSelectedDistrict(String(response.data.district.district_cd));
+        setSelectedDistrictName(response.data.district.district_name || '');
+      }
     } catch (error) {
       console.error('Failed to fetch DEO dashboard counts:', error);
       setCountsError('Dashboard counts could not be loaded.');
@@ -321,15 +335,28 @@ const Attendance = () => {
         month: Number(selectedMonth),
         year: Number(selectedYear),
         page: currentPage,
-        limit: pagination.limit,
+        limit: pageSize,
       };
 
       if (filter) {
         params.status = filter;
       }
+      if (selectedDistrict) {
+        params.district_cd = selectedDistrict;
+      }
+      if (selectedBlock) {
+        params.block_cd = selectedBlock;
+      }
+      if (selectedCluster) {
+        params.cluster_cd = selectedCluster;
+      }
 
       const response = await api.get('/deo/school-reports', { params });
       const rows = response.data?.data || [];
+      if (response.data?.district?.district_cd) {
+        setSelectedDistrict(String(response.data.district.district_cd));
+        setSelectedDistrictName(response.data.district.district_name || '');
+      }
 
       setSchools(
         rows.map((row) => ({
@@ -349,21 +376,63 @@ const Attendance = () => {
           deoRemarks: row.deo_remarks,
         }))
       );
-      setPagination(response.data?.pagination || DEFAULT_PAGINATION);
+      setPagination(response.data?.pagination || { ...DEFAULT_PAGINATION, limit: pageSize });
       setExpandedSchool(null);
     } catch (error) {
       console.error('Failed to fetch DEO school reports:', error);
       setSchools([]);
-      setPagination(DEFAULT_PAGINATION);
+      setPagination({ ...DEFAULT_PAGINATION, limit: pageSize });
       setReportsError('School reports could not be loaded.');
     } finally {
       setReportsLoading(false);
     }
-  }, [currentPage, filter, pagination.limit, selectedMonth, selectedYear]);
+  }, [currentPage, filter, pageSize, selectedMonth, selectedYear, selectedDistrict, selectedBlock, selectedCluster]);
 
   useEffect(() => {
     fetchSchoolReports();
   }, [fetchSchoolReports]);
+
+  useEffect(() => {
+    if (!selectedDistrict) {
+      setBlocks([]);
+      setSelectedBlock('');
+      setClusters([]);
+      setSelectedCluster('');
+      return;
+    }
+
+    setLoadingBlocks(true);
+    api.get('/reports/location-master', { params: { type: 'blocks', district_cd: selectedDistrict } })
+      .then((response) => setBlocks(response.data?.data || []))
+      .catch(() => setBlocks([]))
+      .finally(() => setLoadingBlocks(false));
+
+    setSelectedBlock('');
+    setClusters([]);
+    setSelectedCluster('');
+  }, [selectedDistrict]);
+
+  useEffect(() => {
+    if (!selectedDistrict || !selectedBlock) {
+      setClusters([]);
+      setSelectedCluster('');
+      return;
+    }
+
+    setLoadingClusters(true);
+    api.get('/reports/location-master', {
+      params: { type: 'clusters', district_cd: selectedDistrict, block_cd: selectedBlock },
+    })
+      .then((response) => setClusters(response.data?.data || []))
+      .catch(() => setClusters([]))
+      .finally(() => setLoadingClusters(false));
+
+    setSelectedCluster('');
+  }, [selectedDistrict, selectedBlock]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [pageSize, selectedBlock, selectedCluster]);
 
   useEffect(() => {
     setSchoolVts({});
@@ -614,6 +683,18 @@ const Attendance = () => {
               </option>
             ))}
           </select>
+          <select
+            value={pageSize}
+            onChange={(event) => setPageSize(Number(event.target.value))}
+            className="rounded-[1.25rem] border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+            aria-label="Select page size"
+          >
+            {PAGE_SIZE_OPTIONS.map((size) => (
+              <option key={size} value={size}>
+                {size} / page
+              </option>
+            ))}
+          </select>
           <Button
             variant="primary"
             size="sm"
@@ -696,6 +777,51 @@ const Attendance = () => {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">District</label>
+          <select
+            value={selectedDistrict}
+            disabled
+            className="w-full cursor-not-allowed rounded-[1.25rem] border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+          >
+            <option value="">{selectedDistrictName || 'Loading district...'}</option>
+          </select>
+        </div>
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Block</label>
+          <select
+            value={selectedBlock}
+            onChange={(event) => setSelectedBlock(event.target.value)}
+            disabled={!selectedDistrict || loadingBlocks}
+            className="w-full rounded-[1.25rem] border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+          >
+            <option value="">All Blocks</option>
+            {blocks.map((block) => (
+              <option key={block.block_cd} value={block.block_cd}>
+                {block.block_name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Cluster</label>
+          <select
+            value={selectedCluster}
+            onChange={(event) => setSelectedCluster(event.target.value)}
+            disabled={!selectedBlock || loadingClusters}
+            className="w-full rounded-[1.25rem] border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+          >
+            <option value="">All Clusters</option>
+            {clusters.map((cluster) => (
+              <option key={cluster.cluster_cd} value={cluster.cluster_cd}>
+                {cluster.cluster_name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="overflow-hidden rounded-[1.5rem] border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
         {reportsLoading ? (
           <div className="py-12 text-center">
@@ -717,6 +843,7 @@ const Attendance = () => {
             <table className="w-full min-w-[780px]">
               <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950">
                 <tr>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Se no</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">School</th>
                   <th className="w-[170px] px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">UDISE</th>
                   <th className="w-[150px] px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Block</th>
@@ -731,6 +858,9 @@ const Attendance = () => {
                         index % 2 === 1 ? 'bg-gray-50/60 dark:bg-gray-800/30' : ''
                       }`}
                     >
+                      <td className="px-5 py-4">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{(currentPage - 1) * pagination.limit + index + 1}</span>
+                      </td>
                       <td className="px-5 py-4">
                         <div className="flex min-w-0 items-center gap-3">
                           <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-300">

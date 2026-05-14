@@ -6,9 +6,10 @@ import Table from '../../components/common/Table';
 import Badge from '../../components/common/Badge';
 import Card from '../../components/common/Card';
 import Pagination from '../../components/common/Pagination';
+import api from '../../services/api';
 import { getAdminVtpList } from '../../services/adminService';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE_OPTIONS = [10, 15, 30, 50];
 const displayValue = (value) => (value === null || value === undefined || value === '' ? 'N/A' : value);
 
 const formatDate = (value) => {
@@ -20,13 +21,60 @@ const formatDate = (value) => {
 const ManageVTP = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedBlock, setSelectedBlock] = useState('');
+  const [selectedCluster, setSelectedCluster] = useState('');
+  const [districts, setDistricts] = useState([]);
+  const [blocks, setBlocks] = useState([]);
+  const [clusters, setClusters] = useState([]);
   const [vtps, setVtps] = useState([]);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, pageSize, selectedDistrict, selectedBlock, selectedCluster]);
+
+  useEffect(() => {
+    api.get('/reports/location-master', { params: { type: 'districts' } })
+      .then((response) => setDistricts(response.data?.data || []))
+      .catch(() => setDistricts([]));
+  }, []);
+
+  useEffect(() => {
+    if (!selectedDistrict) {
+      setBlocks([]);
+      setSelectedBlock('');
+      setClusters([]);
+      setSelectedCluster('');
+      return;
+    }
+
+    api.get('/reports/location-master', { params: { type: 'blocks', district_cd: selectedDistrict } })
+      .then((response) => setBlocks(response.data?.data || []))
+      .catch(() => setBlocks([]));
+
+    setSelectedBlock('');
+    setClusters([]);
+    setSelectedCluster('');
+  }, [selectedDistrict]);
+
+  useEffect(() => {
+    if (!selectedDistrict || !selectedBlock) {
+      setClusters([]);
+      setSelectedCluster('');
+      return;
+    }
+
+    api.get('/reports/location-master', {
+      params: { type: 'clusters', district_cd: selectedDistrict, block_cd: selectedBlock },
+    })
+      .then((response) => setClusters(response.data?.data || []))
+      .catch(() => setClusters([]));
+
+    setSelectedCluster('');
+  }, [selectedDistrict, selectedBlock]);
 
   useEffect(() => {
     const fetchVtps = async () => {
@@ -34,8 +82,11 @@ const ManageVTP = () => {
         setIsLoading(true);
         const result = await getAdminVtpList({
           page: currentPage,
-          limit: PAGE_SIZE,
+          limit: pageSize,
           search: searchQuery,
+          district_cd: selectedDistrict,
+          block_cd: selectedBlock,
+          cluster_cd: selectedCluster,
         });
 
         setVtps(result.data || []);
@@ -51,7 +102,7 @@ const ManageVTP = () => {
     };
 
     fetchVtps();
-  }, [currentPage, searchQuery]);
+  }, [currentPage, pageSize, searchQuery, selectedDistrict, selectedBlock, selectedCluster]);
 
   const activeCount = vtps.filter((vtp) => vtp.status === 'active').length;
   const inactiveCount = vtps.filter((vtp) => vtp.status === 'inactive').length;
@@ -107,12 +158,57 @@ const ManageVTP = () => {
       </div>
 
       <Card padding="md">
-        <Input
-          placeholder="Search VTP by provider, coordinator, mobile, or email..."
-          leftIcon={<Search className="h-4 w-4" />}
-          value={searchQuery}
-          onChange={(event) => setSearchQuery(event.target.value)}
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Input
+            placeholder="Search VTP by provider, coordinator, mobile, or email..."
+            leftIcon={<Search className="h-4 w-4" />}
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+          <select
+            value={pageSize}
+            onChange={(event) => setPageSize(Number(event.target.value))}
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 focus:ring-2 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+          >
+            {PAGE_SIZE_OPTIONS.map((size) => (
+              <option key={size} value={size}>{size} / page</option>
+            ))}
+          </select>
+        </div>
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <select
+            value={selectedDistrict}
+            onChange={(event) => setSelectedDistrict(event.target.value)}
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+          >
+            <option value="">All Districts</option>
+            {districts.map((district) => (
+              <option key={district.district_cd} value={district.district_cd}>{district.district_name}</option>
+            ))}
+          </select>
+          <select
+            value={selectedBlock}
+            onChange={(event) => setSelectedBlock(event.target.value)}
+            disabled={!selectedDistrict}
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+          >
+            <option value="">All Blocks</option>
+            {blocks.map((block) => (
+              <option key={block.block_cd} value={block.block_cd}>{block.block_name}</option>
+            ))}
+          </select>
+          <select
+            value={selectedCluster}
+            onChange={(event) => setSelectedCluster(event.target.value)}
+            disabled={!selectedBlock}
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+          >
+            <option value="">All Clusters</option>
+            {clusters.map((cluster) => (
+              <option key={cluster.cluster_cd} value={cluster.cluster_cd}>{cluster.cluster_name}</option>
+            ))}
+          </select>
+        </div>
       </Card>
 
       <Card padding="none">
@@ -160,7 +256,7 @@ const ManageVTP = () => {
         currentPage={currentPage}
         totalPages={pagination.totalPages}
         totalItems={pagination.total}
-        pageSize={PAGE_SIZE}
+        pageSize={pageSize}
         onPageChange={setCurrentPage}
       />
     </div>

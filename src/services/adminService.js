@@ -5,23 +5,44 @@ export const getAdminDashboardCounts = async () => {
   return response.data;
 };
 
-export const getAdminSchools = async ({ page = 1, limit = 10, search = '' } = {}) => {
+export const getAdminSchools = async ({
+  page = 1,
+  limit = 10,
+  search = '',
+  district_cd = '',
+  block_cd = '',
+  cluster_cd = '',
+} = {}) => {
   const response = await api.get('/admin/schools', {
-    params: { page, limit, search },
+    params: { page, limit, search, district_cd, block_cd, cluster_cd },
   });
   return response.data;
 };
 
-export const getAdminVtpList = async ({ page = 1, limit = 10, search = '' } = {}) => {
+export const getAdminVtpList = async ({
+  page = 1,
+  limit = 10,
+  search = '',
+  district_cd = '',
+  block_cd = '',
+  cluster_cd = '',
+} = {}) => {
   const response = await api.get('/admin/vtp', {
-    params: { page, limit, search },
+    params: { page, limit, search, district_cd, block_cd, cluster_cd },
   });
   return response.data;
 };
 
-export const getAdminDeoList = async ({ page = 1, limit = 10, search = '' } = {}) => {
+export const getAdminDeoList = async ({
+  page = 1,
+  limit = 10,
+  search = '',
+  district_cd = '',
+  block_cd = '',
+  cluster_cd = '',
+} = {}) => {
   const response = await api.get('/admin/deos', {
-    params: { page, limit, search },
+    params: { page, limit, search, district_cd, block_cd, cluster_cd },
   });
   return response.data;
 };
@@ -33,9 +54,12 @@ export const getAdminAttendanceTracking = async ({
   month,
   year,
   status = '',
+  district_cd = '',
+  block_cd = '',
+  cluster_cd = '',
 } = {}) => {
   const response = await api.get('/admin/attendance-tracking', {
-    params: { page, limit, search, month, year, status },
+    params: { page, limit, search, month, year, status, district_cd, block_cd, cluster_cd },
   });
   return response.data;
 };

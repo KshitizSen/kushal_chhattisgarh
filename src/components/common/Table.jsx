@@ -94,7 +94,7 @@ const Table = ({
                       key={col.key}
                       className={`px-4 py-3 text-gray-800 dark:text-gray-200 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}
                     >
-                      {col.render ? col.render(row[col.key], row) : row[col.key]}
+                      {col.render ? col.render(row[col.key], row, rowIndex) : row[col.key]}
                     </td>
                   ))}
                 </tr>

@@ -17,9 +17,10 @@ import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import Input from '../../components/common/Input';
 import Pagination from '../../components/common/Pagination';
+import api from '../../services/api';
 import { getAdminAttendanceTracking } from '../../services/adminService';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE_OPTIONS = [10, 15, 30, 50];
 
 const MONTH_OPTIONS = [
   { value: 1, label: 'January' },
@@ -180,6 +181,13 @@ const AttendanceTracking = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth);
   const [selectedYear, setSelectedYear] = useState(getCurrentYear);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedBlock, setSelectedBlock] = useState('');
+  const [selectedCluster, setSelectedCluster] = useState('');
+  const [districts, setDistricts] = useState([]);
+  const [blocks, setBlocks] = useState([]);
+  const [clusters, setClusters] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
   const [summary, setSummary] = useState({});
@@ -191,11 +199,14 @@ const AttendanceTracking = () => {
       setIsLoading(true);
       const result = await getAdminAttendanceTracking({
         page: currentPage,
-        limit: PAGE_SIZE,
+        limit: pageSize,
         search: searchQuery,
         status: statusFilter,
         month: selectedMonth,
         year: selectedYear,
+        district_cd: selectedDistrict,
+        block_cd: selectedBlock,
+        cluster_cd: selectedCluster,
       });
 
       const rows = result.data || [];
@@ -214,7 +225,47 @@ const AttendanceTracking = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, searchQuery, selectedMonth, selectedYear, statusFilter]);
+  }, [currentPage, pageSize, searchQuery, selectedMonth, selectedYear, statusFilter, selectedDistrict, selectedBlock, selectedCluster]);
+
+  useEffect(() => {
+    api.get('/reports/location-master', { params: { type: 'districts' } })
+      .then((response) => setDistricts(response.data?.data || []))
+      .catch(() => setDistricts([]));
+  }, []);
+
+  useEffect(() => {
+    if (!selectedDistrict) {
+      setBlocks([]);
+      setSelectedBlock('');
+      setClusters([]);
+      setSelectedCluster('');
+      return;
+    }
+
+    api.get('/reports/location-master', { params: { type: 'blocks', district_cd: selectedDistrict } })
+      .then((response) => setBlocks(response.data?.data || []))
+      .catch(() => setBlocks([]));
+
+    setSelectedBlock('');
+    setClusters([]);
+    setSelectedCluster('');
+  }, [selectedDistrict]);
+
+  useEffect(() => {
+    if (!selectedDistrict || !selectedBlock) {
+      setClusters([]);
+      setSelectedCluster('');
+      return;
+    }
+
+    api.get('/reports/location-master', {
+      params: { type: 'clusters', district_cd: selectedDistrict, block_cd: selectedBlock },
+    })
+      .then((response) => setClusters(response.data?.data || []))
+      .catch(() => setClusters([]));
+
+    setSelectedCluster('');
+  }, [selectedDistrict, selectedBlock]);
 
   useEffect(() => {
     fetchTrackingReports();
@@ -253,6 +304,11 @@ const AttendanceTracking = () => {
     setCurrentPage(1);
   };
 
+  const handlePageSizeChange = (event) => {
+    setPageSize(Number(event.target.value));
+    setCurrentPage(1);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -281,6 +337,16 @@ const AttendanceTracking = () => {
           >
             {yearOptions.map((year) => (
               <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+          <select
+            value={pageSize}
+            onChange={handlePageSizeChange}
+            className="rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+            aria-label="Select page size"
+          >
+            {PAGE_SIZE_OPTIONS.map((size) => (
+              <option key={size} value={size}>{size} / page</option>
             ))}
           </select>
           <Button
@@ -331,6 +397,41 @@ const AttendanceTracking = () => {
           <option value="pending">Pending</option>
           <option value="approved">Approved</option>
           <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <select
+          value={selectedDistrict}
+          onChange={(event) => { setSelectedDistrict(event.target.value); setCurrentPage(1); }}
+          className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+        >
+          <option value="">All Districts</option>
+          {districts.map((district) => (
+            <option key={district.district_cd} value={district.district_cd}>{district.district_name}</option>
+          ))}
+        </select>
+        <select
+          value={selectedBlock}
+          onChange={(event) => { setSelectedBlock(event.target.value); setCurrentPage(1); }}
+          disabled={!selectedDistrict}
+          className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+        >
+          <option value="">All Blocks</option>
+          {blocks.map((block) => (
+            <option key={block.block_cd} value={block.block_cd}>{block.block_name}</option>
+          ))}
+        </select>
+        <select
+          value={selectedCluster}
+          onChange={(event) => { setSelectedCluster(event.target.value); setCurrentPage(1); }}
+          disabled={!selectedBlock}
+          className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+        >
+          <option value="">All Clusters</option>
+          {clusters.map((cluster) => (
+            <option key={cluster.cluster_cd} value={cluster.cluster_cd}>{cluster.cluster_name}</option>
+          ))}
         </select>
       </div>
 
@@ -409,7 +510,7 @@ const AttendanceTracking = () => {
         currentPage={currentPage}
         totalPages={Math.max(pagination.totalPages, 1)}
         totalItems={pagination.total}
-        pageSize={PAGE_SIZE}
+        pageSize={pageSize}
         onPageChange={setCurrentPage}
       />
     </div>
