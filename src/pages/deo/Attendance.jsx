@@ -243,8 +243,8 @@ const AttendanceStatusPill = ({ status }) => {
 const ActionIcon = ({ icon: Icon, label, onClick, variant = 'default' }) => {
   const color = {
     default: 'text-gray-500 hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-gray-800',
-    approve: 'text-gray-500 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20',
-    reject: 'text-gray-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20',
+    approve: 'text-green-600 bg-green-50/70 hover:bg-green-100 hover:text-green-700 dark:bg-green-900/20 dark:text-green-300 dark:hover:bg-green-900/35',
+    reject: 'text-red-600 bg-red-50/70 hover:bg-red-100 hover:text-red-700 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/35',
   }[variant];
 
   return (
@@ -252,7 +252,7 @@ const ActionIcon = ({ icon: Icon, label, onClick, variant = 'default' }) => {
       type="button"
       onClick={onClick}
       title={label}
-      className={`rounded-lg p-2 transition-colors ${color}`}
+      className={`rounded-lg p-2 transition-all duration-150 hover:scale-105 ${color}`}
       aria-label={label}
     >
       <Icon className="h-4 w-4" />
@@ -895,6 +895,7 @@ const Attendance = () => {
 
                     {expandedSchool === school.id && (
                       <tr>
+                        <td className="border-b border-gray-100 bg-gray-50/70 px-5 pb-5 pt-4 dark:border-gray-800 dark:bg-gray-950/30" />
                         <td colSpan={4} className="border-b border-gray-100 bg-gray-50/70 px-5 pb-5 pt-4 dark:border-gray-800 dark:bg-gray-950/30">
                           <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
@@ -903,7 +904,7 @@ const Attendance = () => {
                                 {school.name} | UDISE {school.udise}
                               </p>
                             </div>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 sm:ml-auto sm:justify-end">
                               <Button
                                 variant="success"
                                 size="sm"
@@ -953,13 +954,15 @@ const Attendance = () => {
                                       <span className="block truncate text-xs text-gray-500">{vt.trade} | {vt.phone}</span>
                                     </span>
                                   </div>
-                                  <StatusPill status={vt.deoApprovalStatus} />
-                                  <div className="flex items-center gap-1">
+                                  <div className="flex items-center gap-3 sm:ml-auto">
+                                    <StatusPill status={vt.deoApprovalStatus} />
+                                  <div className="flex items-center gap-1 sm:justify-end">
                                     <ActionIcon icon={FileText} label="Reports" onClick={() => openAttendanceReport(school, vt)} />
                                     <ActionIcon icon={Eye} label="View" onClick={() => {}} />
                                     <ActionIcon icon={Download} label="Download" onClick={() => {}} />
                                     <ActionIcon icon={CheckCircle} label="Approve" variant="approve" onClick={() => openAction('approve', { ...school, vt }, 'vt')} />
                                     <ActionIcon icon={XCircle} label="Reject" variant="reject" onClick={() => openAction('reject', { ...school, vt }, 'vt')} />
+                                  </div>
                                   </div>
                                 </div>
                               ))
