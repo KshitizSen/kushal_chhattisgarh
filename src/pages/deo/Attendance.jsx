@@ -5,7 +5,6 @@ import {
   CheckCircle,
   ChevronDown,
   Download,
-  Eye,
   FileText,
   Filter,
   MapPin,
@@ -15,6 +14,7 @@ import {
   Users,
   XCircle,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
 import Pagination from '../../components/common/Pagination';
@@ -240,11 +240,11 @@ const AttendanceStatusPill = ({ status }) => {
   );
 };
 
-const ActionIcon = ({ icon: Icon, label, onClick, variant = 'default' }) => {
+const ActionIcon = ({ icon: Icon, label, onClick, variant = 'default', disabled = false, loading = false }) => {
   const color = {
     default: 'text-gray-500 hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-gray-800',
-    approve: 'text-gray-500 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20',
-    reject: 'text-gray-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20',
+    approve: 'text-green-600 bg-green-50/70 hover:bg-green-100 hover:text-green-700 dark:bg-green-900/20 dark:text-green-300 dark:hover:bg-green-900/35',
+    reject: 'text-red-600 bg-red-50/70 hover:bg-red-100 hover:text-red-700 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/35',
   }[variant];
 
   return (
@@ -252,10 +252,11 @@ const ActionIcon = ({ icon: Icon, label, onClick, variant = 'default' }) => {
       type="button"
       onClick={onClick}
       title={label}
-      className={`rounded-lg p-2 transition-colors ${color}`}
+      className={`rounded-lg p-2 transition-all duration-150 ${disabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-105'} ${color}`}
       aria-label={label}
+      disabled={disabled || loading}
     >
-      <Icon className="h-4 w-4" />
+      {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}
     </button>
   );
 };
@@ -286,9 +287,12 @@ const Attendance = () => {
   const [schoolVts, setSchoolVts] = useState({});
   const [schoolVtsLoading, setSchoolVtsLoading] = useState({});
   const [schoolVtsError, setSchoolVtsError] = useState({});
+  const [selectedSchoolCodes, setSelectedSchoolCodes] = useState([]);
+  const [downloadLoadingId, setDownloadLoadingId] = useState(null);
   const [actionModal, setActionModal] = useState({ open: false, type: null, target: null, level: null });
   const [remarks, setRemarks] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
   const [actionError, setActionError] = useState('');
   const [attendanceReportModal, setAttendanceReportModal] = useState({
     open: false,
@@ -464,6 +468,14 @@ const Attendance = () => {
     });
   }, [schools, search]);
 
+  useEffect(() => {
+    const visibleUdiseCodes = new Set(filteredSchools.map((school) => String(school.udise)));
+    setSelectedSchoolCodes((prev) => prev.filter((udise) => visibleUdiseCodes.has(udise)));
+  }, [filteredSchools]);
+
+  const allVisibleSelected = filteredSchools.length > 0
+    && filteredSchools.every((school) => selectedSchoolCodes.includes(String(school.udise)));
+
   const refreshPageData = useCallback(() => {
     fetchDashboardCounts();
     fetchSchoolReports();
@@ -543,8 +555,41 @@ const Attendance = () => {
   };
 
   const handleAction = async (status) => {
-    const { target } = actionModal;
+    const { target, level } = actionModal;
     if (!target) return;
+
+    if (level === 'bulk') {
+      setBulkActionLoading(true);
+      setActionError('');
+      try {
+        const payload = {
+          udise_codes: (target.schools || []).map((school) => Number(school.udise)),
+          month: Number(selectedMonth),
+          year: Number(selectedYear),
+          status,
+          remarks: remarks.trim(),
+        };
+
+        const response = await api.post('/reports/approve-bulk', payload);
+        if (!response.data?.status) {
+          throw new Error(response.data?.message || 'Bulk action failed.');
+        }
+
+        toast.success(response.data?.message || 'Selected schools updated successfully.');
+        setActionModal({ open: false, type: null, target: null, level: null });
+        setSelectedSchoolCodes([]);
+        setRemarks('');
+        setExpandedSchool(null);
+        setSchoolVts({});
+        refreshPageData();
+      } catch (error) {
+        console.error('Failed to run bulk approval action:', error);
+        setActionError(error?.response?.data?.message || error.message || 'Bulk action failed.');
+      } finally {
+        setBulkActionLoading(false);
+      }
+      return;
+    }
 
     const vtIdentifier = actionModal.level === 'vt'
       ? target.vt?.userId || target.vt?.vtStaffId
@@ -584,6 +629,85 @@ const Attendance = () => {
     setActionModal({ open: true, type, target, level });
     setRemarks('');
     setActionError('');
+  };
+
+  const handleToggleSchoolSelection = (udiseCode) => {
+    const code = String(udiseCode);
+    setSelectedSchoolCodes((prev) => (
+      prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code]
+    ));
+  };
+
+  const handleToggleSelectAllVisible = () => {
+    if (allVisibleSelected) {
+      setSelectedSchoolCodes([]);
+      return;
+    }
+    setSelectedSchoolCodes(filteredSchools.map((school) => String(school.udise)));
+  };
+
+  const handleOpenBulkAction = (type) => {
+    const selectedSchools = filteredSchools.filter((school) => selectedSchoolCodes.includes(String(school.udise)));
+    if (!selectedSchools.length) {
+      toast.error('Please select at least one school.');
+      return;
+    }
+    setActionModal({ open: true, type, target: { schools: selectedSchools }, level: 'bulk' });
+    setRemarks('');
+    setActionError('');
+  };
+
+  const parseDownloadFileName = (contentDisposition, fallbackName) => {
+    if (!contentDisposition) return fallbackName;
+    const utfMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utfMatch?.[1]) {
+      try {
+        return decodeURIComponent(utfMatch[1]);
+      } catch (_) {
+        return utfMatch[1];
+      }
+    }
+    const normalMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
+    return normalMatch?.[1] || fallbackName;
+  };
+
+  const handleDownloadPdf = async (school, vt) => {
+    const vtIdentifier = vt.userId || vt.vtStaffId;
+    if (!vtIdentifier) {
+      toast.error('Teacher account is not linked.');
+      return;
+    }
+
+    setDownloadLoadingId(String(vtIdentifier));
+    try {
+      const response = await api.get('/reports/download-vt-pdf', {
+        params: {
+          user_id: vtIdentifier,
+          month: Number(selectedMonth),
+          year: Number(selectedYear),
+        },
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const fallbackName = `VT_Attendance_${(vt.name || 'VT').replace(/\s+/g, '_')}_${selectedMonth}_${selectedYear}.pdf`;
+      const fileName = parseDownloadFileName(response.headers?.['content-disposition'], fallbackName);
+
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      window.URL.revokeObjectURL(url);
+      toast.success('PDF downloaded');
+    } catch (error) {
+      console.error('Failed to download PDF:', error);
+      toast.error(error?.response?.data?.message || 'PDF download failed.');
+    } finally {
+      setDownloadLoadingId(null);
+    }
   };
 
   const openAttendanceReport = async (school, vt) => {
@@ -822,6 +946,32 @@ const Attendance = () => {
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.25rem] border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900">
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          {selectedSchoolCodes.length} school{selectedSchoolCodes.length !== 1 ? 's' : ''} selected
+        </p>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="success"
+            size="sm"
+            leftIcon={<CheckCircle className="h-4 w-4" />}
+            disabled={!selectedSchoolCodes.length || bulkActionLoading}
+            onClick={() => handleOpenBulkAction('approve')}
+          >
+            Approve All
+          </Button>
+          <Button
+            variant="danger"
+            size="sm"
+            leftIcon={<XCircle className="h-4 w-4" />}
+            disabled={!selectedSchoolCodes.length || bulkActionLoading}
+            onClick={() => handleOpenBulkAction('reject')}
+          >
+            Reject All
+          </Button>
+        </div>
+      </div>
+
       <div className="overflow-hidden rounded-[1.5rem] border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
         {reportsLoading ? (
           <div className="py-12 text-center">
@@ -843,6 +993,15 @@ const Attendance = () => {
             <table className="w-full min-w-[780px]">
               <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950">
                 <tr>
+                  <th className="w-14 px-4 py-4 text-left">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      checked={allVisibleSelected}
+                      onChange={handleToggleSelectAllVisible}
+                      aria-label="Select all schools"
+                    />
+                  </th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Se no</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">School</th>
                   <th className="w-[170px] px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">UDISE</th>
@@ -858,6 +1017,15 @@ const Attendance = () => {
                         index % 2 === 1 ? 'bg-gray-50/60 dark:bg-gray-800/30' : ''
                       }`}
                     >
+                      <td className="px-4 py-4">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          checked={selectedSchoolCodes.includes(String(school.udise))}
+                          onChange={() => handleToggleSchoolSelection(school.udise)}
+                          aria-label={`Select ${school.name}`}
+                        />
+                      </td>
                       <td className="px-5 py-4">
                         <span className="text-sm text-gray-500 dark:text-gray-400">{(currentPage - 1) * pagination.limit + index + 1}</span>
                       </td>
@@ -895,6 +1063,8 @@ const Attendance = () => {
 
                     {expandedSchool === school.id && (
                       <tr>
+                        <td className="border-b border-gray-100 bg-gray-50/70 px-4 pb-5 pt-4 dark:border-gray-800 dark:bg-gray-950/30" />
+                        <td className="border-b border-gray-100 bg-gray-50/70 px-5 pb-5 pt-4 dark:border-gray-800 dark:bg-gray-950/30" />
                         <td colSpan={4} className="border-b border-gray-100 bg-gray-50/70 px-5 pb-5 pt-4 dark:border-gray-800 dark:bg-gray-950/30">
                           <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
@@ -903,7 +1073,7 @@ const Attendance = () => {
                                 {school.name} | UDISE {school.udise}
                               </p>
                             </div>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 sm:ml-auto sm:justify-end">
                               <Button
                                 variant="success"
                                 size="sm"
@@ -953,13 +1123,38 @@ const Attendance = () => {
                                       <span className="block truncate text-xs text-gray-500">{vt.trade} | {vt.phone}</span>
                                     </span>
                                   </div>
-                                  <StatusPill status={vt.deoApprovalStatus} />
-                                  <div className="flex items-center gap-1">
-                                    <ActionIcon icon={FileText} label="Reports" onClick={() => openAttendanceReport(school, vt)} />
-                                    <ActionIcon icon={Eye} label="View" onClick={() => {}} />
-                                    <ActionIcon icon={Download} label="Download" onClick={() => {}} />
-                                    <ActionIcon icon={CheckCircle} label="Approve" variant="approve" onClick={() => openAction('approve', { ...school, vt }, 'vt')} />
-                                    <ActionIcon icon={XCircle} label="Reject" variant="reject" onClick={() => openAction('reject', { ...school, vt }, 'vt')} />
+                                  <div className="flex items-center gap-3 sm:ml-auto">
+                                    <div className="flex flex-col items-end gap-1">
+                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">HM Status</span>
+                                      <StatusPill status={vt.hmApprovalStatus} />
+                                    </div>
+                                    <div className="flex flex-col items-end gap-1">
+                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">DEO Status</span>
+                                      <StatusPill status={vt.deoApprovalStatus} />
+                                    </div>
+                                    <div className="flex items-center gap-1 sm:justify-end">
+                                      <ActionIcon icon={FileText} label="Reports" onClick={() => openAttendanceReport(school, vt)} />
+                                      <ActionIcon
+                                        icon={Download}
+                                        label="Download Attendance PDF"
+                                        loading={downloadLoadingId === String(vt.userId || vt.vtStaffId)}
+                                        onClick={() => handleDownloadPdf(school, vt)}
+                                      />
+                                      <ActionIcon
+                                        icon={CheckCircle}
+                                        label={vt.hmApprovalStatus === 'approved' ? 'Approve' : 'HM approval pending'}
+                                        variant="approve"
+                                        disabled={vt.hmApprovalStatus !== 'approved'}
+                                        onClick={() => openAction('approve', { ...school, vt }, 'vt')}
+                                      />
+                                      <ActionIcon
+                                        icon={XCircle}
+                                        label={vt.hmApprovalStatus === 'approved' ? 'Reject' : 'HM approval pending'}
+                                        variant="reject"
+                                        disabled={vt.hmApprovalStatus !== 'approved'}
+                                        onClick={() => openAction('reject', { ...school, vt }, 'vt')}
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               ))
@@ -1012,11 +1207,11 @@ const Attendance = () => {
             </Button>
             <Button
               variant={actionModal.type === 'approve' ? 'success' : 'danger'}
-              disabled={actionLoading}
+              disabled={actionLoading || bulkActionLoading}
               leftIcon={actionModal.type === 'approve' ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
               onClick={() => handleAction(actionModal.type === 'approve' ? 'approved' : 'rejected')}
             >
-              {actionLoading ? 'Saving...' : actionModal.type === 'approve' ? 'Approve' : 'Reject'}
+              {(actionLoading || bulkActionLoading) ? 'Saving...' : actionModal.type === 'approve' ? 'Approve' : 'Reject'}
             </Button>
           </>
         }
@@ -1033,11 +1228,19 @@ const Attendance = () => {
                 {actionModal.type === 'approve' ? 'Approve' : 'Reject'} this report?
               </p>
               <p className="mt-1 text-sm text-gray-500">
-                School: <strong>{actionModal.target?.name}</strong>
-                {actionModal.target?.vt?.name && (
+                {actionModal.level === 'bulk' ? (
                   <>
-                    <br />
-                    VT: <strong>{actionModal.target.vt.name}</strong>
+                    Selected Schools: <strong>{actionModal.target?.schools?.length || 0}</strong>
+                  </>
+                ) : (
+                  <>
+                    School: <strong>{actionModal.target?.name}</strong>
+                    {actionModal.target?.vt?.name && (
+                      <>
+                        <br />
+                        VT: <strong>{actionModal.target.vt.name}</strong>
+                      </>
+                    )}
                   </>
                 )}
               </p>
