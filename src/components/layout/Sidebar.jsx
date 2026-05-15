@@ -96,7 +96,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: '/principal/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
           { path: '/principal/school-timing', label: 'School Timing', icon: <Clock className="h-5 w-5" /> },
-          { path: '/principal/school-overview', label: 'School Overview', icon: <Home className="h-5 w-5" /> },
+          // { path: '/principal/school-overview', label: 'School Overview', icon: <Home className="h-5 w-5" /> },
         ],
       },
       {

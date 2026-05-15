@@ -67,6 +67,7 @@ export const StatusBadge = ({ status, showIcon = true }) => {
     inactive: { label: 'Inactive', variant: 'gray', icon: '○' },
     pending: { label: 'Pending', variant: 'warning', icon: '⏳' },
     approved: { label: 'Approved', variant: 'success', icon: '✓' },
+    accepted: { label: 'Accepted', variant: 'success', icon: '✓' },
     rejected: { label: 'Rejected', variant: 'danger', icon: '✕' },
     completed: { label: 'Completed', variant: 'primary', icon: '✓' },
     warning: { label: 'Warning', variant: 'warning', icon: '!' },
