@@ -17,20 +17,20 @@ import Pagination from '../../components/common/Pagination';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const MONTHS = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December',
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
 const currentDate = new Date();
 const currentMonth = currentDate.getMonth() + 1;
-const currentYear  = currentDate.getFullYear();
+const currentYear = currentDate.getFullYear();
 const YEARS = [currentYear, currentYear - 1, currentYear - 2];
 
 const ApprovalPill = ({ status }) => {
   const map = {
-    pending:  { variant: 'warning', label: 'Pending',  Icon: Clock       },
+    pending: { variant: 'warning', label: 'Pending', Icon: Clock },
     approved: { variant: 'success', label: 'Approved', Icon: ShieldCheck },
-    rejected: { variant: 'danger',  label: 'Rejected', Icon: ShieldX     },
+    rejected: { variant: 'danger', label: 'Rejected', Icon: ShieldX },
   };
   const s = map[status] || { variant: 'default', label: status || '—', Icon: ShieldAlert };
   const { variant, label, Icon } = s;
@@ -44,23 +44,23 @@ const ApprovalPill = ({ status }) => {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 const Reports = () => {
-  const [reports, setReports]           = useState([]);
-  const [counts, setCounts]             = useState({ total: 0, pending_my_action: 0, approved: 0, rejected: 0 });
-  const [loading, setLoading]           = useState(true);
+  const [reports, setReports] = useState([]);
+  const [counts, setCounts] = useState({ total: 0, pending_my_action: 0, approved: 0, rejected: 0 });
+  const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
-  const [selectedYear, setSelectedYear]   = useState(currentYear);
-  const [searchQuery, setSearchQuery]   = useState('');
-  const [currentPage, setCurrentPage]   = useState(1);
-  const [totalPages, setTotalPages]     = useState(1);
-  const [totalItems, setTotalItems]     = useState(0);
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   const [generateLoading, setGenerateLoading] = useState(null); // user_id being generated
   const [downloadLoading, setDownloadLoading] = useState(null); // user_id being downloaded
-  const [actionLoading, setActionLoading]     = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const [approveModal, setApproveModal] = useState({ open: false, report: null });
-  const [rejectModal, setRejectModal]   = useState({ open: false, report: null });
-  const [remarks, setRemarks]           = useState('');
+  const [rejectModal, setRejectModal] = useState({ open: false, report: null });
+  const [remarks, setRemarks] = useState('');
 
   // ── Fetch reports list ───────────────────────────────────────────────────
   const fetchReports = useCallback(async () => {
@@ -71,8 +71,8 @@ const Reports = () => {
       });
       if (res.data?.status) {
         setReports(res.data.data || []);
-        setTotalPages(res.data.pagination?.totalPages  || 1);
-        setTotalItems(res.data.pagination?.totalItems  || 0);
+        setTotalPages(res.data.pagination?.totalPages || 1);
+        setTotalItems(res.data.pagination?.totalItems || 0);
       } else {
         toast.error(res.data?.message || 'Failed to load reports');
       }
@@ -118,8 +118,8 @@ const Reports = () => {
     try {
       const res = await api.post('/reports/generate-monthly-vt-report', {
         user_id: report.user_id,
-        month:   selectedMonth,
-        year:    selectedYear,
+        month: selectedMonth,
+        year: selectedYear,
       });
       if (res.data?.status) {
         toast.success('Report generated successfully');
@@ -142,6 +142,8 @@ const Reports = () => {
         params: { user_id: report.user_id, month: selectedMonth, year: selectedYear },
         responseType: 'blob',
       });
+      console.log("#@@@@", res.data);
+
       const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
       const a = document.createElement('a');
       a.href = url;
@@ -166,10 +168,10 @@ const Reports = () => {
     try {
       const res = await api.post('/reports/approve', {
         vtUserId: report.user_id,
-        month:    selectedMonth,
-        year:     selectedYear,
-        status:   'approved',
-        remarks:  remarks.trim(),
+        month: selectedMonth,
+        year: selectedYear,
+        status: 'approved',
+        remarks: remarks.trim(),
       });
       if (res.data?.status) {
         toast.success('Report approved successfully');
@@ -195,10 +197,10 @@ const Reports = () => {
     try {
       const res = await api.post('/reports/approve', {
         vtUserId: report.user_id,
-        month:    selectedMonth,
-        year:     selectedYear,
-        status:   'rejected',
-        remarks:  remarks.trim(),
+        month: selectedMonth,
+        year: selectedYear,
+        status: 'rejected',
+        remarks: remarks.trim(),
       });
       if (res.data?.status) {
         toast.success('Report rejected');
