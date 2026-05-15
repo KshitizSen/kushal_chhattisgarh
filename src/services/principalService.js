@@ -139,6 +139,19 @@ const principalService = {
   updateRegularizationStatus: (id, status) => {
     return api.patch(`/regularization/${id}/status`, { status });
   },
+
+  // VT Attendance (Headmaster)
+  getVtList: (payload = {}) => {
+    return api.post('/headmaster/vt-list', payload);
+  },
+
+  markVtAttendance: (payload) => {
+    return api.post('/headmaster/mark-vt-attendance', payload);
+  },
+
+  updateVtAttendance: (attendanceId, payload) => {
+    return api.put(`/headmaster/update-vt-attendance/${attendanceId}`, payload);
+  },
 };
 
 export default principalService;

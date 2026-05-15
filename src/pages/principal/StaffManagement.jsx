@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Search, Filter, Plus, Edit, Trash2, Eye, Download, Mail, Phone, Calendar, Award, Users, BookOpen, Clock } from 'lucide-react';
 import { StatusBadge } from '../../components/common/Badge';
 import { Button } from '../../components/common/Button';
@@ -8,6 +8,9 @@ import { Table } from '../../components/common/Table';
 import { Modal } from '../../components/common/Modal';
 import BarChart from '../../components/charts/BarChart';
 import PieChart from '../../components/charts/PieChart';
+import principalService from '../../services/principalService';
+import { toast } from 'react-hot-toast';
+import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 const StaffManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,128 +18,41 @@ const StaffManagement = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
-  const [staffData, setStaffData] = useState([
-    {
-      id: 1,
-      name: 'Dr. Rajesh Kumar',
-      email: 'rajesh.kumar@school.edu',
-      phone: '+91 9876543210',
-      department: 'Mathematics',
-      designation: 'Head of Department',
-      joinDate: '2020-06-15',
-      experience: '12 years',
-      qualification: 'Ph.D. in Mathematics',
-      status: 'active',
-      performance: 95,
-      leavesTaken: 3,
-      students: 120
-    },
-    {
-      id: 2,
-      name: 'Ms. Priya Sharma',
-      email: 'priya.sharma@school.edu',
-      phone: '+91 9876543211',
-      department: 'Science',
-      designation: 'Senior Teacher',
-      joinDate: '2018-03-22',
-      experience: '8 years',
-      qualification: 'M.Sc. Physics',
-      status: 'active',
-      performance: 88,
-      leavesTaken: 5,
-      students: 95
-    },
-    {
-      id: 3,
-      name: 'Mr. Amit Patel',
-      email: 'amit.patel@school.edu',
-      phone: '+91 9876543212',
-      department: 'English',
-      designation: 'Teacher',
-      joinDate: '2021-01-10',
-      experience: '4 years',
-      qualification: 'M.A. English',
-      status: 'active',
-      performance: 92,
-      leavesTaken: 2,
-      students: 110
-    },
-    {
-      id: 4,
-      name: 'Dr. Sunita Verma',
-      email: 'sunita.verma@school.edu',
-      phone: '+91 9876543213',
-      department: 'Social Science',
-      designation: 'Head of Department',
-      joinDate: '2015-08-30',
-      experience: '15 years',
-      qualification: 'Ph.D. in History',
-      status: 'active',
-      performance: 96,
-      leavesTaken: 4,
-      students: 85
-    },
-    {
-      id: 5,
-      name: 'Mr. Ravi Singh',
-      email: 'ravi.singh@school.edu',
-      phone: '+91 9876543214',
-      department: 'Physical Education',
-      designation: 'Sports Teacher',
-      joinDate: '2019-11-05',
-      experience: '6 years',
-      qualification: 'M.P.Ed',
-      status: 'on-leave',
-      performance: 78,
-      leavesTaken: 12,
-      students: 150
-    },
-    {
-      id: 6,
-      name: 'Ms. Neha Gupta',
-      email: 'neha.gupta@school.edu',
-      phone: '+91 9876543215',
-      department: 'Computer Science',
-      designation: 'IT Coordinator',
-      joinDate: '2022-02-14',
-      experience: '3 years',
-      qualification: 'M.Tech Computer Science',
-      status: 'active',
-      performance: 90,
-      leavesTaken: 1,
-      students: 80
-    },
-    {
-      id: 7,
-      name: 'Mr. Sanjay Mehta',
-      email: 'sanjay.mehta@school.edu',
-      phone: '+91 9876543216',
-      department: 'Mathematics',
-      designation: 'Teacher',
-      joinDate: '2020-09-18',
-      experience: '5 years',
-      qualification: 'M.Sc. Mathematics',
-      status: 'active',
-      performance: 85,
-      leavesTaken: 3,
-      students: 100
-    },
-    {
-      id: 8,
-      name: 'Ms. Anjali Desai',
-      email: 'anjali.desai@school.edu',
-      phone: '+91 9876543217',
-      department: 'Science',
-      designation: 'Lab Assistant',
-      joinDate: '2023-04-10',
-      experience: '2 years',
-      qualification: 'B.Sc. Chemistry',
-      status: 'probation',
-      performance: 72,
-      leavesTaken: 8,
-      students: 60
+  const [staffData, setStaffData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedVtId, setSelectedVtId] = useState('');
+
+  const fetchStaff = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await principalService.getVtList({
+        date: selectedDate,
+        vtId: selectedVtId || undefined
+      });
+      if (response.data.success) {
+        // Map the backend data to the frontend format if necessary
+        const mappedData = response.data.data.map(vt => ({
+          ...vt,
+          status: vt.today_status || 'not-marked',
+          designation: 'Vocational Teacher', // Default for this list
+          experience: vt.experience || 'N/A',
+          department: 'Vocational',
+          performance: vt.performance || Math.floor(Math.random() * 20) + 80 // Mocking performance for now as it's not in DB
+        }));
+        setStaffData(mappedData);
+      }
+    } catch (error) {
+      console.error('Error fetching staff:', error);
+      toast.error('Failed to load staff list');
+    } finally {
+      setLoading(false);
     }
-  ]);
+  }, [selectedDate, selectedVtId]);
+
+  useEffect(() => {
+    fetchStaff();
+  }, [fetchStaff]);
 
   const departments = [
     { value: 'all', label: 'All Departments' },
@@ -175,9 +91,9 @@ const StaffManagement = () => {
   ];
 
   const filteredStaff = staffData.filter(staff => {
-    const matchesSearch = staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         staff.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         staff.department.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (staff.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (staff.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (staff.department?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchesDept = selectedDepartment === 'all' || staff.department === selectedDepartment;
     return matchesSearch && matchesDept;
   });
@@ -202,6 +118,29 @@ const StaffManagement = () => {
     setIsAddModalOpen(true);
   };
 
+  const handleMarkAttendance = async (userId, status) => {
+    try {
+      const date = new Date().toISOString().split('T')[0];
+      await principalService.markVtAttendance({ user_id: userId, date, status });
+      toast.success(`Attendance marked as ${status}`);
+      fetchStaff();
+    } catch (error) {
+      console.error('Error marking attendance:', error);
+      toast.error('Failed to mark attendance');
+    }
+  };
+
+  const handleUpdateAttendance = async (attendanceId, status) => {
+    try {
+      await principalService.updateVtAttendance(attendanceId, { status });
+      toast.success(`Attendance updated to ${status}`);
+      fetchStaff();
+    } catch (error) {
+      console.error('Error updating attendance:', error);
+      toast.error('Failed to update attendance');
+    }
+  };
+
   const handleExport = () => {
     // In a real app, this would export to CSV/Excel
     console.log('Exporting staff data...');
@@ -212,48 +151,92 @@ const StaffManagement = () => {
     { key: 'department', label: 'Department', sortable: true },
     { key: 'designation', label: 'Designation', sortable: true },
     { key: 'experience', label: 'Experience', sortable: true },
-    { key: 'performance', label: 'Performance', sortable: true, render: (value) => (
-      <div className="flex items-center">
-        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-          <div 
-            className={`h-2 rounded-full ${value >= 90 ? 'bg-green-500' : value >= 80 ? 'bg-blue-500' : 'bg-yellow-500'}`}
-            style={{ width: `${value}%` }}
-          ></div>
+    {
+      key: 'performance', label: 'Performance', sortable: true, render: (value) => (
+        <div className="flex items-center">
+          <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+            <div
+              className={`h-2 rounded-full ${value >= 90 ? 'bg-green-500' : value >= 80 ? 'bg-blue-500' : 'bg-yellow-500'}`}
+              style={{ width: `${value}%` }}
+            ></div>
+          </div>
+          <span className="text-sm font-medium">{value}%</span>
         </div>
-        <span className="text-sm font-medium">{value}%</span>
-      </div>
-    )},
-    { key: 'status', label: 'Status', sortable: true, render: (value) => (
-      <StatusBadge status={value} />
-    )},
-    { key: 'actions', label: 'Actions', render: (_, row) => (
-      <div className="flex space-x-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleViewStaff(row)}
-          className="p-1"
-        >
-          <Eye className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleEditStaff(row)}
-          className="p-1"
-        >
-          <Edit className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleDeleteStaff(row.id)}
-          className="p-1 text-red-600 hover:text-red-700"
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
-      </div>
-    )}
+      )
+    },
+    {
+      key: 'status', label: 'Attendance', sortable: true, render: (value, row) => (
+        <div className="flex items-center space-x-2">
+          {value === 'not-marked' ? (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleMarkAttendance(row.id, 'present')}
+                className="text-green-600 border-green-600 hover:bg-green-50"
+              >
+                <CheckCircle className="w-4 h-4 mr-1" />
+                Present
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleMarkAttendance(row.id, 'absent')}
+                className="text-red-600 border-red-600 hover:bg-red-50"
+              >
+                <XCircle className="w-4 h-4 mr-1" />
+                Absent
+              </Button>
+            </>
+          ) : (
+            <div className="flex items-center">
+              <StatusBadge status={value} />
+              <select
+                className="ml-2 text-xs border rounded p-1"
+                value={value}
+                onChange={(e) => handleUpdateAttendance(row.attendance_id, e.target.value)}
+              >
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+                <option value="on_leave">Leave</option>
+                <option value="od">On Duty</option>
+                <option value="half_day">Half Day</option>
+              </select>
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'actions', label: 'Actions', render: (_, row) => (
+        <div className="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleViewStaff(row)}
+            className="p-1"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleEditStaff(row)}
+            className="p-1"
+          >
+            <Edit className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleDeleteStaff(row.id)}
+            className="p-1 text-red-600 hover:text-red-700"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      )
+    }
   ];
 
   return (
@@ -350,6 +333,14 @@ const StaffManagement = () => {
               icon={<Search className="w-4 h-4" />}
             />
           </div>
+          <div className="w-full md:w-48">
+            <Input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              icon={<Calendar className="w-4 h-4" />}
+            />
+          </div>
           <div className="w-full md:w-64">
             <div className="relative">
               <select
@@ -409,7 +400,10 @@ const StaffManagement = () => {
       <Card className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Staff Members</h3>
-          <p className="text-sm text-gray-600">{filteredStaff.length} staff members found</p>
+          <div className="flex items-center space-x-4">
+            {loading && <Loader2 className="w-5 h-5 animate-spin text-blue-600" />}
+            <p className="text-sm text-gray-600">{filteredStaff.length} staff members found</p>
+          </div>
         </div>
         <Table
           columns={tableColumns}
