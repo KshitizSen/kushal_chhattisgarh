@@ -303,6 +303,27 @@ const LeaveManagement = () => {
       ),
     },
     {
+      key: 'excess_record',
+      header: 'Excess Record',
+      render: (_, row) => {
+        if (row.approved_leave_days !== undefined && row.approved_leave_days !== null) {
+          const approved = parseFloat(row.approved_leave_days);
+          const excess = parseFloat(row.excess_leave);
+          return (
+            <div className="flex flex-col gap-0.5 text-xs">
+              <span className="text-gray-600 dark:text-gray-400">
+                Approved: <span className="font-medium text-gray-900 dark:text-white">{approved.toFixed(1)} days</span>
+              </span>
+              <span className="text-gray-600 dark:text-gray-400">
+                Excess: <span className={`font-medium ${excess > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-white'}`}>{excess.toFixed(1)} days</span>
+              </span>
+            </div>
+          );
+        }
+        return <span className="text-xs text-gray-400">—</span>;
+      }
+    },
+    {
       key: 'status',
       header: 'Status',
       render: (value) => <StatusBadge status={value} />,
@@ -417,8 +438,8 @@ const LeaveManagement = () => {
         <button
           onClick={() => setActiveTab('requests')}
           className={`px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'requests'
-              ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
+            ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
+            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
             }`}
         >
           Leave Requests
@@ -426,8 +447,8 @@ const LeaveManagement = () => {
         <button
           onClick={() => setActiveTab('balances')}
           className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${activeTab === 'balances'
-              ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
+            ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
+            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
             }`}
         >
           <Wallet className="h-4 w-4" />
@@ -644,26 +665,33 @@ const LeaveManagement = () => {
                 {
                   key: 'balance',
                   header: 'EL Breakdown',
-                  render: (bal) => (
-                    <div className="text-xs space-y-1 min-w-[140px]">
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Opening:</span>
-                        <span className="font-medium">{parseFloat(bal?.openingBalance || 0).toFixed(1)}</span>
+                  render: (bal) => {
+                    const earned = parseFloat(bal?.totalEarned || 0);
+                    const used = parseFloat(bal?.totalUsed || 0);
+                    const excess = Math.max(0, used - earned);
+                    const closing = parseFloat(bal?.remainingBalance || 0);
+
+                    return (
+                      <div className="text-xs space-y-1 min-w-[140px]">
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Earned:</span>
+                          <span className="font-medium text-green-600">+{earned.toFixed(1)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Used:</span>
+                          <span className="font-medium text-red-600">-{used.toFixed(1)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Excess:</span>
+                          <span className="font-medium text-orange-600">{excess.toFixed(1)}</span>
+                        </div>
+                        <div className="flex justify-between border-t border-gray-200 pt-1">
+                          <span className="text-gray-500">Closing:</span>
+                          <span className="font-bold">{closing.toFixed(1)}</span>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Earned:</span>
-                        <span className="font-medium text-green-600">+{parseFloat(bal?.totalEarned || 0).toFixed(1)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Used:</span>
-                        <span className="font-medium text-red-600">-{parseFloat(bal?.totalUsed || 0).toFixed(1)}</span>
-                      </div>
-                      <div className="flex justify-between border-t border-gray-200 pt-1">
-                        <span className="text-gray-500">Closing:</span>
-                        <span className="font-bold">{parseFloat(bal?.remainingBalance || 0).toFixed(1)}</span>
-                      </div>
-                    </div>
-                  ),
+                    );
+                  },
                 },
               ]}
               emptyState={
@@ -738,8 +766,8 @@ const LeaveManagement = () => {
               {/* Leave Balance Check */}
               {selectedLeaveBalance && (
                 <div className={`mt-3 p-3 rounded-lg ${selectedLeaveBalance.balanceCheck?.sufficient
-                    ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                    : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                  ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                  : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
                   }`}>
                   <div className="flex items-center gap-2 mb-2">
                     {selectedLeaveBalance.balanceCheck?.sufficient ? (
@@ -748,8 +776,8 @@ const LeaveManagement = () => {
                       <Ban className="h-4 w-4 text-red-600" />
                     )}
                     <span className={`font-medium ${selectedLeaveBalance.balanceCheck?.sufficient
-                        ? 'text-green-800 dark:text-green-200'
-                        : 'text-red-800 dark:text-red-200'
+                      ? 'text-green-800 dark:text-green-200'
+                      : 'text-red-800 dark:text-red-200'
                       }`}>
                       {selectedLeaveBalance.balanceCheck?.sufficient
                         ? 'Sufficient Leave Balance'
