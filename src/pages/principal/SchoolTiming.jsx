@@ -465,7 +465,7 @@ const SchoolTiming = () => {
             </h3>
             <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
               <li>
-                • School timing settings apply to all vocational teachers
+                • School timing settings apply to all vocational trainers
               </li>
               <li>• Changes will take effect from the next working day</li>
               {/* <li>• Teachers are marked late after grace period expires</li> */}

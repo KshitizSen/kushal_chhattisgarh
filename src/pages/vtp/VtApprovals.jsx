@@ -259,7 +259,7 @@ const VtApprovals = () => {
             VT Approvals
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Review and approve Vocational Teachers assigned to your VTP organization
+            Review and approve Vocational Trainers assigned to your VTP organization
           </p>
         </div>
         <Button

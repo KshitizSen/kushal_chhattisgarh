@@ -142,7 +142,6 @@ const Reports = () => {
         params: { user_id: report.user_id, month: selectedMonth, year: selectedYear },
         responseType: 'blob',
       });
-      console.log("#@@@@", res.data);
 
       const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
       const a = document.createElement('a');
