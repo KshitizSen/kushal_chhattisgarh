@@ -147,7 +147,7 @@ const LeaveManagement = () => {
     fetchCounts();
   }, [fetchCounts]);
 
-  // ── Fetch School Leave Balances ─────────────────────────────────────────
+  // ── Fetch School Leave Balances ─────────────────────────────────────
   const fetchSchoolBalances = useCallback(async () => {
     setBalanceLoading(true);
     try {
