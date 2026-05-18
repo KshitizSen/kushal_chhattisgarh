@@ -201,6 +201,27 @@ const LeaveManagement = () => {
       ),
     },
     {
+      key: 'excess_record',
+      header: 'Excess Record',
+      render: (_, row) => {
+        if (row.approved_leave_days !== undefined && row.approved_leave_days !== null) {
+          const approved = parseFloat(row.approved_leave_days);
+          const excess = parseFloat(row.excess_leave);
+          return (
+            <div className="flex flex-col gap-0.5 text-xs">
+              <span className="text-gray-600 dark:text-gray-400">
+                Approved: <span className="font-medium text-gray-900 dark:text-white">{approved.toFixed(1)} days</span>
+              </span>
+              <span className="text-gray-600 dark:text-gray-400">
+                Excess: <span className={`font-medium ${excess > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-white'}`}>{excess.toFixed(1)} days</span>
+              </span>
+            </div>
+          );
+        }
+        return <span className="text-xs text-gray-400">—</span>;
+      }
+    },
+    {
       key: 'principal_status',
       header: 'HM Status',
       render: (value) => (
@@ -538,26 +559,32 @@ const LeaveManagement = () => {
                   {
                     key: 'balance',
                     header: 'EL Breakdown',
-                    render: (bal) => (
-                      <div className="text-xs space-y-1 min-w-[140px]">
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Opening:</span>
-                          <span className="font-medium">{parseFloat(bal?.openingBalance || 0).toFixed(1)}</span>
+                    render: (bal) => {
+                      const earned = parseFloat(bal?.totalEarned || 0);
+                      const used = parseFloat(bal?.totalUsed || 0);
+                      const excess = Math.max(0, used - earned);
+                      const closing = parseFloat(bal?.remainingBalance || 0);
+                      return (
+                        <div className="text-xs space-y-1 min-w-[140px]">
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Earned:</span>
+                            <span className="font-medium text-emerald-600">+{earned.toFixed(1)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Used:</span>
+                            <span className="font-medium text-rose-600">-{used.toFixed(1)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Excess:</span>
+                            <span className={`font-medium ${excess > 0 ? 'text-orange-600' : 'text-gray-900 dark:text-white'}`}>{excess.toFixed(1)}</span>
+                          </div>
+                          <div className="flex justify-between border-t border-gray-200 pt-1">
+                            <span className="text-gray-500">Closing:</span>
+                            <span className="font-bold">{closing.toFixed(1)}</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Earned:</span>
-                          <span className="font-medium text-emerald-600">+{parseFloat(bal?.totalEarned || 0).toFixed(1)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Used:</span>
-                          <span className="font-medium text-rose-600">-{parseFloat(bal?.totalUsed || 0).toFixed(1)}</span>
-                        </div>
-                        <div className="flex justify-between border-t border-gray-200 pt-1">
-                          <span className="text-gray-500">Closing:</span>
-                          <span className="font-bold">{parseFloat(bal?.remainingBalance || 0).toFixed(1)}</span>
-                        </div>
-                      </div>
-                    ),
+                      );
+                    },
                   },
                 ]}
                 emptyState={

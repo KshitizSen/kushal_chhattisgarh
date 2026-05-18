@@ -14,6 +14,7 @@ import {
   MapPin,
   School,
   CreditCard,
+  Building2,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -168,11 +169,17 @@ const TeacherApproval = () => {
     },
     {
       key: 'trade',
-      header: 'Trade',
-      render: (value) => (
-        <div className="flex items-center gap-2">
-          <Briefcase className="h-4 w-4 text-gray-400 flex-shrink-0" />
-          <span className="text-gray-700 dark:text-gray-300 text-sm">{value || 'N/A'}</span>
+      header: 'Trade & VTP',
+      render: (value, row) => (
+        <div>
+          <div className="flex items-center gap-2">
+            <Briefcase className="h-4 w-4 text-gray-400 flex-shrink-0" />
+            <span className="text-gray-700 dark:text-gray-300 text-sm font-medium">{value || 'N/A'}</span>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
+            <Building2 className="h-3 w-3 flex-shrink-0" />
+            <span>{row.vtp_name || 'N/A'}</span>
+          </div>
         </div>
       ),
     },
@@ -293,7 +300,7 @@ const TeacherApproval = () => {
             Teacher Approval
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage vocational teacher registrations and approvals
+            Manage vocational trainer registrations and approvals
           </p>
         </div>
         <Button

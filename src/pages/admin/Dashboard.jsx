@@ -66,7 +66,7 @@ const AdminDashboard = () => {
       title: 'VT Staff',
       value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_vt_staff),
       icon: <Users className="w-6 h-6" />,
-      description: 'Vocational teacher staff',
+      description: 'Vocational trainer staff',
     },
     {
       title: 'Total Trades',

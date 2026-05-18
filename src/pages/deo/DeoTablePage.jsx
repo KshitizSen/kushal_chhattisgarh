@@ -193,7 +193,7 @@ const pageConfig = {
   },
   teachers: {
     title: 'VT Teacher',
-    subtitle: 'Vocational teacher details with school and VTP mapping',
+    subtitle: 'Vocational trainer details with school and VTP mapping',
     searchPlaceholder: 'Search teacher by name, trade, school, VTP or phone...',
     icon: GraduationCap,
     statusKey: 'status',

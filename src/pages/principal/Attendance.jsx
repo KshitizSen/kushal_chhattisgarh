@@ -264,7 +264,10 @@ const Attendance = () => {
     {
       key: 'status',
       header: 'Status',
-      render: (value) => <StatusBadge status={value} />,
+      render: (value, row) => {
+        const computedStatus = row.check_in_time ? 'active' : (value || 'inactive');
+        return <StatusBadge status={computedStatus} />;
+      },
     },
   ];
 
