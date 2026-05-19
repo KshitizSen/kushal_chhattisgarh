@@ -172,10 +172,14 @@ const pageConfig = {
     showLocationFilters: true,
     api: {
       endpoint: '/deo/school-reports',
-      params: { status: 'pending' },
+      params: { status: '' },
       limit: 10,
       statusParam: 'status',
     },
+    statusOptions: [
+      { value: 'approved', label: 'Approved' },
+      { value: 'pending', label: 'Pending' },
+    ],
     mapRow: (row) => ({
       ...row,
       deo_approval_status: row.deo_approval_status || 'pending',
@@ -187,8 +191,8 @@ const pageConfig = {
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'block_name', header: 'Block', render: (value, row) => <div><p>{value || '-'}</p><p className="text-xs text-gray-500">{row.district_name || '-'}</p></div> },
       { key: 'hm_approval_status', header: 'HM Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
-      { key: 'vtp_approval_status', header: 'VTP Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
       { key: 'deo_approval_status', header: 'DEO Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
+      { key: 'vtp_approval_status', header: 'VTP Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
     ],
   },
   teachers: {
@@ -364,10 +368,20 @@ const DeoTablePage = ({ type }) => {
     setSelectedCluster('');
   }, [selectedDistrict, selectedBlock, showLocationFilters]);
 
-  const statuses = useMemo(
-    () => [...new Set(rows.map((row) => row[statusKey]).filter(Boolean))],
-    [rows, statusKey]
-  );
+  const statusOptions = useMemo(() => {
+    if (Array.isArray(config.statusOptions) && config.statusOptions.length > 0) {
+      return config.statusOptions;
+    }
+
+    return [...new Set(rows.map((row) => row[statusKey]).filter(Boolean))]
+      .map((status) => ({
+        value: status,
+        label: status
+          .split('_')
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(' '),
+      }));
+  }, [config.statusOptions, rows, statusKey]);
 
   const filteredRows = useMemo(() => {
     if (isApiPage) return rows;
@@ -413,8 +427,8 @@ const DeoTablePage = ({ type }) => {
               className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 focus:ring-2 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
             >
               <option value="">All Status</option>
-              {statuses.map((status) => (
-                <option key={status} value={status}>{status.replace('_', ' ')}</option>
+              {statusOptions.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
           </div>
