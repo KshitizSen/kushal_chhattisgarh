@@ -176,6 +176,19 @@ const getMonthLabel = (monthValue) => MONTH_OPTIONS.find((month) => month.value 
 
 const getMonthlySummaryParam = (year, month) => `${year}-${String(month).padStart(2, '0')}`;
 
+const parseBooleanFlag = (value) => (
+  value === true
+  || value === 'true'
+  || value === 't'
+  || value === 1
+  || value === '1'
+);
+
+const normalizeApprovalStatus = (value) => {
+  if (!value) return 'pending';
+  return String(value).toLowerCase();
+};
+
 const formatReportDate = (year, month, day) => {
   const date = new Date(Number(year), Number(month) - 1, Number(day));
   if (Number.isNaN(date.getTime())) return `${day}/${month}/${year}`;
@@ -363,22 +376,46 @@ const Attendance = () => {
       }
 
       setSchools(
-        rows.map((row) => ({
-          id: row.udise_code,
-          name: row.school_name,
-          udise: row.udise_code,
-          block: row.block_name,
-          district: row.district_name,
-          reportStatus: row.deo_approval_status || 'pending',
-          reportId: row.report_id,
-          reportMonth: row.report_month,
-          reportYear: row.report_year,
-          hmApprovalStatus: row.hm_approval_status,
-          vtpApprovalStatus: row.vtp_approval_status,
-          hmRemarks: row.hm_remarks,
-          vtpRemarks: row.vtp_remarks,
-          deoRemarks: row.deo_remarks,
-        }))
+        rows.map((row) => {
+          const totalTeachers = Number(row.total_teachers || 0);
+          const hmApprovedTeachers = Number(row.hm_approved_teachers || 0);
+          const hasExplicitHmAllApproved = (
+            row.hm_all_approved === true
+            || row.hm_all_approved === false
+            || row.hm_all_approved === 'true'
+            || row.hm_all_approved === 'false'
+            || row.hm_all_approved === 't'
+            || row.hm_all_approved === 'f'
+            || row.hm_all_approved === 1
+            || row.hm_all_approved === 0
+            || row.hm_all_approved === '1'
+            || row.hm_all_approved === '0'
+          );
+
+          return {
+            id: row.udise_code,
+            name: row.school_name,
+            udise: row.udise_code,
+            block: row.block_name,
+            district: row.district_name,
+            reportStatus: row.deo_approval_status || 'pending',
+            reportId: row.report_id,
+            reportMonth: row.report_month,
+            reportYear: row.report_year,
+            hmApprovalStatus: row.hm_approval_status,
+            vtpApprovalStatus: row.vtp_approval_status,
+            totalTeachers,
+            hmApprovedTeachers,
+            hmPendingTeachers: Number(row.hm_pending_teachers || 0),
+            hmRejectedTeachers: Number(row.hm_rejected_teachers || 0),
+            hmAllApproved: hasExplicitHmAllApproved
+              ? parseBooleanFlag(row.hm_all_approved)
+              : (totalTeachers > 0 && hmApprovedTeachers === totalTeachers),
+            hmRemarks: row.hm_remarks,
+            vtpRemarks: row.vtp_remarks,
+            deoRemarks: row.deo_remarks,
+          };
+        })
       );
       setPagination(response.data?.pagination || { ...DEFAULT_PAGINATION, limit: pageSize });
       setExpandedSchool(null);
@@ -468,13 +505,45 @@ const Attendance = () => {
     });
   }, [schools, search]);
 
-  useEffect(() => {
-    const visibleUdiseCodes = new Set(filteredSchools.map((school) => String(school.udise)));
-    setSelectedSchoolCodes((prev) => prev.filter((udise) => visibleUdiseCodes.has(udise)));
-  }, [filteredSchools]);
+  const getSchoolVtsList = useCallback((school) => {
+    const mappedVts = schoolVts[String(school.udise)];
+    if (Array.isArray(mappedVts) && mappedVts.length) return mappedVts;
+    if (Array.isArray(school.vts) && school.vts.length) return school.vts;
+    return [];
+  }, [schoolVts]);
 
-  const allVisibleSelected = filteredSchools.length > 0
-    && filteredSchools.every((school) => selectedSchoolCodes.includes(String(school.udise)));
+  const isSchoolActionAllowed = useCallback((school) => {
+    const vts = getSchoolVtsList(school);
+    if (vts.length > 0) {
+      return vts.every((vt) => normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved');
+    }
+    return school.hmAllApproved === true;
+  }, [getSchoolVtsList]);
+
+  const getSchoolDeoStatus = useCallback((school) => {
+    const vts = getSchoolVtsList(school);
+    if (!vts.length) return normalizeApprovalStatus(school.reportStatus || 'pending');
+
+    const allApproved = vts.every((vt) => normalizeApprovalStatus(vt.deo_approval_status ?? vt.deoApprovalStatus) === 'approved');
+    const allRejected = vts.every((vt) => normalizeApprovalStatus(vt.deo_approval_status ?? vt.deoApprovalStatus) === 'rejected');
+
+    if (allApproved) return 'approved';
+    if (allRejected) return 'rejected';
+    return 'pending';
+  }, [getSchoolVtsList]);
+
+  const selectableFilteredSchools = useMemo(
+    () => filteredSchools.filter((school) => isSchoolActionAllowed(school)),
+    [filteredSchools, isSchoolActionAllowed]
+  );
+
+  useEffect(() => {
+    const visibleSelectableUdiseCodes = new Set(selectableFilteredSchools.map((school) => String(school.udise)));
+    setSelectedSchoolCodes((prev) => prev.filter((udise) => visibleSelectableUdiseCodes.has(udise)));
+  }, [selectableFilteredSchools]);
+
+  const allVisibleSelected = selectableFilteredSchools.length > 0
+    && selectableFilteredSchools.every((school) => selectedSchoolCodes.includes(String(school.udise)));
 
   const refreshPageData = useCallback(() => {
     fetchDashboardCounts();
@@ -524,6 +593,9 @@ const Attendance = () => {
           phone: vt.vt_mob || 'Mobile not available',
           email: vt.vt_email,
           vtpName: vt.vtp_name,
+          hm_approval_status: vt.hm_approval_status || school.hmApprovalStatus || 'pending',
+          vtp_approval_status: vt.vtp_approval_status || school.vtpApprovalStatus || 'pending',
+          deo_approval_status: vt.deo_approval_status || school.reportStatus || 'pending',
           hmApprovalStatus: vt.hm_approval_status || school.hmApprovalStatus || 'pending',
           vtpApprovalStatus: vt.vtp_approval_status || school.vtpApprovalStatus || 'pending',
           deoApprovalStatus: vt.deo_approval_status || school.reportStatus || 'pending',
@@ -554,6 +626,71 @@ const Attendance = () => {
     }
   };
 
+  const applySchoolDeoStatusLocally = useCallback((udiseCodes, status) => {
+    const normalizedStatus = normalizeApprovalStatus(status);
+    const udiseSet = new Set((udiseCodes || []).map((code) => String(code)));
+
+    setSchoolVts((prev) => {
+      const next = { ...prev };
+      udiseSet.forEach((code) => {
+        if (Array.isArray(next[code])) {
+          next[code] = next[code].map((vt) => ({
+            ...vt,
+            deo_approval_status: normalizedStatus,
+            deoApprovalStatus: normalizedStatus,
+            reportStatus: normalizedStatus,
+          }));
+        }
+      });
+      return next;
+    });
+
+    setSchools((prev) => prev.map((school) => (
+      udiseSet.has(String(school.udise))
+        ? { ...school, reportStatus: normalizedStatus }
+        : school
+    )));
+  }, []);
+
+  const applySingleVtDeoStatusLocally = useCallback((udiseCode, vtUserId, status) => {
+    const normalizedStatus = normalizeApprovalStatus(status);
+    const schoolCode = String(udiseCode);
+    const numericVtUserId = Number(vtUserId);
+    let updatedSchoolVts = null;
+
+    setSchoolVts((prev) => {
+      const existing = prev[schoolCode];
+      if (!Array.isArray(existing)) return prev;
+
+      updatedSchoolVts = existing.map((vt) => (
+        Number(vt.userId) === numericVtUserId
+          ? {
+            ...vt,
+            deo_approval_status: normalizedStatus,
+            deoApprovalStatus: normalizedStatus,
+            reportStatus: normalizedStatus,
+          }
+          : vt
+      ));
+
+      return {
+        ...prev,
+        [schoolCode]: updatedSchoolVts,
+      };
+    });
+
+    if (Array.isArray(updatedSchoolVts) && updatedSchoolVts.length) {
+      const allApproved = updatedSchoolVts.every((vt) => normalizeApprovalStatus(vt.deo_approval_status ?? vt.deoApprovalStatus) === 'approved');
+      const allRejected = updatedSchoolVts.every((vt) => normalizeApprovalStatus(vt.deo_approval_status ?? vt.deoApprovalStatus) === 'rejected');
+      const schoolStatus = allApproved ? 'approved' : allRejected ? 'rejected' : 'pending';
+      setSchools((prev) => prev.map((school) => (
+        String(school.udise) === schoolCode
+          ? { ...school, reportStatus: schoolStatus }
+          : school
+      )));
+    }
+  }, []);
+
   const handleAction = async (status) => {
     const { target, level } = actionModal;
     if (!target) return;
@@ -575,13 +712,12 @@ const Attendance = () => {
           throw new Error(response.data?.message || 'Bulk action failed.');
         }
 
+        applySchoolDeoStatusLocally((target.schools || []).map((school) => school.udise), status);
+        fetchDashboardCounts();
         toast.success(response.data?.message || 'Selected schools updated successfully.');
         setActionModal({ open: false, type: null, target: null, level: null });
         setSelectedSchoolCodes([]);
         setRemarks('');
-        setExpandedSchool(null);
-        setSchoolVts({});
-        refreshPageData();
       } catch (error) {
         console.error('Failed to run bulk approval action:', error);
         setActionError(error?.response?.data?.message || error.message || 'Bulk action failed.');
@@ -592,34 +728,41 @@ const Attendance = () => {
     }
 
     const vtIdentifier = actionModal.level === 'vt'
-      ? target.vt?.userId || target.vt?.vtStaffId
+      ? target.vt?.userId
       : null;
 
     setActionLoading(true);
     setActionError('');
     try {
-      const payload = {
-        udise_code: Number(target.udise),
-        month: Number(selectedMonth),
-        year: Number(selectedYear),
-        status,
-        remarks: remarks.trim(),
-      };
-
-      if (vtIdentifier) {
-        payload.vtUserId = Number(vtIdentifier);
+      if (actionModal.level === 'vt') {
+        if (!vtIdentifier) {
+          throw new Error('Teacher account is not linked.');
+        }
+        await api.post('/reports/approve-teacher', {
+          vtUserId: Number(vtIdentifier),
+          month: Number(selectedMonth),
+          year: Number(selectedYear),
+          status,
+          remarks: remarks.trim(),
+        });
+        applySingleVtDeoStatusLocally(target.udise, vtIdentifier, status);
+      } else {
+        await api.post('/reports/approve', {
+          udise_code: Number(target.udise),
+          month: Number(selectedMonth),
+          year: Number(selectedYear),
+          status,
+          remarks: remarks.trim(),
+        });
+        applySchoolDeoStatusLocally([target.udise], status);
       }
 
-      await api.post('/reports/approve', payload);
-
+      fetchDashboardCounts();
       setActionModal({ open: false, type: null, target: null, level: null });
       setRemarks('');
-      setExpandedSchool(null);
-      setSchoolVts({});
-      refreshPageData();
     } catch (error) {
       console.error('Failed to update report approval:', error);
-      setActionError('Report status could not be updated.');
+      setActionError(error?.response?.data?.message || error.message || 'Report status could not be updated.');
     } finally {
       setActionLoading(false);
     }
@@ -631,8 +774,9 @@ const Attendance = () => {
     setActionError('');
   };
 
-  const handleToggleSchoolSelection = (udiseCode) => {
-    const code = String(udiseCode);
+  const handleToggleSchoolSelection = (school) => {
+    if (!isSchoolActionAllowed(school)) return;
+    const code = String(school.udise);
     setSelectedSchoolCodes((prev) => (
       prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code]
     ));
@@ -643,11 +787,13 @@ const Attendance = () => {
       setSelectedSchoolCodes([]);
       return;
     }
-    setSelectedSchoolCodes(filteredSchools.map((school) => String(school.udise)));
+    setSelectedSchoolCodes(selectableFilteredSchools.map((school) => String(school.udise)));
   };
 
   const handleOpenBulkAction = (type) => {
-    const selectedSchools = filteredSchools.filter((school) => selectedSchoolCodes.includes(String(school.udise)));
+    const selectedSchools = filteredSchools.filter((school) => (
+      isSchoolActionAllowed(school) && selectedSchoolCodes.includes(String(school.udise))
+    ));
     if (!selectedSchools.length) {
       toast.error('Please select at least one school.');
       return;
@@ -998,6 +1144,7 @@ const Attendance = () => {
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       checked={allVisibleSelected}
+                      disabled={!selectableFilteredSchools.length}
                       onChange={handleToggleSelectAllVisible}
                       aria-label="Select all schools"
                     />
@@ -1022,7 +1169,8 @@ const Attendance = () => {
                           type="checkbox"
                           className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                           checked={selectedSchoolCodes.includes(String(school.udise))}
-                          onChange={() => handleToggleSchoolSelection(school.udise)}
+                          disabled={!isSchoolActionAllowed(school)}
+                          onChange={() => handleToggleSchoolSelection(school)}
                           aria-label={`Select ${school.name}`}
                         />
                       </td>
@@ -1055,7 +1203,7 @@ const Attendance = () => {
                           aria-expanded={expandedSchool === school.id}
                           aria-label={`Toggle vocational teachers for ${school.name}`}
                         >
-                          <StatusPill status={school.reportStatus} />
+                          <StatusPill status={getSchoolDeoStatus(school)} />
                           <ChevronDown className={`h-4 w-4 text-gray-400 transition ${expandedSchool === school.id ? 'rotate-180' : ''}`} />
                         </button>
                       </td>
@@ -1072,12 +1220,19 @@ const Attendance = () => {
                               <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                                 {school.name} | UDISE {school.udise}
                               </p>
+                              {!isSchoolActionAllowed(school) && (
+                                <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
+                                  {/* Approve/Reject All tab tak disabled rahega jab tak is school ke sabhi teachers ka HM Status Approved na ho. */}
+                                  Approve/Reject All will remain disabled until all teachers of this school have HM Status Approved.
+                                </p>
+                              )}
                             </div>
                             <div className="flex flex-wrap gap-2 sm:ml-auto sm:justify-end">
                               <Button
                                 variant="success"
                                 size="sm"
                                 leftIcon={<CheckCircle className="h-4 w-4" />}
+                                disabled={!isSchoolActionAllowed(school)}
                                 onClick={() => openAction('approve', school, 'school')}
                               >
                                 Approve All
@@ -1086,6 +1241,7 @@ const Attendance = () => {
                                 variant="danger"
                                 size="sm"
                                 leftIcon={<XCircle className="h-4 w-4" />}
+                                disabled={!isSchoolActionAllowed(school)}
                                 onClick={() => openAction('reject', school, 'school')}
                               >
                                 Reject All
@@ -1142,16 +1298,28 @@ const Attendance = () => {
                                       />
                                       <ActionIcon
                                         icon={CheckCircle}
-                                        label={vt.hmApprovalStatus === 'approved' ? 'Approve' : 'HM approval pending'}
+                                        label={
+                                          !vt.userId
+                                            ? 'Teacher account is not linked'
+                                            : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
+                                              ? 'Approve'
+                                              : 'HM approval pending'
+                                        }
                                         variant="approve"
-                                        disabled={vt.hmApprovalStatus !== 'approved'}
+                                        disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}
                                         onClick={() => openAction('approve', { ...school, vt }, 'vt')}
                                       />
                                       <ActionIcon
                                         icon={XCircle}
-                                        label={vt.hmApprovalStatus === 'approved' ? 'Reject' : 'HM approval pending'}
+                                        label={
+                                          !vt.userId
+                                            ? 'Teacher account is not linked'
+                                            : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
+                                              ? 'Reject'
+                                              : 'HM approval pending'
+                                        }
                                         variant="reject"
-                                        disabled={vt.hmApprovalStatus !== 'approved'}
+                                        disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}
                                         onClick={() => openAction('reject', { ...school, vt }, 'vt')}
                                       />
                                     </div>
