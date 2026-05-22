@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/deo/Dashboard';
 import Attendance from '../pages/deo/Attendance';
+import AttendanceStatus from '../pages/deo/AttendanceStatus';
 import VTPs from '../pages/deo/VTPs';
 import VTSchools from '../pages/deo/VTSchools';
 import VTTeachers from '../pages/deo/VTTeachers';
@@ -25,6 +26,14 @@ const DEORoutes = () => {
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <Attendance />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="attendance-status"
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <AttendanceStatus />
           </ProtectedRoute>
         }
       />

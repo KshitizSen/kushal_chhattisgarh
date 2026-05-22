@@ -121,6 +121,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
           { path: '/deo/attendance', label: 'Attendance', icon: <CalendarCheck className="h-5 w-5" /> },
+          { path: '/deo/attendance-status', label: 'Attendance Status', icon: <UserCheck className="h-5 w-5" /> },
           { path: '/deo/vtps', label: "VTP's", icon: <Building2 className="h-5 w-5" /> },
           { path: '/deo/vt-schools', label: 'VT School', icon: <School className="h-5 w-5" /> },
           { path: '/deo/vt-teachers', label: 'VT Details', icon: <Users className="h-5 w-5" /> },
