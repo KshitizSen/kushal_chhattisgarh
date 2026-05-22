@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   AlertCircle,
   CalendarDays,
@@ -8,7 +8,6 @@ import {
   GraduationCap,
   MapPin,
   RefreshCw,
-  Search,
   Timer,
   UserCheck,
   UserX,
@@ -32,6 +31,7 @@ const ATTENDANCE_STATUS_OPTIONS = [
   { value: 'present', label: 'Present' },
   { value: 'absent', label: 'Absent' },
   { value: 'on_leave', label: 'On Leave' },
+  { value: 'od', label: 'On Duty' },
   { value: 'late', label: 'Late' },
   { value: 'half_day', label: 'Half Day' },
 ];
@@ -87,7 +87,7 @@ const AvatarCell = ({ name, sub }) => (
     </div>
     <div>
       <p className="text-sm font-semibold text-gray-900 dark:text-white">{name || '-'}</p>
-      <p className="text-xs text-gray-500 dark:text-gray-400">{sub || '-'}</p>
+      {sub && <p className="text-xs text-gray-500 dark:text-gray-400">{sub}</p>}
     </div>
   </div>
 );
@@ -110,8 +110,21 @@ const COLUMNS = [
   },
   {
     key: 'vt_name',
-    header: 'Teacher / Trade',
-    render: (value, row) => <AvatarCell name={value} sub={row.trade || '-'} />,
+    header: 'Teacher',
+    render: (value) => <AvatarCell name={value} />,
+  },
+  {
+    key: 'trade',
+    header: 'Trade',
+    render: (value) => (
+      value
+        ? (
+          <span className="inline-flex items-center rounded-lg bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700 ring-1 ring-primary-200 dark:bg-primary-900/20 dark:text-primary-300 dark:ring-primary-800">
+            {value}
+          </span>
+        )
+        : <span className="text-xs text-gray-400">-</span>
+    ),
   },
   {
     key: 'school_name',
@@ -226,11 +239,11 @@ const AttendanceStatus = () => {
   /* summary counts derived from current page data */
   const [summary, setSummary] = useState({ present: 0, absent: 0, on_leave: 0, total: 0 });
 
-  /* debounce refs for text inputs */
-  const tradeDebounce = useRef(null);
-  const vtpDebounce = useRef(null);
-  const [tradeInput, setTradeInput] = useState('');
-  const [vtpInput, setVtpInput] = useState('');
+  /* VTP & Trade lists from API */
+  const [vtpList, setVtpList] = useState([]);
+  const [tradeList, setTradeList] = useState([]);
+  const [loadingVtpList, setLoadingVtpList] = useState(false);
+  const [loadingTradeList, setLoadingTradeList] = useState(false);
 
   /* ── Fetch ────────────────────────────────────────────────────────────── */
   const fetchAttendance = useCallback(async () => {
@@ -243,8 +256,8 @@ const AttendanceStatus = () => {
       };
 
       if (statusFilter) payload.status = statusFilter;
-      if (tradeFilter.trim()) payload.trade = tradeFilter.trim();
-      if (vtpFilter.trim()) payload.vtp_name = vtpFilter.trim();
+      if (tradeFilter) payload.trade = tradeFilter;
+      if (vtpFilter) payload.vtp_name = vtpFilter;
       if (fromDate) payload.from_date = fromDate;
       if (toDate) payload.to_date = toDate;
       if (selectedBlock) payload.block_cd = Number(selectedBlock);
@@ -292,6 +305,24 @@ const AttendanceStatus = () => {
         }
       })
       .catch(() => { });
+  }, []);
+
+  /* ── Fetch VTP names list from API on mount */
+  useEffect(() => {
+    setLoadingVtpList(true);
+    api.get('/deo/vtp-names')
+      .then((res) => setVtpList(res.data?.data || []))
+      .catch(() => setVtpList([]))
+      .finally(() => setLoadingVtpList(false));
+  }, []);
+
+  /* ── Fetch trade names list from API on mount */
+  useEffect(() => {
+    setLoadingTradeList(true);
+    api.get('/deo/trades')
+      .then((res) => setTradeList(res.data?.data || []))
+      .catch(() => setTradeList([]))
+      .finally(() => setLoadingTradeList(false));
   }, []);
 
   /* ── Load blocks when district is known (mirrors Attendance.jsx exactly) */
@@ -355,8 +386,6 @@ const AttendanceStatus = () => {
   const clearAllFilters = () => {
     setTradeFilter('');
     setVtpFilter('');
-    setTradeInput('');
-    setVtpInput('');
     setStatusFilter('');
     setFromDate('');
     setToDate('');
@@ -441,23 +470,24 @@ const AttendanceStatus = () => {
           )}
         </div>
 
-        {/* Row 1 — text filters + status */}
+        {/* Row 1 — dropdown filters */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* Trade */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               Trade
             </label>
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="e.g. IT-ITeS, Electrical…"
-                value={tradeInput}
-                onChange={handleTradeInput}
-                className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-3 text-sm text-gray-700 placeholder-gray-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-              />
-            </div>
+            <select
+              value={tradeFilter}
+              onChange={(e) => setTradeFilter(e.target.value)}
+              disabled={loadingTradeList}
+              className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+            >
+              <option value="">{loadingTradeList ? 'Loading...' : 'All Trades'}</option>
+              {tradeList.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
           </div>
 
           {/* VTP Name */}
@@ -465,16 +495,17 @@ const AttendanceStatus = () => {
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               VTP Name
             </label>
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search VTP…"
-                value={vtpInput}
-                onChange={handleVtpInput}
-                className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-3 text-sm text-gray-700 placeholder-gray-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-              />
-            </div>
+            <select
+              value={vtpFilter}
+              onChange={(e) => setVtpFilter(e.target.value)}
+              disabled={loadingVtpList}
+              className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+            >
+              <option value="">{loadingVtpList ? 'Loading...' : 'All VTPs'}</option>
+              {vtpList.map((v) => (
+                <option key={v} value={v}>{v}</option>
+              ))}
+            </select>
           </div>
 
           {/* Status */}
