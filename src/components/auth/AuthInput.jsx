@@ -39,8 +39,8 @@ const AuthInput = forwardRef(({
       <div className="relative group">
         {/* Leading icon */}
         {Icon && (
-          <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-200 z-10 ${
-            isFocused ? 'text-violet-400' : error ? 'text-red-400' : 'text-white/30'
+          <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-all duration-300 z-10 ${
+            isFocused ? 'text-violet-400 scale-110' : error ? 'text-red-400' : 'text-white/30'
           }`}>
             <Icon className="w-[18px] h-[18px]" />
           </div>
@@ -53,11 +53,12 @@ const AuthInput = forwardRef(({
           name={name}
           type={type}
           className={`
-            glass-input w-full h-13 text-sm font-medium
+            auth-input-premium w-full h-14 text-sm font-medium
             ${Icon ? 'pl-11' : 'pl-4'}
             ${rightElement ? 'pr-12' : 'pr-4'}
             pt-5 pb-2
-            ${error ? 'border-red-500/50 focus:border-red-500/60 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]' : ''}
+            ${error ? 'border-red-500/40 focus:border-red-500/50 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.08)]' : ''}
+            ${isFocused ? 'auth-input-focused' : ''}
             ${className}
           `}
           placeholder=" "
@@ -68,6 +69,11 @@ const AuthInput = forwardRef(({
           aria-describedby={error ? `${inputId}-error` : undefined}
           {...rest}
         />
+
+        {/* Focus glow underline */}
+        <div className={`absolute bottom-0 left-4 right-4 h-[2px] rounded-full transition-all duration-300 ${
+          isFocused ? 'bg-gradient-to-r from-violet-500 to-indigo-500 opacity-100' : 'opacity-0'
+        }`} />
 
         {/* Floating label */}
         <label
