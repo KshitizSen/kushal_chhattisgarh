@@ -57,7 +57,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
       {
         title: 'Governance',
         items: [
-          { path: '/admin/roles', label: 'Role & Permission', icon: <Shield className="h-5 w-5" /> },
+          // { path: '/admin/roles', label: 'Role & Permission', icon: <Shield className="h-5 w-5" /> },
           { path: '/admin/reports', label: 'Reports', icon: <BarChart3 className="h-5 w-5" /> },
           { path: '/admin/settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
         ],

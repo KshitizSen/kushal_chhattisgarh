@@ -78,7 +78,7 @@ const AuthLayout = ({ children }) => {
             and building skills across Chhattisgarh.
           </p>
 
-          <motion.div 
+          {/* <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: [1, 1.03, 1] }}
             transition={{ 
@@ -92,7 +92,7 @@ const AuthLayout = ({ children }) => {
               alt="Platform Overview"
               className="w-full max-w-[300px] sm:max-w-[500px] rounded-xl opacity-90 shadow-2xl object-contain mix-blend-luminosity hover:mix-blend-normal transition-all duration-300"
             />
-          </motion.div>
+          </motion.div> */}
 
           {/* Feature list */}
           <div className="space-y-4 pt-4">
