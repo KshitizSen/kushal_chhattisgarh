@@ -100,13 +100,17 @@ const Login = () => {
       const result = response.data;
 
       if (result.status) {
-        const { user, tokens } = result.data;
+        const { user, tokens, headmaster_details, deo_details, vtp_details } = result.data;
 
         // Map backend role name → frontend route key
         const frontendRole = BACKEND_TO_FRONTEND_ROLE[user.role] || user.role;
 
         const loggedInUser = {
           ...user,
+          // Merge role-specific details so they're available on user.*
+          ...(headmaster_details || {}),
+          ...(deo_details || {}),
+          ...(vtp_details || {}),
           role: frontendRole,
           access_token: tokens.access_token,
           refresh_token: tokens.refresh_token,
