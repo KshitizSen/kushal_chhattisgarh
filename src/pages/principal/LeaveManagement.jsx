@@ -681,10 +681,10 @@ const LeaveManagement = () => {
                           <span className="text-gray-500">Used:</span>
                           <span className="font-medium text-red-600">-{used.toFixed(1)}</span>
                         </div>
-                        <div className="flex justify-between">
+                        {/* <div className="flex justify-between">
                           <span className="text-gray-500">Excess:</span>
                           <span className="font-medium text-orange-600">{excess.toFixed(1)}</span>
-                        </div>
+                        </div> */}
                         <div className="flex justify-between border-t border-gray-200 pt-1">
                           <span className="text-gray-500">Closing:</span>
                           <span className="font-bold">{closing.toFixed(1)}</span>

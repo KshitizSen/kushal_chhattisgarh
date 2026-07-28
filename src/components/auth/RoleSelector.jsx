@@ -18,20 +18,20 @@ const RoleSelector = ({ value, onChange, error, roles = [], isLoading = false })
       </label>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-[72px] rounded-xl bg-white/[0.04] border border-white/[0.08]">
+        <div className="flex items-center justify-center h-[72px] rounded-xl bg-white/[0.03] border border-white/[0.06]">
           <Loader2 className="w-4 h-4 animate-spin text-white/40" />
           <span className="ml-2 text-xs text-white/40">Loading roles…</span>
         </div>
       ) : (
         <div
-          className="relative grid gap-2 p-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08]"
+          className="relative grid gap-2 p-1.5 rounded-xl bg-white/[0.03] border border-white/[0.06]"
           style={{ gridTemplateColumns: `repeat(${roles.length}, minmax(0, 1fr))` }}
         >
           {/* Animated sliding indicator */}
           {value && (
             <motion.div
               layoutId="role-indicator"
-              className="absolute top-1.5 bottom-1.5 rounded-lg bg-gradient-to-br from-violet-600/80 to-indigo-600/80 shadow-lg shadow-violet-500/20"
+              className="absolute top-1.5 bottom-1.5 rounded-lg bg-gradient-to-br from-violet-600/70 to-indigo-600/70 shadow-lg shadow-violet-500/15 border border-white/[0.06]"
               style={{
                 width: `calc(${100 / roles.length}% - 0.5rem)`,
                 left: `calc(${roles.findIndex(r => r.id === value) * (100 / roles.length)}% + 0.375rem)`,
@@ -56,18 +56,18 @@ const RoleSelector = ({ value, onChange, error, roles = [], isLoading = false })
                 onClick={() => onChange(role.id)}
                 className={`
                   relative z-10 flex flex-col items-center justify-center py-3 px-2 rounded-lg
-                  transition-colors duration-200 cursor-pointer
+                  transition-all duration-200 cursor-pointer
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50
-                  ${isActive ? 'text-white' : 'text-white/40 hover:text-white/60'}
+                  ${isActive ? 'text-white' : 'text-white/35 hover:text-white/55'}
                 `}
                 aria-pressed={isActive}
                 role="radio"
                 aria-checked={isActive}
                 aria-label={`Login as ${display.label}`}
               >
-                <RoleIcon className={`w-4 h-4 mb-1.5 transition-all duration-200 ${isActive ? 'scale-110' : ''}`} />
+                <RoleIcon className={`w-4 h-4 mb-1.5 transition-all duration-300 ${isActive ? 'scale-110' : ''}`} />
                 <span className="text-xs font-bold tracking-wide">{display.label}</span>
-                <span className={`text-[9px] mt-0.5 transition-colors duration-200 ${isActive ? 'text-white/70' : 'text-white/25'}`}>
+                <span className={`text-[9px] mt-0.5 transition-colors duration-200 ${isActive ? 'text-white/65' : 'text-white/20'}`}>
                   {display.description}
                 </span>
               </button>
