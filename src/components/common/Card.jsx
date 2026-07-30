@@ -83,15 +83,27 @@ export const CardFooter = ({ children, className = '' }) => (
   </div>
 );
 
-export const StatCard = ({ title, value, change, icon, trend = 'up', description }) => {
-  const trendColor = trend === 'up' ? 'text-success-500' : 'text-danger-500';
-  const trendLabel = trend === 'up' ? 'Up' : 'Down';
+export const StatCardGrid = ({ children, className = '' }) => (
+  <div
+    className={`grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${className}`}
+  >
+    {children}
+  </div>
+);
 
+export const StatCard = ({ title, value, change, icon, description, className = '' }) => {
   return (
-    <Card variant="elevated" hover padding="md">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+    <Card
+      variant="elevated"
+      hover
+      padding="md"
+      className={`h-full min-h-40 ${className}`}
+    >
+      <div className="flex h-full items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="min-h-10 text-sm font-medium leading-5 text-gray-500 dark:text-gray-400">
+            {title}
+          </p>
           <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
           {change && (
             <div className="mt-2 flex items-center gap-1">
@@ -106,7 +118,7 @@ export const StatCard = ({ title, value, change, icon, trend = 'up', description
           )}
         </div>
         {icon && (
-          <div className="rounded-2xl bg-primary-50 p-3 text-primary-500 dark:bg-primary-900/20">
+          <div className="shrink-0 rounded-2xl bg-primary-50 p-3 text-primary-500 dark:bg-primary-900/20">
             {icon}
           </div>
         )}

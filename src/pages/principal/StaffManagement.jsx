@@ -122,22 +122,22 @@ const StaffManagement = () => {
     try {
       const date = new Date().toISOString().split('T')[0];
       await principalService.markVtAttendance({ user_id: userId, date, status });
-      toast.success(`Attendance marked as ${status}`);
+      toast.success(`VT status marked as ${status}`);
       fetchStaff();
     } catch (error) {
       console.error('Error marking attendance:', error);
-      toast.error('Failed to mark attendance');
+      toast.error('Failed to mark VT status');
     }
   };
 
   const handleUpdateAttendance = async (attendanceId, status) => {
     try {
       await principalService.updateVtAttendance(attendanceId, { status });
-      toast.success(`Attendance updated to ${status}`);
+      toast.success(`VT status updated to ${status}`);
       fetchStaff();
     } catch (error) {
       console.error('Error updating attendance:', error);
-      toast.error('Failed to update attendance');
+      toast.error('Failed to update VT status');
     }
   };
 
@@ -165,7 +165,7 @@ const StaffManagement = () => {
       )
     },
     {
-      key: 'status', label: 'Attendance', sortable: true, render: (value, row) => (
+      key: 'status', label: 'VT Status', sortable: true, render: (value, row) => (
         <div className="flex items-center space-x-2">
           {value === 'not-marked' ? (
             <>

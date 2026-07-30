@@ -336,9 +336,9 @@ const Reports = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Monthly Attendance Reports</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Monthly VT Approval Reports</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Generate and approve monthly VT attendance reports for your school
+            Generate and approve monthly VT reports for your school
           </p>
         </div>
         <Button
@@ -503,7 +503,7 @@ const Reports = () => {
           <div className="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
             <CheckCircle className="h-10 w-10 text-green-500" />
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">Approve this monthly attendance report?</p>
+              <p className="font-medium text-gray-900 dark:text-white">Approve this monthly VT report?</p>
               <p className="text-sm text-gray-600 dark:text-gray-400">This will move the report to DEO for next-level approval.</p>
             </div>
           </div>

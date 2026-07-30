@@ -1,6 +1,6 @@
 # Kushal Chhattisgarh - Education/Vocational Management System
 
-A multi-role web application for managing education and vocational training programs in Chhattisgarh.
+A multi-role web application for managing education and VT programs in Chhattisgarh.
 
 ## Features
 

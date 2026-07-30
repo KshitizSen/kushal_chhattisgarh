@@ -9,7 +9,7 @@ import {
   BarChart3,
   FileText
 } from 'lucide-react';
-import { StatCard } from '../../components/common/Card';
+import { StatCard, StatCardGrid } from '../../components/common/Card';
 import BarChart from '../../components/charts/BarChart';
 import LineChart from '../../components/charts/LineChart';
 import PieChart from '../../components/charts/PieChart';
@@ -43,7 +43,7 @@ const VTPDashboard = () => {
       trend: 'neutral'
     },
     {
-      title: 'Attendance Rate',
+      title: 'VT Status Rate',
       value: '92%',
       change: '+3%',
       icon: <TrendingUp className="h-6 w-6" />,
@@ -154,7 +154,7 @@ const VTPDashboard = () => {
     { key: 'name', header: 'Student Name' },
     { key: 'course', header: 'Course' },
     { key: 'batch', header: 'Batch' },
-    { key: 'attendance', header: 'Attendance' },
+    { key: 'attendance', header: 'VT Status Rate' },
     { key: 'progress', header: 'Progress' },
     { 
       key: 'status', 
@@ -179,7 +179,7 @@ const VTPDashboard = () => {
             VTP Dashboard
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Welcome back! Here's your vocational training overview
+            Welcome back! Here's your VT overview
           </p>
         </div>
         <div className="flex space-x-3">
@@ -195,7 +195,7 @@ const VTPDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <StatCardGrid>
         {stats.map((stat, index) => (
           <StatCard
             key={index}
@@ -207,7 +207,7 @@ const VTPDashboard = () => {
             trend={stat.trend}
           />
         ))}
-      </div>
+      </StatCardGrid>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

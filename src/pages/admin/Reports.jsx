@@ -35,7 +35,7 @@ const Reports = () => {
 
   const reportTypes = [
     { id: 'enrollment', name: 'Enrollment Report', icon: <TrendingUp className="w-5 h-5" /> },
-    { id: 'attendance', name: 'Attendance Report', icon: <Calendar className="w-5 h-5" /> },
+    { id: 'attendance', name: 'VT Status Report', icon: <Calendar className="w-5 h-5" /> },
     { id: 'performance', name: 'Performance Report', icon: <BarChart3 className="w-5 h-5" /> },
     { id: 'financial', name: 'Financial Report', icon: <PieChartIcon className="w-5 h-5" /> },
   ];
@@ -91,7 +91,7 @@ const Reports = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Avg. Attendance</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Average VT Status</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">92%</p>
             </div>
             <Calendar className="w-8 h-8 text-warning-500" />

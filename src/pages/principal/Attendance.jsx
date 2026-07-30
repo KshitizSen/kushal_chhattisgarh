@@ -145,10 +145,10 @@ const Attendance = () => {
         });
         setSummary(s);
       } else {
-        toast.error(res.data?.message || 'Failed to load attendance');
+        toast.error(res.data?.message || 'Failed to load VT approval records');
       }
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Error loading attendance');
+      toast.error(err?.response?.data?.message || 'Error loading VT approval records');
     } finally {
       setLoading(false);
     }
@@ -285,10 +285,10 @@ const Attendance = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Attendance Management
+            Approval of Vocational Trainer
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Track and manage VT teacher attendance records
+            Track and manage VT records
           </p>
         </div>
         <Button
@@ -450,11 +450,11 @@ const Attendance = () => {
       <Card variant="elevated">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {activeTab === 'today' ? "Today's Attendance" :
-             activeTab === 'week'  ? 'This Week\'s Attendance' :
-             activeTab === 'month' ? 'This Month\'s Attendance' :
-             activeTab === 'date_range' ? 'Attendance — Date Range' :
-             `Attendance for ${formatDate(selectedDate)}`}
+            {activeTab === 'today' ? "Today's VT Status" :
+             activeTab === 'week'  ? 'This Week\'s VT Status' :
+             activeTab === 'month' ? 'This Month\'s VT Status' :
+             activeTab === 'date_range' ? 'VT Status — Date Range' :
+             `VT Status for ${formatDate(selectedDate)}`}
           </h2>
           <div className="flex items-center gap-3">
             <Badge variant="primary" outline>
@@ -465,7 +465,7 @@ const Attendance = () => {
 
         {loading ? (
           <div className="py-12 text-center">
-            <Loader text="Loading attendance data..." />
+            <Loader text="Loading VT approval data..." />
           </div>
         ) : (
           <Table
@@ -474,7 +474,7 @@ const Attendance = () => {
             emptyState={
               <div className="text-center py-12">
                 <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No attendance records found</p>
+                <p className="text-gray-500 dark:text-gray-400">No VT approval records found</p>
               </div>
             }
           />

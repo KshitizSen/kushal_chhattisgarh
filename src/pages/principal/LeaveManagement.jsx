@@ -377,7 +377,7 @@ const LeaveManagement = () => {
             Leave Management
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage and approve VT teacher leave requests
+            Manage and approve VT leave requests
           </p>
         </div>
         <Button

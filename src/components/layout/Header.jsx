@@ -24,7 +24,7 @@ const Header = ({ onMenuToggle }) => {
   });
   const [notifications] = useState([
     { id: 1, title: 'New student enrolled', time: '5 min ago', read: false },
-    { id: 2, title: 'Attendance report ready', time: '1 hour ago', read: false },
+    { id: 2, title: 'VT status report ready', time: '1 hour ago', read: false },
     { id: 3, title: 'System maintenance', time: '2 hours ago', read: true },
   ]);
 

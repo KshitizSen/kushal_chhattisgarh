@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, BookOpen, Building2, Calendar, Download, MoreVertical, School, ShieldCheck, Users } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import Card, { StatCard } from '../../components/common/Card';
+import Card, { StatCard, StatCardGrid } from '../../components/common/Card';
 import Table from '../../components/common/Table';
 import Badge, { StatusBadge } from '../../components/common/Badge';
 import Button from '../../components/common/Button';
@@ -66,7 +66,7 @@ const AdminDashboard = () => {
       title: 'VT Staff',
       value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_vt_staff),
       icon: <Users className="w-6 h-6" />,
-      description: 'Vocational trainer staff',
+      description: 'VT staff',
     },
     {
       title: 'Total Trades',
@@ -142,11 +142,11 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
+      <StatCardGrid>
         {stats.map((stat, index) => (
           <StatCard key={index} {...stat} />
         ))}
-      </div>
+      </StatCardGrid>
 
       {/* Charts */}
       {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

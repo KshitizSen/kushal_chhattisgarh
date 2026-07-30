@@ -300,7 +300,7 @@ const TeacherApproval = () => {
             Teacher Approval
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage vocational trainer registrations and approvals
+            Manage VT registrations and approvals
           </p>
         </div>
         <Button
@@ -373,7 +373,7 @@ const TeacherApproval = () => {
         >
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
-            <span className="font-semibold">{pendingCount}</span> VT teacher
+            <span className="font-semibold">{pendingCount}</span> VT
             {pendingCount > 1 ? 's are' : ' is'} awaiting your approval.
             Please review their applications.
           </p>
@@ -470,7 +470,7 @@ const TeacherApproval = () => {
                 Are you sure you want to approve this teacher?
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                This will allow to mark attendance and activities of teacher.
+                This will allow VT activities to be managed.
               </p>
             </div>
           </div>

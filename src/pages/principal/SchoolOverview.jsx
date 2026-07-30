@@ -292,7 +292,7 @@ const SchoolOverview = () => {
           </div>
           <div className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="text-3xl font-bold text-green-600 dark:text-green-400">94%</div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Average Attendance</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Average VT Status</p>
           </div>
           <div className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">74</div>

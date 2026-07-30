@@ -17,7 +17,7 @@ export const permissionGroups = [
     permissions: [
       { value: 'schools.view', label: 'View schools', description: 'Review registered schools and center information.' },
       { value: 'schools.manage', label: 'Manage schools', description: 'Approve, edit, and maintain school records.' },
-      { value: 'vtp.view', label: 'View VTP', description: 'Review vocational training partner details.' },
+      { value: 'vtp.view', label: 'View VTP', description: 'Review VT partner details.' },
       { value: 'vtp.manage', label: 'Manage VTP', description: 'Approve, update, and coordinate VTP partners.' },
     ],
   },

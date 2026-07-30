@@ -29,12 +29,16 @@ const VTPRoutes = () => {
         }
       />
       <Route
-        path="attendance-requests"
+        path="vocational-training-requests"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <AttendanceRequests />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="attendance-requests"
+        element={<Navigate to="/vtp/vocational-training-requests" replace />}
       />
       <Route
         path="monthly-reports"

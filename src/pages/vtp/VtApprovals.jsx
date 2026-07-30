@@ -259,7 +259,7 @@ const VtApprovals = () => {
             VT Approvals
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Review and approve Vocational Trainers assigned to your VTP organization
+            Review and approve VTs assigned to your VTP organization
           </p>
         </div>
         <Button
@@ -332,7 +332,7 @@ const VtApprovals = () => {
         >
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
-            <span className="font-semibold">{counts.pending}</span> VT teacher
+            <span className="font-semibold">{counts.pending}</span> VT
             {counts.pending > 1 ? 's are' : ' is'} awaiting your VTP approval.
             Please review their applications.
           </p>

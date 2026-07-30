@@ -262,7 +262,7 @@ const ManageUsers = () => {
                 {...register('role')}
               >
                 <option value="admin">Administrator</option>
-                <option value="vtp">Vocational Trainer Provider (VTP)</option>
+                <option value="vtp">VT Provider (VTP)</option>
                 <option value="principal">Principal/Head Master</option>
               </select>
               {errors.role && (

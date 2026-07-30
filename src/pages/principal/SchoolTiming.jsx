@@ -274,7 +274,7 @@ const SchoolTiming = () => {
             Configure School Hours
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Set the daily school timing and grace period for attendance
+            Set the daily school timing and grace period for VT records
           </p>
         </div>
 
@@ -465,7 +465,7 @@ const SchoolTiming = () => {
             </h3>
             <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
               <li>
-                • School timing settings apply to all vocational trainers
+                • School timing settings apply to all VTs
               </li>
               <li>• Changes will take effect from the next working day</li>
               {/* <li>• Teachers are marked late after grace period expires</li> */}

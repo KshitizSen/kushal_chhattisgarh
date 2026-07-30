@@ -57,12 +57,16 @@ const AdminRoutes = () => {
         } 
       />
       <Route 
-        path="attendance-tracking" 
+        path="vocational-training-approval-tracking"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <AttendanceTracking />
           </ProtectedRoute>
         } 
+      />
+      <Route
+        path="attendance-tracking"
+        element={<Navigate to="/admin/vocational-training-approval-tracking" replace />}
       />
       <Route 
         path="roles" 

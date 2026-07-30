@@ -25,6 +25,24 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
+const normalizePath = (path) => {
+  if (!path || path === '/') {
+    return '/';
+  }
+
+  return path.replace(/\/+$/, '');
+};
+
+const isPathActive = (currentPath, itemPath) => {
+  const normalizedCurrentPath = normalizePath(currentPath);
+  const normalizedItemPath = normalizePath(itemPath);
+
+  return (
+    normalizedCurrentPath === normalizedItemPath ||
+    normalizedCurrentPath.startsWith(`${normalizedItemPath}/`)
+  );
+};
+
 /**
  * Sidebar navigation component with role-based menu items
  */
@@ -51,7 +69,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: '/admin/manage-schools', label: 'Manage Schools', icon: <School className="h-5 w-5" /> },
           { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <Building2 className="h-5 w-5" /> },
           { path: '/admin/manage-deo', label: 'Manage DEO', icon: <UserCheck className="h-5 w-5" /> },
-          { path: '/admin/attendance-tracking', label: 'Attendance Tracking', icon: <Route className="h-5 w-5" /> },
+          { path: '/admin/vocational-training-approval-tracking', label: 'VT Approval', icon: <Route className="h-5 w-5" /> },
         ],
       },
       {
@@ -68,9 +86,9 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
       {
         title: 'Approvals',
         items: [
-          { path: '/vtp/vt-approvals', label: 'VT Approvals', icon: <ShieldCheck className="h-5 w-5" /> },
+          { path: '/vtp/vt-approvals', label: 'Register Approvals', icon: <ShieldCheck className="h-5 w-5" /> },
           { path: '/vtp/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
-          { path: '/vtp/attendance-requests', label: 'Attendance Requests', icon: <CheckCircle className="h-5 w-5" /> },
+          { path: '/vtp/vocational-training-requests', label: 'OnDuty Requests', icon: <CheckCircle className="h-5 w-5" /> },
         ],
       },
       {
@@ -86,9 +104,9 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         title: 'Overview',
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
-          { path: '/principal/teacher-approval', label: 'VT Approvals', icon: <UserCheck className="h-5 w-5" /> },
-          { path: '/principal/attendance', label: 'Attendance', icon: <CalendarCheck className="h-5 w-5" /> },
-          { path: '/principal/attendance-requests', label: 'Attendance Requests', icon: <CheckCircle className="h-5 w-5" /> },
+          { path: '/principal/teacher-approval', label: 'Register Approvals', icon: <UserCheck className="h-5 w-5" /> },
+          { path: '/principal/vocational-training-approval', label: 'VT Status', icon: <CalendarCheck className="h-5 w-5" /> },
+          { path: '/principal/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },
         ],
       },
       {
@@ -102,7 +120,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
       {
         title: 'Operations',
         items: [
-          { path: '/principal/staff-management', label: 'All Staff', icon: <Users className="h-5 w-5" /> },
+          // { path: '/principal/staff-management', label: 'All Staff', icon: <Users className="h-5 w-5" /> },
           { path: '/principal/activities', label: 'Activities', icon: <Briefcase className="h-5 w-5" /> },
           { path: '/principal/holidays', label: 'Holidays', icon: <School className="h-5 w-5" /> },
         ],
@@ -120,7 +138,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         title: 'Overview',
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
-          { path: '/deo/attendance', label: 'Attendance', icon: <CalendarCheck className="h-5 w-5" /> },
+          { path: '/deo/vocational-training-approval', label: 'Report Approvals', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/deo/vtps', label: "VTP's", icon: <Building2 className="h-5 w-5" /> },
           { path: '/deo/vt-schools', label: 'VT School', icon: <School className="h-5 w-5" /> },
           { path: '/deo/vt-teachers', label: 'VT Details', icon: <Users className="h-5 w-5" /> },
@@ -187,8 +205,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           <div key={section.title}>
             <ul className="space-y-1.5">
               {section.items.map((item) => {
-                const isActive =
-                  location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
+                const isActive = isPathActive(location.pathname, item.path);
 
                 return (
                   <li key={item.path}>

@@ -10,7 +10,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { StatCard } from '../../components/common/Card';
+import { StatCard, StatCardGrid } from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import api from '../../services/api';
 
@@ -107,7 +107,7 @@ const PrincipalDashboard = () => {
       icon:    <UserCheck className="h-6 w-6" />,
       color:   'bg-green-500',
       trend:   'up',
-      onClick: () => navigate('/principal/attendance'),
+      onClick: () => navigate('/principal/vocational-training-approval'),
     },
     {
       title:   'Late Teachers',
@@ -116,7 +116,7 @@ const PrincipalDashboard = () => {
       icon:    <Clock className="h-6 w-6" />,
       color:   'bg-yellow-500',
       trend:   attCounts.late > 0 ? 'down' : 'neutral',
-      onClick: () => navigate('/principal/attendance'),
+      onClick: () => navigate('/principal/vocational-training-approval'),
     },
     {
       title:   'Absent Today',
@@ -125,7 +125,7 @@ const PrincipalDashboard = () => {
       icon:    <UserX className="h-6 w-6" />,
       color:   'bg-red-500',
       trend:   attCounts.absent > 0 ? 'down' : 'neutral',
-      onClick: () => navigate('/principal/attendance'),
+      onClick: () => navigate('/principal/vocational-training-approval'),
     },
     {
       title:   'Activities',
@@ -169,12 +169,12 @@ const PrincipalDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <StatCardGrid>
         {stats.map((stat, index) => (
           <div
             key={index}
             onClick={stat.onClick}
-            className="cursor-pointer"
+            className="h-full cursor-pointer"
           >
             <StatCard
               title={stat.title}
@@ -186,7 +186,7 @@ const PrincipalDashboard = () => {
             />
           </div>
         ))}
-      </div>
+      </StatCardGrid>
 
     </div>
   );

@@ -258,7 +258,7 @@ const Activities = () => {
             Activities Management
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Assign and track vocational training activities
+            Assign and track VT activities
           </p>
         </div>
         <Button
