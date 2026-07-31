@@ -736,7 +736,7 @@ const Attendance = () => {
     try {
       if (actionModal.level === 'vt') {
         if (!vtIdentifier) {
-          throw new Error('Teacher account is not linked.');
+          throw new Error('VT account is not linked.');
         }
         await api.post('/reports/approve-teacher', {
           vtUserId: Number(vtIdentifier),
@@ -820,7 +820,7 @@ const Attendance = () => {
   const handleDownloadPdf = async (school, vt) => {
     const vtIdentifier = vt.userId || vt.vtStaffId;
     if (!vtIdentifier) {
-      toast.error('Teacher account is not linked.');
+      toast.error('VT account is not linked.');
       return;
     }
 
@@ -1300,7 +1300,7 @@ const Attendance = () => {
                                         icon={CheckCircle}
                                         label={
                                           !vt.userId
-                                            ? 'Teacher account is not linked'
+                                            ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Approve'
                                               : 'HM approval pending'
@@ -1313,7 +1313,7 @@ const Attendance = () => {
                                         icon={XCircle}
                                         label={
                                           !vt.userId
-                                            ? 'Teacher account is not linked'
+                                            ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Reject'
                                               : 'HM approval pending'

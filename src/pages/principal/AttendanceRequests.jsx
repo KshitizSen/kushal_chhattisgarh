@@ -221,7 +221,7 @@ const AttendanceRequests = () => {
   const columns = [
     {
       key: 'teacher_name',
-      header: 'Teacher',
+      header: 'VT Name',
       render: (value, row) => {
         const name = value || row.vt_name || row.user_name || '—';
         const phone = row.vt_phone || row.mobile || '—';

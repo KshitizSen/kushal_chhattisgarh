@@ -80,7 +80,7 @@ const AuthLayout = ({ children }) => {
             <h2 className="text-3xl xl:text-[2.5rem] 2xl:text-[2.75rem] font-heading font-extrabold text-white leading-[1.15] tracking-tight">
               Transforming{' '}
               <span className="auth-gradient-text">
-                VT
+                Skill Education
               </span>{' '}
               Across Chhattisgarh
             </h2>

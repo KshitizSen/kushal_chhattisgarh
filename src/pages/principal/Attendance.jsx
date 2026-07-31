@@ -199,7 +199,7 @@ const Attendance = () => {
   const columns = [
     {
       key: 'vt_name',
-      header: 'Teacher',
+      header: 'VT Name',
       render: (value, row) => (
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-semibold flex-shrink-0">

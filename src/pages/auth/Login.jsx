@@ -149,7 +149,7 @@ const Login = () => {
                 transition={{ duration: 0.2 }}
               >
                 <AuthInput
-                  label="Teacher Code"
+                  label="VT Code"
                   type="text"
                   icon={Code}
                   error={errors.email?.message}

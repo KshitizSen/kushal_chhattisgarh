@@ -249,7 +249,7 @@ const LeaveManagement = () => {
   const columns = [
     {
       key: 'teacher_name',
-      header: 'Teacher',
+      header: 'VT Name',
       render: (value, row) => (
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-semibold flex-shrink-0">
@@ -589,7 +589,7 @@ const LeaveManagement = () => {
         <Card variant="elevated">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Teacher Leave Balances (EL - Earned Leave)
+              VT Leave Balances (EL - Earned Leave)
             </h2>
             <Badge variant="primary" outline>
               {schoolBalances.length} Teachers
@@ -606,7 +606,7 @@ const LeaveManagement = () => {
               columns={[
                 {
                   key: 'teacherName',
-                  header: 'Teacher',
+                  header: 'VT Name',
                   render: (value, row) => (
                     <div className="flex items-center gap-3 min-w-[160px]">
                       <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-semibold flex-shrink-0">

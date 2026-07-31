@@ -153,7 +153,7 @@ const LeaveManagement = () => {
   const columns = [
     {
       key: 'teacher_name',
-      header: 'Teacher',
+      header: 'VT Name',
       render: (value, row) => (
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold flex-shrink-0">
@@ -490,7 +490,7 @@ const LeaveManagement = () => {
           </div>
 
           <Card variant="elevated">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Teacher Leave Balances (EL - Earned Leave)</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">VT Leave Balances (EL - Earned Leave)</h2>
             {balanceLoading ? (
               <div className="py-20 text-center">
                 <Loader text="Calculating balances..." />
@@ -501,7 +501,7 @@ const LeaveManagement = () => {
                 columns={[
                   {
                     key: 'teacherName',
-                    header: 'Teacher',
+                    header: 'VT Name',
                     render: (value, row) => (
                       <div className="flex items-center gap-3 min-w-[160px]">
                         <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold flex-shrink-0">
@@ -637,7 +637,7 @@ const LeaveManagement = () => {
           {selectedLeave && (
             <div className="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 space-y-4">
               <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-sm text-gray-500">Teacher</span>
+                <span className="text-sm text-gray-500">Vocational Trainer</span>
                 <span className="font-bold text-gray-900 dark:text-white">{selectedLeave.teacher_name}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">

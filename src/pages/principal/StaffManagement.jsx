@@ -35,7 +35,7 @@ const StaffManagement = () => {
         const mappedData = response.data.data.map(vt => ({
           ...vt,
           status: vt.today_status || 'not-marked',
-          designation: 'Vocational Teacher', // Default for this list
+          designation: 'Vocational Trainer', // Default for this list
           experience: vt.experience || 'N/A',
           department: 'Vocational',
           performance: vt.performance || Math.floor(Math.random() * 20) + 80 // Mocking performance for now as it's not in DB

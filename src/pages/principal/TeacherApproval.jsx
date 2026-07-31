@@ -154,7 +154,7 @@ const TeacherApproval = () => {
   const columns = [
     {
       key: 'name',
-      header: 'Teacher Name',
+      header: 'VT Name',
       render: (value, row) => (
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-semibold flex-shrink-0">
@@ -297,7 +297,7 @@ const TeacherApproval = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Teacher Approval
+            VT Approval
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             Manage VT registrations and approvals
@@ -438,7 +438,7 @@ const TeacherApproval = () => {
           setIsApproveModalOpen(false);
           setSelectedTeacher(null);
         }}
-        title="Approve Teacher"
+        title="Approve VT"
         size="md"
         footer={
           <>
@@ -527,7 +527,7 @@ const TeacherApproval = () => {
           setSelectedTeacher(null);
           setRejectReason('');
         }}
-        title="Reject Teacher"
+        title="Reject VT"
         size="md"
         footer={
           <>

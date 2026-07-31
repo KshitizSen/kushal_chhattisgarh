@@ -81,7 +81,7 @@ const schoolCell = (name, row) => (
 );
 
 const attendanceColumns = [
-  { key: 'vt_name', header: 'Teacher', render: (value, row) => personCell(value, row.trade) },
+  { key: 'vt_name', header: 'VT Name', render: (value, row) => personCell(value, row.trade) },
   {
     key: 'school_name',
     header: 'School',
@@ -214,7 +214,7 @@ const pageConfig = {
     }),
     columns: [
       { key: 'seno', header: 'Se no', render: (_, __, index) => <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span> },
-      { key: 'vt_name', header: 'Teacher', render: (value, row) => personCell(value, row.trade) },
+      { key: 'vt_name', header: 'VT Name', render: (value, row) => personCell(value, row.trade) },
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'vtp_name', header: 'VTP' },
       { key: 'phone', header: 'Phone' },
