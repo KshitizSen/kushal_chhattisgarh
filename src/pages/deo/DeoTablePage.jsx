@@ -190,7 +190,7 @@ const pageConfig = {
       { key: 'seno', header: 'Se no', render: (_, __, index) => <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span> },
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'block_name', header: 'Block', render: (value, row) => <div><p>{value || '-'}</p><p className="text-xs text-gray-500">{row.district_name || '-'}</p></div> },
-      { key: 'hm_approval_status', header: 'HM Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
+      { key: 'hm_approval_status', header: 'Hos Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
       { key: 'deo_approval_status', header: 'DEO Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
       { key: 'vtp_approval_status', header: 'VTP Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
     ],

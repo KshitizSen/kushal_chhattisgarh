@@ -27,6 +27,7 @@ import Table from '../../components/common/Table';
 import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
+import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
 
 const TeacherApproval = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const TeacherApproval = () => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
+  const [remarks, setRemarks] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
   // ── Fetch VT registrations (re-fetches when statusFilter changes) ──
@@ -86,12 +87,13 @@ const TeacherApproval = () => {
     if (!selectedTeacher) return;
     setActionLoading(true);
     try {
-      const res = await api.patch(`/vt/${selectedTeacher.id}/approve`);
+      const res = await api.patch(`/vt/${selectedTeacher.id}/approve`, { remarks: remarks.trim() });
 
       if (res.data?.status) {
         toast.success(`${selectedTeacher.name} approved successfully`);
         setIsApproveModalOpen(false);
         setSelectedTeacher(null);
+        setRemarks('');
         fetchPendingTeachers();
       } else {
         // ── School timing gate ──────────────────────────────────────
@@ -128,17 +130,17 @@ const TeacherApproval = () => {
 
   // ── Reject ───────────────────────────────────────────────────────
   const handleReject = async () => {
-    if (!selectedTeacher || !rejectReason.trim()) return;
+    if (!selectedTeacher) return;
     setActionLoading(true);
     try {
       const res = await api.patch(`/vt/${selectedTeacher.id}/reject`, {
-        reason: rejectReason,
+        remarks: remarks.trim(),
       });
       if (res.data?.status) {
         toast.success(`${selectedTeacher.name} rejected`);
         setIsRejectModalOpen(false);
         setSelectedTeacher(null);
-        setRejectReason('');
+        setRemarks('');
         fetchPendingTeachers();
       } else {
         toast.error(res.data?.message || 'Failed to reject');
@@ -437,6 +439,7 @@ const TeacherApproval = () => {
         onClose={() => {
           setIsApproveModalOpen(false);
           setSelectedTeacher(null);
+          setRemarks('');
         }}
         title="Approve VT"
         size="md"
@@ -447,6 +450,7 @@ const TeacherApproval = () => {
               onClick={() => {
                 setIsApproveModalOpen(false);
                 setSelectedTeacher(null);
+                setRemarks('');
               }}
             >
               Cancel
@@ -516,6 +520,7 @@ const TeacherApproval = () => {
               </div>
             </div>
           )}
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
 
@@ -525,7 +530,7 @@ const TeacherApproval = () => {
         onClose={() => {
           setIsRejectModalOpen(false);
           setSelectedTeacher(null);
-          setRejectReason('');
+          setRemarks('');
         }}
         title="Reject VT"
         size="md"
@@ -536,7 +541,7 @@ const TeacherApproval = () => {
               onClick={() => {
                 setIsRejectModalOpen(false);
                 setSelectedTeacher(null);
-                setRejectReason('');
+                setRemarks('');
               }}
             >
               Cancel
@@ -545,7 +550,6 @@ const TeacherApproval = () => {
               variant="danger"
               onClick={handleReject}
               loading={actionLoading}
-              disabled={!rejectReason.trim()}
               leftIcon={<XCircle className="h-4 w-4" />}
             >
               Confirm Rejection
@@ -561,7 +565,7 @@ const TeacherApproval = () => {
                 Reject this teacher registration?
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Please provide a reason for rejection.
+                You may add remarks for this rejection.
               </p>
             </div>
           </div>
@@ -580,18 +584,7 @@ const TeacherApproval = () => {
               </div>
             </div>
           )}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Rejection Reason <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Enter reason for rejection..."
-              rows={4}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            />
-          </div>
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
     </div>

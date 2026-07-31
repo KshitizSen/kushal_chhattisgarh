@@ -1222,8 +1222,8 @@ const Attendance = () => {
                               </p>
                               {!isSchoolActionAllowed(school) && (
                                 <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
-                                  {/* Approve/Reject All tab tak disabled rahega jab tak is school ke sabhi teachers ka HM Status Approved na ho. */}
-                                  Approve/Reject All will remain disabled until all teachers of this school have HM Status Approved.
+                                  {/* Approve/Reject All tab tak disabled rahega jab tak is school ke sabhi teachers ka Hos Status Approved na ho. */}
+                                  Approve/Reject All will remain disabled until all teachers of this school have Hos Status Approved.
                                 </p>
                               )}
                             </div>
@@ -1281,7 +1281,7 @@ const Attendance = () => {
                                   </div>
                                   <div className="flex items-center gap-3 sm:ml-auto">
                                     <div className="flex flex-col items-end gap-1">
-                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">HM Status</span>
+                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">Hos Status</span>
                                       <StatusPill status={vt.hmApprovalStatus} />
                                     </div>
                                     <div className="flex flex-col items-end gap-1">
@@ -1303,7 +1303,7 @@ const Attendance = () => {
                                             ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Approve'
-                                              : 'HM approval pending'
+                                              : 'Hos approval pending'
                                         }
                                         variant="approve"
                                         disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}
@@ -1316,7 +1316,7 @@ const Attendance = () => {
                                             ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Reject'
-                                              : 'HM approval pending'
+                                              : 'Hos approval pending'
                                         }
                                         variant="reject"
                                         disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}
@@ -1416,13 +1416,14 @@ const Attendance = () => {
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Remarks
+              Remarks (Optional)
             </label>
             <textarea
               value={remarks}
               onChange={(event) => setRemarks(event.target.value)}
               placeholder="Add remarks..."
               rows={3}
+              maxLength={1000}
               className="w-full resize-none rounded-[1.25rem] border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             />
           </div>

@@ -28,6 +28,7 @@ import Table from '../../components/common/Table';
 import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
+import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
 
 // ── Approval status pill (same as Principal) ─────────────────────────────────
 const ApprovalPill = ({ status }) => {
@@ -57,7 +58,7 @@ const VtApprovals = () => {
   const [selectedVt, setSelectedVt] = useState(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
+  const [remarks, setRemarks] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
   // ── Fetch VTs scoped to logged-in VTP ────────────────────────────────────
@@ -98,11 +99,12 @@ const VtApprovals = () => {
     if (!selectedVt) return;
     setActionLoading(true);
     try {
-      const res = await api.patch(`/vtp/${selectedVt.id}/approve`);
+      const res = await api.patch(`/vtp/${selectedVt.id}/approve`, { remarks: remarks.trim() });
       if (res.data?.status) {
         toast.success(res.data.message || `${selectedVt.name} approved successfully`);
         setIsApproveModalOpen(false);
         setSelectedVt(null);
+        setRemarks('');
         fetchVts();
       } else {
         toast.error(res.data?.message || 'Approval failed');
@@ -116,15 +118,15 @@ const VtApprovals = () => {
 
   // ── Reject ────────────────────────────────────────────────────────────────
   const handleReject = async () => {
-    if (!selectedVt || !rejectReason.trim()) return;
+    if (!selectedVt) return;
     setActionLoading(true);
     try {
-      const res = await api.patch(`/vtp/${selectedVt.id}/reject`, { reason: rejectReason.trim() });
+      const res = await api.patch(`/vtp/${selectedVt.id}/reject`, { remarks: remarks.trim() });
       if (res.data?.status) {
         toast.success(res.data.message || `${selectedVt.name} rejected`);
         setIsRejectModalOpen(false);
         setSelectedVt(null);
-        setRejectReason('');
+        setRemarks('');
         fetchVts();
       } else {
         toast.error(res.data?.message || 'Rejection failed');
@@ -183,7 +185,7 @@ const VtApprovals = () => {
     },
     {
       key: 'vt_approval_status',
-      header: 'HM (Principal)',
+      header: 'Hos (Principal)',
       render: (value) => <ApprovalPill status={value} />,
     },
     {
@@ -391,14 +393,14 @@ const VtApprovals = () => {
       {/* ── Approve Modal ─────────────────────────────────────────────────────── */}
       <Modal
         isOpen={isApproveModalOpen}
-        onClose={() => { setIsApproveModalOpen(false); setSelectedVt(null); }}
+        onClose={() => { setIsApproveModalOpen(false); setSelectedVt(null); setRemarks(''); }}
         title="Approve VT"
         size="md"
         footer={
           <>
             <Button
               variant="ghost"
-              onClick={() => { setIsApproveModalOpen(false); setSelectedVt(null); }}
+              onClick={() => { setIsApproveModalOpen(false); setSelectedVt(null); setRemarks(''); }}
             >
               Cancel
             </Button>
@@ -461,7 +463,7 @@ const VtApprovals = () => {
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-500">HM Status:</span>
+                  <span className="text-gray-500">Hos Status:</span>
                   <ApprovalPill status={selectedVt.vt_approval_status} />
                 </div>
                 <div>
@@ -471,20 +473,21 @@ const VtApprovals = () => {
               </div>
             </div>
           )}
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
 
       {/* ── Reject Modal ──────────────────────────────────────────────────────── */}
       <Modal
         isOpen={isRejectModalOpen}
-        onClose={() => { setIsRejectModalOpen(false); setSelectedVt(null); setRejectReason(''); }}
+        onClose={() => { setIsRejectModalOpen(false); setSelectedVt(null); setRemarks(''); }}
         title="Reject VT"
         size="md"
         footer={
           <>
             <Button
               variant="ghost"
-              onClick={() => { setIsRejectModalOpen(false); setSelectedVt(null); setRejectReason(''); }}
+              onClick={() => { setIsRejectModalOpen(false); setSelectedVt(null); setRemarks(''); }}
             >
               Cancel
             </Button>
@@ -492,7 +495,6 @@ const VtApprovals = () => {
               variant="danger"
               onClick={handleReject}
               loading={actionLoading}
-              disabled={!rejectReason.trim()}
               leftIcon={<XCircle className="h-4 w-4" />}
             >
               Confirm Rejection
@@ -508,7 +510,7 @@ const VtApprovals = () => {
                 Reject this teacher registration?
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Please provide a reason for rejection.
+                You may add remarks for this rejection.
               </p>
             </div>
           </div>
@@ -527,18 +529,7 @@ const VtApprovals = () => {
             </div>
           )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Rejection Reason <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Enter reason for rejection..."
-              rows={4}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            />
-          </div>
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
     </div>

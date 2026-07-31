@@ -134,7 +134,7 @@ const TrackingTimeline = ({ report }) => {
     report.deo_approval_status === 'approved';
 
   const steps = [
-    { stepLabel: '1A', label: 'Principal / HM', status: report.hm_approval_status, icon: UserCheck },
+    { stepLabel: '1A', label: 'Principal / Hos', status: report.hm_approval_status, icon: UserCheck },
     { stepLabel: '1B', label: 'VTP Approval', status: report.vtp_approval_status, icon: Building2 },
     { stepLabel: '2', label: 'DEO Approval', status: report.deo_approval_status, icon: ShieldCheck },
     { stepLabel: '3', label: 'Completed', status: isComplete ? 'approved' : 'pending', icon: CheckCircle },
@@ -278,7 +278,7 @@ const AttendanceTracking = () => {
 
   const summaryCards = useMemo(() => [
     { label: 'Total Files', value: summary.total_reports || 0, icon: FileSearch, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    { label: 'HM Approved', value: summary.hm_approved || 0, icon: UserCheck, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
+    { label: 'Hos Approved', value: summary.hm_approved || 0, icon: UserCheck, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
     { label: 'VTP Approved', value: summary.vtp_approved || 0, icon: Building2, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
     { label: 'DEO Approved', value: summary.deo_approved || 0, icon: ShieldCheck, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
     { label: 'Rejected', value: summary.rejected_reports || 0, icon: XCircle, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-900/20' },
@@ -315,7 +315,7 @@ const AttendanceTracking = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">VT Reports Approval Tracking</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Track monthly VT approval from Principal/HM, VTP, and DEO.
+            Track monthly VT approval from Principal/Hos, VTP, and DEO.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -453,7 +453,7 @@ const AttendanceTracking = () => {
                 <tr>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">School</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Month</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Principal / HM</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Principal / Hos</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">VTP</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">DEO</th>
                   <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Action</th>

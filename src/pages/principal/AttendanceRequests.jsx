@@ -23,6 +23,7 @@ import Table from '../../components/common/Table';
 import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
+import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (iso) =>
@@ -60,6 +61,7 @@ const AttendanceRequests = () => {
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [remarks, setRemarks] = useState('');
 
   // ── Tab state ─────────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState('onduty'); // 'onduty' | 'regularization'
@@ -175,14 +177,15 @@ const AttendanceRequests = () => {
       const id = selectedRequest.id || selectedRequest.od_id || selectedRequest.reg_id;
 
       if (activeTab === 'onduty') {
-        await principalService.updateOnDutyStatus(id, 'approved');
+        await principalService.updateOnDutyStatus(id, 'approved', remarks.trim());
       } else {
-        await principalService.updateRegularizationStatus(id, 'approved');
+        await principalService.updateRegularizationStatus(id, 'approved', remarks.trim());
       }
 
       toast.success(`Request approved successfully`);
       setIsApproveModalOpen(false);
       setSelectedRequest(null);
+      setRemarks('');
       fetchRequests();
       fetchCounts();
     } catch (err) {
@@ -200,14 +203,15 @@ const AttendanceRequests = () => {
       const id = selectedRequest.id || selectedRequest.od_id || selectedRequest.reg_id;
 
       if (activeTab === 'onduty') {
-        await principalService.updateOnDutyStatus(id, 'rejected');
+        await principalService.updateOnDutyStatus(id, 'rejected', remarks.trim());
       } else {
-        await principalService.updateRegularizationStatus(id, 'rejected');
+        await principalService.updateRegularizationStatus(id, 'rejected', remarks.trim());
       }
 
       toast.success(`Request rejected successfully`);
       setIsRejectModalOpen(false);
       setSelectedRequest(null);
+      setRemarks('');
       fetchRequests();
       fetchCounts();
     } catch (err) {
@@ -290,7 +294,7 @@ const AttendanceRequests = () => {
     },
     {
       key: 'hm_status',
-      header: 'HM Status',
+      header: 'Hos Status',
       render: (_, row) => <StatusBadge status={row.hm_status || row.status || 'pending'} />,
     },
     {
@@ -533,12 +537,12 @@ const AttendanceRequests = () => {
       {/* ── Approve Modal ─────────────────────────────────────────────────── */}
       <Modal
         isOpen={isApproveModalOpen}
-        onClose={() => { setIsApproveModalOpen(false); setSelectedRequest(null); }}
+        onClose={() => { setIsApproveModalOpen(false); setSelectedRequest(null); setRemarks(''); }}
         title="Approve Request"
         size="md"
         footer={
           <>
-            <Button variant="ghost" onClick={() => { setIsApproveModalOpen(false); setSelectedRequest(null); }}>
+            <Button variant="ghost" onClick={() => { setIsApproveModalOpen(false); setSelectedRequest(null); setRemarks(''); }}>
               Cancel
             </Button>
             <Button
@@ -594,18 +598,19 @@ const AttendanceRequests = () => {
               </div>
             </div>
           )}
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
 
       {/* ── Reject Modal ──────────────────────────────────────────────────── */}
       <Modal
         isOpen={isRejectModalOpen}
-        onClose={() => { setIsRejectModalOpen(false); setSelectedRequest(null); }}
+        onClose={() => { setIsRejectModalOpen(false); setSelectedRequest(null); setRemarks(''); }}
         title="Reject Request"
         size="md"
         footer={
           <>
-            <Button variant="ghost" onClick={() => { setIsRejectModalOpen(false); setSelectedRequest(null); }}>
+            <Button variant="ghost" onClick={() => { setIsRejectModalOpen(false); setSelectedRequest(null); setRemarks(''); }}>
               Cancel
             </Button>
             <Button
@@ -646,6 +651,7 @@ const AttendanceRequests = () => {
               </div>
             </div>
           )}
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
 

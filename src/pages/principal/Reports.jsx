@@ -191,7 +191,7 @@ const Reports = () => {
   // ── Reject ────────────────────────────────────────────────────────────────
   const handleReject = async () => {
     const report = rejectModal.report;
-    if (!report || !remarks.trim()) return;
+    if (!report) return;
     setActionLoading(true);
     try {
       const res = await api.post('/reports/approve', {
@@ -546,7 +546,6 @@ const Reports = () => {
               variant="danger"
               onClick={handleReject}
               loading={actionLoading}
-              disabled={!remarks.trim()}
               leftIcon={<XCircle className="h-4 w-4" />}
             >
               Confirm Rejection
@@ -570,13 +569,14 @@ const Reports = () => {
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Rejection Reason <span className="text-red-500">*</span>
+              Remarks (Optional)
             </label>
             <textarea
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               placeholder="Enter reason for rejection..."
               rows={4}
+              maxLength={1000}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
             />
           </div>

@@ -46,7 +46,7 @@ const ApprovalPill = ({ status, short }) => {
 
 // Returns the first blocking authority text, or null if VTP can approve
 const getBlockingAuthority = (report) => {
-  if (report.hm_approval_status !== 'approved')  return 'Not approved by Principal/HM';
+  if (report.hm_approval_status !== 'approved')  return 'Not approved by Principal/Hos';
   if (report.deo_approval_status !== 'approved') return 'Not approved by DEO';
   return null;
 };
@@ -168,7 +168,7 @@ const MonthlyAttendanceReports = () => {
   // ── Reject ────────────────────────────────────────────────────────────────
   const handleReject = async () => {
     const report = rejectModal.report;
-    if (!report || !remarks.trim()) return;
+    if (!report) return;
     setActionLoading(true);
     try {
       const res = await api.post('/reports/approve', {
@@ -216,7 +216,7 @@ const MonthlyAttendanceReports = () => {
       render: (_, row) => (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-gray-500 w-8">HM:</span>
+            <span className="text-xs text-gray-500 w-8">Hos:</span>
             <ApprovalPill status={row.hm_approval_status} />
           </div>
           <div className="flex items-center gap-1.5">
@@ -389,7 +389,7 @@ const MonthlyAttendanceReports = () => {
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
             <span className="font-semibold">{counts.pending_my_action}</span> report
-            {counts.pending_my_action !== 1 ? 's have' : ' has'} passed both HM and DEO approval and need{counts.pending_my_action !== 1 ? '' : 's'} your final VTP approval.
+            {counts.pending_my_action !== 1 ? 's have' : ' has'} passed both Hos and DEO approval and need{counts.pending_my_action !== 1 ? '' : 's'} your final VTP approval.
           </p>
         </motion.div>
       )}
@@ -533,7 +533,7 @@ const MonthlyAttendanceReports = () => {
             <Button variant="ghost" onClick={() => { setRejectModal({ open: false, report: null }); setRemarks(''); }}>
               Cancel
             </Button>
-            <Button variant="danger" onClick={handleReject} loading={actionLoading} disabled={!remarks.trim()} leftIcon={<XCircle className="h-4 w-4" />}>
+            <Button variant="danger" onClick={handleReject} loading={actionLoading} leftIcon={<XCircle className="h-4 w-4" />}>
               Confirm Rejection
             </Button>
           </>
@@ -555,13 +555,14 @@ const MonthlyAttendanceReports = () => {
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Rejection Reason <span className="text-red-500">*</span>
+              Remarks (Optional)
             </label>
             <textarea
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               placeholder="Enter reason for rejection..."
               rows={4}
+              maxLength={1000}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 resize-none"
             />
           </div>

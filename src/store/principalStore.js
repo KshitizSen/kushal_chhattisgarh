@@ -134,9 +134,9 @@ const usePrincipalStore = create(
           }
         },
 
-        approveTeacher: async (teacherId) => {
+        approveTeacher: async (teacherId, remarks = '') => {
           try {
-            await principalService.approveTeacher(teacherId);
+            await principalService.approveTeacher(teacherId, remarks);
             // Refresh pending and all teachers
             await get().fetchPendingTeachers();
             await get().fetchTeachers();
@@ -147,9 +147,9 @@ const usePrincipalStore = create(
           }
         },
 
-        rejectTeacher: async (teacherId, reason) => {
+        rejectTeacher: async (teacherId, remarks = '') => {
           try {
-            await principalService.rejectTeacher(teacherId, reason);
+            await principalService.rejectTeacher(teacherId, remarks);
             await get().fetchPendingTeachers();
             await get().fetchTeachers();
             await get().fetchDashboardStats();
@@ -318,9 +318,9 @@ const usePrincipalStore = create(
           }
         },
 
-        approveLeave: async (leaveId) => {
+        approveLeave: async (leaveId, remarks = '') => {
           try {
-            await principalService.approveLeave(leaveId);
+            await principalService.approveLeave(leaveId, remarks);
             await get().fetchLeaveRequests();
             return { success: true };
           } catch (error) {
@@ -328,9 +328,9 @@ const usePrincipalStore = create(
           }
         },
 
-        rejectLeave: async (leaveId, reason) => {
+        rejectLeave: async (leaveId, remarks = '') => {
           try {
-            await principalService.rejectLeave(leaveId, reason);
+            await principalService.rejectLeave(leaveId, remarks);
             await get().fetchLeaveRequests();
             return { success: true };
           } catch (error) {
@@ -368,9 +368,9 @@ const usePrincipalStore = create(
           }
         },
 
-        approveLeaveWithDeduction: async (leaveId) => {
+        approveLeaveWithDeduction: async (leaveId, remarks = '') => {
           try {
-            const response = await principalService.approveLeaveWithDeduction(leaveId);
+            const response = await principalService.approveLeaveWithDeduction(leaveId, remarks);
             await get().fetchLeaveRequests();
             await get().fetchSchoolLeaveBalances();
             return { success: true, data: response.data };
