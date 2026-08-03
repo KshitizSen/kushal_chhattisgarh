@@ -85,9 +85,7 @@ const AuthLayout = ({ children }) => {
               Across Chhattisgarh
             </h2>
             <p className="text-[15px] text-white/45 leading-relaxed max-w-md font-medium">
-              A comprehensive digital ecosystem empowering skill development,
-              enabling real-time tracking, and driving measurable outcomes
-              for communities statewide.
+              Bridging education, skills and the world of work for empowered futures.
             </p>
           </div>
 

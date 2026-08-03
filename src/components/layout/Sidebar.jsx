@@ -179,7 +179,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-start gap-2 px-2'}`}>
           <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
             <img
-              src="/vtp_icon.png"
+              src="/vtp_icon.jpeg"
               alt="Logo"
               className="h-16 w-18 object-contain drop-shadow-sm"
             />

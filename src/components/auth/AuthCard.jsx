@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import vtpIcon from '../../assets/icons/vtp_icon.png';
+import vtpIcon from '../../assets/icons/vtp_icon.jpeg';
 
 const AuthCard = ({ title, subtitle, children, footer }) => {
   return (
@@ -35,7 +35,7 @@ const AuthCard = ({ title, subtitle, children, footer }) => {
               duration: 4,
               ease: 'easeInOut',
             }}
-            className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl overflow-hidden shadow-glow-violet bg-white/[0.06] ring-2 ring-white/[0.08]"
+            className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-1xl overflow-hidden shadow-glow-violet bg-white/[0.06] ring-2 ring-white/[0.08]"
           >
             <img
               src={vtpIcon}

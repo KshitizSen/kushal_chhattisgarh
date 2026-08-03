@@ -294,7 +294,7 @@ const AttendanceRequests = () => {
     },
     {
       key: 'hm_status',
-      header: 'Hos Status',
+      header: 'HOS Status',
       render: (_, row) => <StatusBadge status={row.hm_status || row.status || 'pending'} />,
     },
     {

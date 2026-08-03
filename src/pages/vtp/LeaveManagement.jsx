@@ -225,7 +225,7 @@ const LeaveManagement = () => {
     },
     {
       key: 'principal_status',
-      header: 'Hos Status',
+      header: 'HOS Status',
       render: (value) => (
         <div className="flex flex-col gap-1">
           <StatusBadge status={value} />
