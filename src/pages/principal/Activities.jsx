@@ -28,7 +28,7 @@ import Loader from '../../components/common/Loader';
 
 const ACTIVITY_TYPES = [
   { value: 'industrial_visit', label: 'Industrial Visit', icon: Building },
-  { value: 'guest_teacher', label: 'Guest Teacher Session', icon: UserPlus },
+  { value: 'guest_teacher', label: 'Guest VT Session', icon: UserPlus },
   { value: 'workshop', label: 'Workshop', icon: Briefcase },
   { value: 'seminar', label: 'Seminar', icon: Users },
   { value: 'competition', label: 'Competition', icon: CheckCircle },
@@ -258,7 +258,7 @@ const Activities = () => {
             Activities Management
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Assign and track vocational training activities
+            Assign and track VT activities
           </p>
         </div>
         <Button
@@ -600,8 +600,8 @@ const Activities = () => {
           {formData.type === 'guest_teacher' && (
             <div>
               <Input
-                label="External Resource / Guest Teacher Name"
-                placeholder="Enter name of guest teacher or external resource"
+                label="External Resource / Guest VT Name"
+                placeholder="Enter name of guest VT or external resource"
                 value={formData.externalResource}
                 onChange={(e) =>
                   setFormData((prev) => ({

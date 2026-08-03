@@ -21,12 +21,16 @@ const DEORoutes = () => {
         }
       />
       <Route
-        path="attendance"
+        path="vocational-training-approval"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <Attendance />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="attendance"
+        element={<Navigate to="/deo/vocational-training-approval" replace />}
       />
       <Route
         path="vtps"

@@ -15,12 +15,12 @@ const principalService = {
     return api.get('/vt/pending');
   },
 
-  approveTeacher: (teacherId) => {
-    return api.post(`/principal/teachers/${teacherId}/approve`);
+  approveTeacher: (teacherId, remarks = '') => {
+    return api.patch(`/vt/${teacherId}/approve`, { remarks });
   },
 
-  rejectTeacher: (teacherId, reason) => {
-    return api.post(`/principal/teachers/${teacherId}/reject`, { reason });
+  rejectTeacher: (teacherId, remarks = '') => {
+    return api.patch(`/vt/${teacherId}/reject`, { remarks });
   },
 
   // Attendance
@@ -67,12 +67,12 @@ const principalService = {
     return api.get(`/principal/leaves/stats/${teacherId}`);
   },
 
-  approveLeave: (leaveId) => {
-    return api.post(`/principal/leaves/${leaveId}/approve`);
+  approveLeave: (leaveId, remarks = '') => {
+    return api.patch(`/leaves/${leaveId}/status`, { status: 'approved', remarks });
   },
 
-  rejectLeave: (leaveId, reason) => {
-    return api.post(`/principal/leaves/${leaveId}/reject`, { reason });
+  rejectLeave: (leaveId, remarks = '') => {
+    return api.patch(`/leaves/${leaveId}/status`, { status: 'rejected', remarks });
   },
 
   // Holidays
@@ -113,9 +113,10 @@ const principalService = {
     return api.get(`/leave-balance/teacher/${teacherId}`, { params: { year } });
   },
 
-  approveLeaveWithDeduction: (leaveId) => {
+  approveLeaveWithDeduction: (leaveId, remarks = '') => {
     return api.post(`/leave-balance/approve-with-deduction/${leaveId}`, {
       status: 'approved',
+      remarks,
     });
   },
 
@@ -128,16 +129,16 @@ const principalService = {
     return api.post('/od/headmaster', payload);
   },
 
-  updateOnDutyStatus: (id, status) => {
-    return api.patch(`/od/${id}/status`, { status });
+  updateOnDutyStatus: (id, status, remarks = '') => {
+    return api.patch(`/od/${id}/status`, { status, remarks });
   },
 
   getRegularizationRequests: (payload) => {
     return api.post('/regularization/list', payload);
   },
 
-  updateRegularizationStatus: (id, status) => {
-    return api.patch(`/regularization/${id}/status`, { status });
+  updateRegularizationStatus: (id, status, remarks = '') => {
+    return api.patch(`/regularization/${id}/status`, { status, remarks });
   },
 
   // VT Attendance (Headmaster)

@@ -6,12 +6,12 @@ const vtpService = {
     return api.get(`/vtp/vts?status=${status}`);
   },
 
-  approveVt: (userId) => {
-    return api.patch(`/vtp/${userId}/approve`);
+  approveVt: (userId, remarks = '') => {
+    return api.patch(`/vtp/${userId}/approve`, { remarks });
   },
 
-  rejectVt: (userId, reason) => {
-    return api.patch(`/vtp/${userId}/reject`, { reason });
+  rejectVt: (userId, remarks = '') => {
+    return api.patch(`/vtp/${userId}/reject`, { remarks });
   },
 
   // Leave Management
@@ -20,12 +20,12 @@ const vtpService = {
     return api.get(`/vtp/leaves?${query}`);
   },
 
-  approveLeave: (leaveId) => {
-    return api.patch(`/vtp/leave/${leaveId}/approve`);
+  approveLeave: (leaveId, remarks = '') => {
+    return api.patch(`/vtp/leave/${leaveId}/approve`, { remarks });
   },
 
-  rejectLeave: (leaveId, reason) => {
-    return api.patch(`/vtp/leave/${leaveId}/reject`, { reason });
+  rejectLeave: (leaveId, remarks = '') => {
+    return api.patch(`/vtp/leave/${leaveId}/reject`, { remarks });
   },
 
   // Leave Balances (Scoped to VTP organization)
@@ -43,8 +43,8 @@ const vtpService = {
     return api.post('/od/vtp', payload);
   },
 
-  updateOnDutyStatus: (id, status) => {
-    return api.patch(`/od/vtp/${id}/status`, { status });
+  updateOnDutyStatus: (id, status, remarks = '') => {
+    return api.patch(`/od/vtp/${id}/status`, { status, remarks });
   }
 };
 

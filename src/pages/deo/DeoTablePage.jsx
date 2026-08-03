@@ -81,7 +81,7 @@ const schoolCell = (name, row) => (
 );
 
 const attendanceColumns = [
-  { key: 'vt_name', header: 'Teacher', render: (value, row) => personCell(value, row.trade) },
+  { key: 'vt_name', header: 'VT Name', render: (value, row) => personCell(value, row.trade) },
   {
     key: 'school_name',
     header: 'School',
@@ -128,8 +128,8 @@ const attendanceColumns = [
 
 const pageConfig = {
   attendance: {
-    title: 'Attendance',
-    subtitle: 'Track VT teacher attendance records across schools',
+    title: 'VT Status Records',
+    subtitle: 'Track VT records across schools',
     searchPlaceholder: 'Search by teacher, trade, school or UDISE...',
     icon: CalendarCheck,
     rows: attendanceRows,
@@ -138,7 +138,7 @@ const pageConfig = {
   },
   vtps: {
     title: "VTP's",
-    subtitle: 'Vocational training provider list',
+    subtitle: 'VT provider list',
     searchPlaceholder: 'Search VTP by name, contact, email or district...',
     icon: Building2,
     statusKey: 'status',
@@ -158,7 +158,7 @@ const pageConfig = {
       { key: 'vc_name', header: 'Contact Person', render: (value, row) => <div><p>{value || '-'}</p><p className="text-xs text-gray-500">{row.mobile || '-'}</p></div> },
       { key: 'district_name', header: 'District', render: (value) => <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4 text-gray-400" />{value || '-'}</span> },
       { key: 'schools_count', header: 'Schools' },
-      { key: 'teachers_count', header: 'VT Teachers' },
+      { key: 'teachers_count', header: 'VTs' },
       { key: 'status', header: 'Status', render: (value) => <StatusBadge status={value || 'inactive'} /> },
     ],
   },
@@ -190,14 +190,14 @@ const pageConfig = {
       { key: 'seno', header: 'Se no', render: (_, __, index) => <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span> },
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'block_name', header: 'Block', render: (value, row) => <div><p>{value || '-'}</p><p className="text-xs text-gray-500">{row.district_name || '-'}</p></div> },
-      { key: 'hm_approval_status', header: 'HM Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
+      { key: 'hm_approval_status', header: 'HOS Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
       { key: 'deo_approval_status', header: 'DEO Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
       { key: 'vtp_approval_status', header: 'VTP Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
     ],
   },
   teachers: {
     title: 'VT Details',
-    subtitle: 'Vocational trainer details with school and VTP mapping',
+    subtitle: 'VT details with school and VTP mapping',
     searchPlaceholder: 'Search trainer by name, trade, school, VTP or phone...',
     icon: GraduationCap,
     statusKey: 'status',
@@ -214,7 +214,7 @@ const pageConfig = {
     }),
     columns: [
       { key: 'seno', header: 'Se no', render: (_, __, index) => <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span> },
-      { key: 'vt_name', header: 'Teacher', render: (value, row) => personCell(value, row.trade) },
+      { key: 'vt_name', header: 'VT Name', render: (value, row) => personCell(value, row.trade) },
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'vtp_name', header: 'VTP' },
       { key: 'phone', header: 'Phone' },

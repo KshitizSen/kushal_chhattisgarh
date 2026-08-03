@@ -605,7 +605,7 @@ const Attendance = () => {
     } catch (error) {
       console.error('Failed to fetch school VTs:', error);
       setSchoolVts((prev) => ({ ...prev, [udiseCode]: [] }));
-      setSchoolVtsError((prev) => ({ ...prev, [udiseCode]: 'Vocational trainers could not be loaded.' }));
+      setSchoolVtsError((prev) => ({ ...prev, [udiseCode]: 'VTs could not be loaded.' }));
     } finally {
       setSchoolVtsLoading((prev) => ({ ...prev, [udiseCode]: false }));
     }
@@ -736,7 +736,7 @@ const Attendance = () => {
     try {
       if (actionModal.level === 'vt') {
         if (!vtIdentifier) {
-          throw new Error('Teacher account is not linked.');
+          throw new Error('VT account is not linked.');
         }
         await api.post('/reports/approve-teacher', {
           vtUserId: Number(vtIdentifier),
@@ -820,7 +820,7 @@ const Attendance = () => {
   const handleDownloadPdf = async (school, vt) => {
     const vtIdentifier = vt.userId || vt.vtStaffId;
     if (!vtIdentifier) {
-      toast.error('Teacher account is not linked.');
+      toast.error('VT account is not linked.');
       return;
     }
 
@@ -837,7 +837,7 @@ const Attendance = () => {
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
-      const fallbackName = `VT_Attendance_${(vt.name || 'VT').replace(/\s+/g, '_')}_${selectedMonth}_${selectedYear}.pdf`;
+      const fallbackName = `VT_Vocational_Training_Approval_${(vt.name || 'VT').replace(/\s+/g, '_')}_${selectedMonth}_${selectedYear}.pdf`;
       const fileName = parseDownloadFileName(response.headers?.['content-disposition'], fallbackName);
 
       const anchor = document.createElement('a');
@@ -872,7 +872,7 @@ const Attendance = () => {
       setAttendanceReportModal((prev) => ({
         ...prev,
         loading: false,
-        error: 'Attendance report is unavailable because this vocational trainer is not linked with a user account.',
+        error: 'The VT status report is unavailable because this VT is not linked with a user account.',
       }));
       return;
     }
@@ -891,14 +891,14 @@ const Attendance = () => {
         ...prev,
         report,
         loading: false,
-        error: report ? '' : 'No attendance report found for this vocational trainer.',
+        error: report ? '' : 'No VT status report was found for this.',
       }));
     } catch (error) {
       console.error('Failed to fetch monthly attendance report:', error);
       setAttendanceReportModal((prev) => ({
         ...prev,
         loading: false,
-        error: error.response?.data?.message || 'Attendance report could not be loaded.',
+        error: error.response?.data?.message || 'The VT approval report could not be loaded.',
       }));
     }
   };
@@ -923,9 +923,9 @@ const Attendance = () => {
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-white">Attendance</h1>
+          <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-white">Approval of VT Reports</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Review school-wise VT reports and attendance approvals
+            Review school-wise VT reports and VT approvals
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -1201,7 +1201,7 @@ const Attendance = () => {
                           onClick={() => handleToggleSchool(school)}
                           className="flex w-full items-center justify-between gap-3 rounded-lg py-1 text-left"
                           aria-expanded={expandedSchool === school.id}
-                          aria-label={`Toggle vocational trainers for ${school.name}`}
+                          aria-label={`Toggle VTs for ${school.name}`}
                         >
                           <StatusPill status={getSchoolDeoStatus(school)} />
                           <ChevronDown className={`h-4 w-4 text-gray-400 transition ${expandedSchool === school.id ? 'rotate-180' : ''}`} />
@@ -1216,14 +1216,14 @@ const Attendance = () => {
                         <td colSpan={4} className="border-b border-gray-100 bg-gray-50/70 px-5 pb-5 pt-4 dark:border-gray-800 dark:bg-gray-950/30">
                           <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                              <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Vocational Trainers</h2>
+                              <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">VTs</h2>
                               <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                                 {school.name} | UDISE {school.udise}
                               </p>
                               {!isSchoolActionAllowed(school) && (
                                 <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
-                                  {/* Approve/Reject All tab tak disabled rahega jab tak is school ke sabhi teachers ka HM Status Approved na ho. */}
-                                  Approve/Reject All will remain disabled until all teachers of this school have HM Status Approved.
+                                  {/* Approve/Reject All tab tak disabled rahega jab tak is school ke sabhi teachers ka HOS Status Approved na ho. */}
+                                  Approve/Reject All will remain disabled until all teachers of this school have HOS Status Approved.
                                 </p>
                               )}
                             </div>
@@ -1253,7 +1253,7 @@ const Attendance = () => {
                             {schoolVtsLoading[String(school.udise)] ? (
                               <div className="flex items-center justify-center gap-2 px-4 py-6 text-sm text-gray-500 dark:text-gray-400">
                                 <RefreshCw className="h-4 w-4 animate-spin" />
-                                Loading vocational trainers...
+                                Loading VTs...
                               </div>
                             ) : schoolVtsError[String(school.udise)] ? (
                               <div className="flex items-center justify-center gap-2 px-4 py-6 text-sm text-red-500 dark:text-red-300">
@@ -1262,7 +1262,7 @@ const Attendance = () => {
                               </div>
                             ) : (schoolVts[String(school.udise)] || []).length === 0 ? (
                               <div className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                                No vocational trainers found
+                                No VTs found
                               </div>
                             ) : (
                               schoolVts[String(school.udise)].map((vt) => (
@@ -1281,7 +1281,7 @@ const Attendance = () => {
                                   </div>
                                   <div className="flex items-center gap-3 sm:ml-auto">
                                     <div className="flex flex-col items-end gap-1">
-                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">HM Status</span>
+                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">HOS Status</span>
                                       <StatusPill status={vt.hmApprovalStatus} />
                                     </div>
                                     <div className="flex flex-col items-end gap-1">
@@ -1292,7 +1292,7 @@ const Attendance = () => {
                                       <ActionIcon icon={FileText} label="Reports" onClick={() => openAttendanceReport(school, vt)} />
                                       <ActionIcon
                                         icon={Download}
-                                        label="Download Attendance PDF"
+                                        label="Download VT Status PDF"
                                         loading={downloadLoadingId === String(vt.userId || vt.vtStaffId)}
                                         onClick={() => handleDownloadPdf(school, vt)}
                                       />
@@ -1300,10 +1300,10 @@ const Attendance = () => {
                                         icon={CheckCircle}
                                         label={
                                           !vt.userId
-                                            ? 'Teacher account is not linked'
+                                            ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Approve'
-                                              : 'HM approval pending'
+                                              : 'HOS approval pending'
                                         }
                                         variant="approve"
                                         disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}
@@ -1313,10 +1313,10 @@ const Attendance = () => {
                                         icon={XCircle}
                                         label={
                                           !vt.userId
-                                            ? 'Teacher account is not linked'
+                                            ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Reject'
-                                              : 'HM approval pending'
+                                              : 'HOS approval pending'
                                         }
                                         variant="reject"
                                         disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}
@@ -1416,13 +1416,14 @@ const Attendance = () => {
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Remarks
+              Remarks (Optional)
             </label>
             <textarea
               value={remarks}
               onChange={(event) => setRemarks(event.target.value)}
               placeholder="Add remarks..."
               rows={3}
+              maxLength={1000}
               className="w-full resize-none rounded-[1.25rem] border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             />
           </div>
@@ -1437,7 +1438,7 @@ const Attendance = () => {
       <Modal
         isOpen={attendanceReportModal.open}
         onClose={closeAttendanceReport}
-        title="Attendance Report"
+        title="VT Status Report"
         size="xl"
         footer={
           <Button variant="ghost" onClick={closeAttendanceReport}>
@@ -1449,7 +1450,7 @@ const Attendance = () => {
           <div className="flex flex-col gap-3 rounded-[1.25rem] border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950/50 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                {attendanceReportModal.report?.name || attendanceReportModal.vt?.name || 'Vocational Trainer'}
+                {attendanceReportModal.report?.name || attendanceReportModal.vt?.name || 'VT'}
               </p>
               <p className="mt-1 text-sm text-gray-500">
                 {attendanceReportModal.school?.name} | UDISE {attendanceReportModal.school?.udise}
@@ -1471,7 +1472,7 @@ const Attendance = () => {
           {attendanceReportModal.loading ? (
             <div className="flex items-center justify-center gap-2 rounded-[1.25rem] border border-gray-200 py-12 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
               <RefreshCw className="h-4 w-4 animate-spin" />
-              Loading attendance report...
+              Loading VT status report...
             </div>
           ) : attendanceReportModal.error ? (
             <div className="flex items-center gap-3 rounded-[1.25rem] border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200">

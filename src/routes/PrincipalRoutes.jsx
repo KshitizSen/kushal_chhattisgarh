@@ -58,12 +58,16 @@ const PrincipalRoutes = () => {
         }
       />
       <Route
-        path="attendance"
+        path="vocational-training-approval"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <Attendance />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="attendance"
+        element={<Navigate to="/principal/vocational-training-approval" replace />}
       />
       <Route
         path="activities"
@@ -98,12 +102,16 @@ const PrincipalRoutes = () => {
         }
       />
       <Route
-        path="attendance-requests"
+        path="vocational-training-requests"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <AttendanceRequests />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="attendance-requests"
+        element={<Navigate to="/principal/vocational-training-requests" replace />}
       />
       <Route path="*" element={<Navigate to="/principal/dashboard" replace />} />
     </Routes>

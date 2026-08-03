@@ -50,13 +50,13 @@ const AuthLayout = ({ children }) => {
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <div className="flex items-center gap-3.5 mb-2">
-            <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-white/10 shadow-lg">
+            {/* <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-white/10 shadow-lg">
               <img
                 src={vtpIcon}
                 alt="Chhattisgarh government logo"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </div> */}
             <div>
               <h1 className="text-xl font-heading font-bold text-white tracking-tight">
                 Kushal Chhattisgarh
@@ -80,14 +80,12 @@ const AuthLayout = ({ children }) => {
             <h2 className="text-3xl xl:text-[2.5rem] 2xl:text-[2.75rem] font-heading font-extrabold text-white leading-[1.15] tracking-tight">
               Transforming{' '}
               <span className="auth-gradient-text">
-                Vocational Training
+                Skill Education
               </span>{' '}
               Across Chhattisgarh
             </h2>
             <p className="text-[15px] text-white/45 leading-relaxed max-w-md font-medium">
-              A comprehensive digital ecosystem empowering skill development,
-              enabling real-time tracking, and driving measurable outcomes
-              for communities statewide.
+              Bridging education, skills and the world of work for empowered futures.
             </p>
           </div>
 

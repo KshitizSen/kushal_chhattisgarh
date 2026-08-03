@@ -24,7 +24,7 @@ const Header = ({ onMenuToggle }) => {
   });
   const [notifications] = useState([
     { id: 1, title: 'New student enrolled', time: '5 min ago', read: false },
-    { id: 2, title: 'Attendance report ready', time: '1 hour ago', read: false },
+    { id: 2, title: 'VT status report ready', time: '1 hour ago', read: false },
     { id: 3, title: 'System maintenance', time: '2 hours ago', read: true },
   ]);
 
@@ -134,7 +134,9 @@ const Header = ({ onMenuToggle }) => {
             <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900">
               <div className="hidden text-right sm:block">
                 <p className="font-medium text-gray-900 dark:text-white">{user?.name || 'User Name'}</p>
-                <p className="text-sm capitalize text-gray-500 dark:text-gray-400">{user?.role ? user.role.replace(/_/g, ' ') : 'Role'}</p>
+                <p className="text-sm uppercase text-gray-500 dark:text-gray-400">
+                  {user?.role ? user.role.replace(/[_-]+/g, ' ') : 'Role'}
+                </p>
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
                 <User className="h-5 w-5" />

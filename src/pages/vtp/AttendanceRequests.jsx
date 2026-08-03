@@ -23,6 +23,7 @@ import Table from '../../components/common/Table';
 import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
+import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (iso) =>
@@ -66,6 +67,7 @@ const AttendanceRequests = () => {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [remarks, setRemarks] = useState('');
 
   // ── Build payload ─────────────────────────────────────────────────────
   const buildPayload = useCallback((limit = 20, p = page, status = statusFilter) => {
@@ -168,11 +170,12 @@ const AttendanceRequests = () => {
     setActionLoading(true);
     try {
       const id = selectedRequest.id || selectedRequest.od_id;
-      await vtpService.updateOnDutyStatus(id, 'approved');
+      await vtpService.updateOnDutyStatus(id, 'approved', remarks.trim());
 
       toast.success(`Request approved successfully`);
       setIsApproveModalOpen(false);
       setSelectedRequest(null);
+      setRemarks('');
       fetchRequests();
       fetchCounts();
     } catch (err) {
@@ -188,11 +191,12 @@ const AttendanceRequests = () => {
     setActionLoading(true);
     try {
       const id = selectedRequest.id || selectedRequest.od_id;
-      await vtpService.updateOnDutyStatus(id, 'rejected');
+      await vtpService.updateOnDutyStatus(id, 'rejected', remarks.trim());
 
       toast.success(`Request rejected successfully`);
       setIsRejectModalOpen(false);
       setSelectedRequest(null);
+      setRemarks('');
       fetchRequests();
       fetchCounts();
     } catch (err) {
@@ -215,7 +219,7 @@ const AttendanceRequests = () => {
   const columns = [
     {
       key: 'user_name',
-      header: 'Teacher',
+      header: 'VT Name',
       render: (value, row) => {
         const name = row.user_name || row.vt_name || '—';
         const phone = row.mobile || row.phone || '—';
@@ -271,7 +275,7 @@ const AttendanceRequests = () => {
     },
     {
       key: 'hm_status',
-      header: 'HM Status',
+      header: 'HOS Status',
       render: (_, row) => <StatusBadge status={row.hm_status || 'pending'} />,
     },
     {
@@ -325,10 +329,10 @@ const AttendanceRequests = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Attendance Requests
+            VT Requests
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage and approve OnDuty attendance requests
+            Manage and approve OnDuty VT requests
           </p>
         </div>
         <Button
@@ -539,11 +543,11 @@ const AttendanceRequests = () => {
               <h3 className="font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Approval Flow</h3>
               <div className="space-y-4 text-sm">
 
-                {/* HM Section */}
+                {/* HOS Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900 dark:text-white">HM Status</span>
+                      <span className="font-medium text-gray-900 dark:text-white">HOS Status</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full border capitalize ${getStatusColor(selectedRequest.hm_status)}`}>
                         {selectedRequest.hm_status === 'approved' && '✅ '}
                         {selectedRequest.hm_status === 'rejected' && '❌ '}
@@ -605,12 +609,12 @@ const AttendanceRequests = () => {
       {/* ── Approve Modal ─────────────────────────────────────────────────── */}
       <Modal
         isOpen={isApproveModalOpen}
-        onClose={() => { setIsApproveModalOpen(false); setSelectedRequest(null); }}
+        onClose={() => { setIsApproveModalOpen(false); setSelectedRequest(null); setRemarks(''); }}
         title="Approve Request"
         size="md"
         footer={
           <>
-            <Button variant="ghost" onClick={() => { setIsApproveModalOpen(false); setSelectedRequest(null); }}>
+            <Button variant="ghost" onClick={() => { setIsApproveModalOpen(false); setSelectedRequest(null); setRemarks(''); }}>
               Cancel
             </Button>
             <Button
@@ -664,18 +668,19 @@ const AttendanceRequests = () => {
               </div>
             </div>
           )}
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
 
       {/* ── Reject Modal ──────────────────────────────────────────────────── */}
       <Modal
         isOpen={isRejectModalOpen}
-        onClose={() => { setIsRejectModalOpen(false); setSelectedRequest(null); }}
+        onClose={() => { setIsRejectModalOpen(false); setSelectedRequest(null); setRemarks(''); }}
         title="Reject Request"
         size="md"
         footer={
           <>
-            <Button variant="ghost" onClick={() => { setIsRejectModalOpen(false); setSelectedRequest(null); }}>
+            <Button variant="ghost" onClick={() => { setIsRejectModalOpen(false); setSelectedRequest(null); setRemarks(''); }}>
               Cancel
             </Button>
             <Button
@@ -716,6 +721,7 @@ const AttendanceRequests = () => {
               </div>
             </div>
           )}
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
 

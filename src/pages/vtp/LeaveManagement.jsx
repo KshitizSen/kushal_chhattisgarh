@@ -26,6 +26,7 @@ import Table from '../../components/common/Table';
 import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
+import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (iso) =>
@@ -68,7 +69,7 @@ const LeaveManagement = () => {
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
+  const [remarks, setRemarks] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [selectedLeaveBalance, setSelectedLeaveBalance] = useState(null);
 
@@ -107,11 +108,12 @@ const LeaveManagement = () => {
   const handleApprove = async () => {
     if (!selectedLeave) return;
     setActionLoading(true);
-    const res = await approveLeave(selectedLeave.leave_id);
+    const res = await approveLeave(selectedLeave.leave_id, remarks.trim());
     if (res.success) {
       toast.success(res.message);
       setIsApproveModalOpen(false);
       setSelectedLeave(null);
+      setRemarks('');
     } else {
       toast.error(res.message || 'Failed to approve leave');
     }
@@ -119,14 +121,14 @@ const LeaveManagement = () => {
   };
 
   const handleReject = async () => {
-    if (!selectedLeave || !rejectReason.trim()) return;
+    if (!selectedLeave) return;
     setActionLoading(true);
-    const res = await rejectLeave(selectedLeave.leave_id, rejectReason.trim());
+    const res = await rejectLeave(selectedLeave.leave_id, remarks.trim());
     if (res.success) {
       toast.success(res.message);
       setIsRejectModalOpen(false);
       setSelectedLeave(null);
-      setRejectReason('');
+      setRemarks('');
     } else {
       toast.error(res.message || 'Failed to reject leave');
     }
@@ -153,7 +155,7 @@ const LeaveManagement = () => {
   const columns = [
     {
       key: 'teacher_name',
-      header: 'Teacher',
+      header: 'VT Name',
       render: (value, row) => (
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold flex-shrink-0">
@@ -223,7 +225,7 @@ const LeaveManagement = () => {
     },
     {
       key: 'principal_status',
-      header: 'HM Status',
+      header: 'HOS Status',
       render: (value) => (
         <div className="flex flex-col gap-1">
           <StatusBadge status={value} />
@@ -490,7 +492,7 @@ const LeaveManagement = () => {
           </div>
 
           <Card variant="elevated">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Teacher Leave Balances (EL - Earned Leave)</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">VT Leave Balances (EL - Earned Leave)</h2>
             {balanceLoading ? (
               <div className="py-20 text-center">
                 <Loader text="Calculating balances..." />
@@ -501,7 +503,7 @@ const LeaveManagement = () => {
                 columns={[
                   {
                     key: 'teacherName',
-                    header: 'Teacher',
+                    header: 'VT Name',
                     render: (value, row) => (
                       <div className="flex items-center gap-3 min-w-[160px]">
                         <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold flex-shrink-0">
@@ -602,12 +604,12 @@ const LeaveManagement = () => {
       {/* ── Approve Modal ─────────────────────────────────────────────────── */}
       <Modal
         isOpen={isApproveModalOpen}
-        onClose={() => { setIsApproveModalOpen(false); setSelectedLeave(null); }}
+        onClose={() => { setIsApproveModalOpen(false); setSelectedLeave(null); setRemarks(''); }}
         title="Approve Leave"
         size="md"
         footer={
           <div className="flex gap-3 w-full justify-end">
-            <Button variant="ghost" onClick={() => { setIsApproveModalOpen(false); setSelectedLeave(null); }}>
+            <Button variant="ghost" onClick={() => { setIsApproveModalOpen(false); setSelectedLeave(null); setRemarks(''); }}>
               Cancel
             </Button>
             <Button
@@ -637,7 +639,7 @@ const LeaveManagement = () => {
           {selectedLeave && (
             <div className="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 space-y-4">
               <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-sm text-gray-500">Teacher</span>
+                <span className="text-sm text-gray-500">Vocational Trainer</span>
                 <span className="font-bold text-gray-900 dark:text-white">{selectedLeave.teacher_name}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
@@ -669,25 +671,25 @@ const LeaveManagement = () => {
               )}
             </div>
           )}
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
 
       {/* ── Reject Modal ──────────────────────────────────────────────────── */}
       <Modal
         isOpen={isRejectModalOpen}
-        onClose={() => { setIsRejectModalOpen(false); setSelectedLeave(null); setRejectReason(''); }}
+        onClose={() => { setIsRejectModalOpen(false); setSelectedLeave(null); setRemarks(''); }}
         title="Reject Leave"
         size="md"
         footer={
           <div className="flex gap-3 w-full justify-end">
-            <Button variant="ghost" onClick={() => { setIsRejectModalOpen(false); setSelectedLeave(null); setRejectReason(''); }}>
+            <Button variant="ghost" onClick={() => { setIsRejectModalOpen(false); setSelectedLeave(null); setRemarks(''); }}>
               Close
             </Button>
             <Button
               variant="danger"
               onClick={handleReject}
               loading={actionLoading}
-              disabled={!rejectReason.trim()}
               leftIcon={<XCircle className="h-4 w-4" />}
             >
               Submit Rejection
@@ -703,22 +705,12 @@ const LeaveManagement = () => {
             <div>
               <p className="font-semibold text-rose-900 dark:text-rose-200">Rejection Notice</p>
               <p className="text-sm text-rose-700/80 dark:text-rose-300/60">
-                Please provide a valid reason for rejecting this leave request. This will be visible to the teacher.
+                You may add remarks for this rejection. They will be visible to the teacher.
               </p>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">
-              Reason for Rejection <span className="text-rose-500">*</span>
-            </label>
-            <textarea
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="e.g. Due to urgent training session, leave cannot be granted..."
-              className="w-full h-32 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-rose-500 transition-all resize-none"
-            />
-          </div>
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
         </div>
       </Modal>
     </div>

@@ -191,7 +191,7 @@ const Reports = () => {
   // ── Reject ────────────────────────────────────────────────────────────────
   const handleReject = async () => {
     const report = rejectModal.report;
-    if (!report || !remarks.trim()) return;
+    if (!report) return;
     setActionLoading(true);
     try {
       const res = await api.post('/reports/approve', {
@@ -336,9 +336,9 @@ const Reports = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Monthly Attendance Reports</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Monthly VT Approval Reports</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Generate and approve monthly VT attendance reports for your school
+            Generate and approve monthly VT reports for your school
           </p>
         </div>
         <Button
@@ -503,7 +503,7 @@ const Reports = () => {
           <div className="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
             <CheckCircle className="h-10 w-10 text-green-500" />
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">Approve this monthly attendance report?</p>
+              <p className="font-medium text-gray-900 dark:text-white">Approve this monthly VT report?</p>
               <p className="text-sm text-gray-600 dark:text-gray-400">This will move the report to DEO for next-level approval.</p>
             </div>
           </div>
@@ -546,7 +546,6 @@ const Reports = () => {
               variant="danger"
               onClick={handleReject}
               loading={actionLoading}
-              disabled={!remarks.trim()}
               leftIcon={<XCircle className="h-4 w-4" />}
             >
               Confirm Rejection
@@ -570,13 +569,14 @@ const Reports = () => {
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Rejection Reason <span className="text-red-500">*</span>
+              Remarks (Optional)
             </label>
             <textarea
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               placeholder="Enter reason for rejection..."
               rows={4}
+              maxLength={1000}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
             />
           </div>

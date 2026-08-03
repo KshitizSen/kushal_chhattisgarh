@@ -5,6 +5,7 @@ import {
   School,
   Users,
 } from 'lucide-react';
+import { StatCardGrid } from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import api from '../../services/api';
 
@@ -59,7 +60,7 @@ const DeoDashboard = () => {
         <div>
           <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-white">DEO Dashboard</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Monitor schools, VT network and attendance summaries
+            Monitor schools, VT network and VT summaries
           </p>
         </div>
         <Button
@@ -79,11 +80,11 @@ const DeoDashboard = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <StatCardGrid>
         {stats.map(({ label, value, Icon, bg }) => (
           <div
             key={label}
-            className="flex items-center gap-4 rounded-[1.5rem] border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            className="flex h-full min-h-40 items-center gap-4 rounded-[1.5rem] border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
           >
             <div className={`flex h-12 w-12 items-center justify-center rounded-2xl text-white ${bg}`}>
               <Icon className="h-6 w-6" />
@@ -96,7 +97,7 @@ const DeoDashboard = () => {
             </div>
           </div>
         ))}
-      </div>
+      </StatCardGrid>
     </div>
   );
 };

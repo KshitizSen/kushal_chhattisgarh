@@ -85,7 +85,7 @@ export const prepareAttendanceDataForExport = (records, teacherName) => {
     workHours: record.workHours || '--',
   }));
 
-  return { headers, data, filename: `${teacherName}_attendance_report.csv` };
+  return { headers, data, filename: `${teacherName}_vocational_training_approval_report.csv` };
 };
 
 export const downloadFile = (blob, filename) => {

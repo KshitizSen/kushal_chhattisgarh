@@ -123,7 +123,7 @@ const TrackingTimeline = ({ report }) => {
     return (
       <div className="rounded-[1.5rem] border border-dashed border-gray-300 bg-white px-6 py-12 text-center dark:border-gray-700 dark:bg-gray-900">
         <FileSearch className="mx-auto h-10 w-10 text-gray-300" />
-        <p className="mt-3 text-sm font-medium text-gray-600 dark:text-gray-300">Select filters to trace an attendance file.</p>
+        <p className="mt-3 text-sm font-medium text-gray-600 dark:text-gray-300">Select filters to trace a VT status file.</p>
       </div>
     );
   }
@@ -134,7 +134,7 @@ const TrackingTimeline = ({ report }) => {
     report.deo_approval_status === 'approved';
 
   const steps = [
-    { stepLabel: '1A', label: 'Principal / HM', status: report.hm_approval_status, icon: UserCheck },
+    { stepLabel: '1A', label: 'Principal / HOS', status: report.hm_approval_status, icon: UserCheck },
     { stepLabel: '1B', label: 'VTP Approval', status: report.vtp_approval_status, icon: Building2 },
     { stepLabel: '2', label: 'DEO Approval', status: report.deo_approval_status, icon: ShieldCheck },
     { stepLabel: '3', label: 'Completed', status: isComplete ? 'approved' : 'pending', icon: CheckCircle },
@@ -148,7 +148,7 @@ const TrackingTimeline = ({ report }) => {
             <FileSearch className="h-7 w-7" />
           </span>
           <div className="text-center sm:text-left">
-            <h2 className="text-3xl font-bold leading-tight text-gray-950 dark:text-white">Trace Attendance File</h2>
+            <h2 className="text-3xl font-bold leading-tight text-gray-950 dark:text-white">Trace VT Status File</h2>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               {report.school_name} | {getMonthLabel(report.report_month)} {report.report_year}
             </p>
@@ -221,7 +221,7 @@ const AttendanceTracking = () => {
       setReports([]);
       setSummary({});
       setPagination({ total: 0, totalPages: 1 });
-      toast.error(error.response?.data?.message || 'Failed to load attendance tracking');
+      toast.error(error.response?.data?.message || 'Failed to load VT status tracking');
     } finally {
       setIsLoading(false);
     }
@@ -278,7 +278,7 @@ const AttendanceTracking = () => {
 
   const summaryCards = useMemo(() => [
     { label: 'Total Files', value: summary.total_reports || 0, icon: FileSearch, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    { label: 'HM Approved', value: summary.hm_approved || 0, icon: UserCheck, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
+    { label: 'HOS Approved', value: summary.hm_approved || 0, icon: UserCheck, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
     { label: 'VTP Approved', value: summary.vtp_approved || 0, icon: Building2, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
     { label: 'DEO Approved', value: summary.deo_approved || 0, icon: ShieldCheck, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
     { label: 'Rejected', value: summary.rejected_reports || 0, icon: XCircle, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-900/20' },
@@ -313,9 +313,9 @@ const AttendanceTracking = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Attendance Tracking</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">VT Reports Approval Tracking</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Track monthly attendance approval from Principal/HM, VTP, and DEO.
+            Track monthly VT approval from Principal/HOS, VTP, and DEO.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -439,12 +439,12 @@ const AttendanceTracking = () => {
         {isLoading ? (
           <div className="py-12 text-center">
             <RefreshCw className="mx-auto mb-3 h-8 w-8 animate-spin text-primary-500" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">Loading attendance approvals...</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Loading VT approvals...</p>
           </div>
         ) : reports.length === 0 ? (
           <div className="py-12 text-center">
             <Route className="mx-auto mb-3 h-10 w-10 text-gray-300" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">No monthly attendance files found</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">No monthly VT status files found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -453,7 +453,7 @@ const AttendanceTracking = () => {
                 <tr>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">School</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Month</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Principal / HM</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Principal / HOS</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">VTP</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">DEO</th>
                   <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">Action</th>

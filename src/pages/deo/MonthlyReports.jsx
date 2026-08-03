@@ -207,7 +207,7 @@ const MonthlyReports = () => {
   // ── Reject ────────────────────────────────────────────────────────────────
   const handleReject = async () => {
     const report = rejectModal.report;
-    if (!report || !remarks.trim()) return;
+    if (!report) return;
     setActionLoading(true);
     try {
       const res = await api.post('/reports/approve', {
@@ -255,7 +255,7 @@ const MonthlyReports = () => {
     {
       key: 'hm_approval_status',
       header: 'Principal',
-      render: (value) => <ApprovalPill status={value} label={value === 'approved' ? 'HM Approved' : value === 'rejected' ? 'HM Rejected' : 'HM Pending'} />,
+      render: (value) => <ApprovalPill status={value} label={value === 'approved' ? 'HOS Approved' : value === 'rejected' ? 'HOS Rejected' : 'HOS Pending'} />,
     },
     {
       key: 'deo_approval_status',
@@ -285,7 +285,7 @@ const MonthlyReports = () => {
             {/* Approve */}
             {row.deo_approval_status === 'pending' && (
               <>
-                <div title={!hmApproved ? 'Not approved by Principal/HM' : ''}>
+                <div title={!hmApproved ? 'Not approved by Principal/HOS' : ''}>
                   <Button
                     variant="success"
                     size="sm"
@@ -299,7 +299,7 @@ const MonthlyReports = () => {
                 {!hmApproved && (
                   <p className="text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
-                    Awaiting HM approval
+                    Awaiting HOS approval
                   </p>
                 )}
                 <Button
@@ -341,9 +341,9 @@ const MonthlyReports = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Monthly VT Attendance Reports</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Monthly VT Approval Reports</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Review and approve VT monthly attendance reports in your district
+            Review and approve monthly VT reports in your district
           </p>
         </div>
         <Button
@@ -415,7 +415,7 @@ const MonthlyReports = () => {
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
             <span className="font-semibold">{counts.pending_my_action}</span> report
-            {counts.pending_my_action !== 1 ? 's have' : ' has'} HM approval and are waiting for your DEO approval.
+            {counts.pending_my_action !== 1 ? 's have' : ' has'} HOS approval and are waiting for your DEO approval.
           </p>
         </motion.div>
       )}
@@ -581,7 +581,7 @@ const MonthlyReports = () => {
               <p className="font-semibold text-gray-900 dark:text-white">{approveModal.report.vt_name}</p>
               <p className="text-sm text-gray-500">{approveModal.report.school_name} · {approveModal.report.trade}</p>
               <div className="flex gap-2 mt-1">
-                <ApprovalPill status={approveModal.report.hm_approval_status} label="HM Approved" />
+                <ApprovalPill status={approveModal.report.hm_approval_status} label="HOS Approved" />
               </div>
             </div>
           )}
@@ -609,7 +609,7 @@ const MonthlyReports = () => {
             <Button variant="ghost" onClick={() => { setRejectModal({ open: false, report: null }); setRemarks(''); }}>
               Cancel
             </Button>
-            <Button variant="danger" onClick={handleReject} loading={actionLoading} disabled={!remarks.trim()} leftIcon={<XCircle className="h-4 w-4" />}>
+            <Button variant="danger" onClick={handleReject} loading={actionLoading} leftIcon={<XCircle className="h-4 w-4" />}>
               Confirm Rejection
             </Button>
           </>
@@ -631,13 +631,14 @@ const MonthlyReports = () => {
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Rejection Reason <span className="text-red-500">*</span>
+              Remarks (Optional)
             </label>
             <textarea
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               placeholder="Enter reason for rejection..."
               rows={4}
+              maxLength={1000}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 resize-none"
             />
           </div>

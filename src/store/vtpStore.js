@@ -71,9 +71,9 @@ const useVtpStore = create(
         }
       },
 
-      approveLeave: async (leaveId) => {
+      approveLeave: async (leaveId, remarks = '') => {
         try {
-          const res = await vtpService.approveLeave(leaveId);
+          const res = await vtpService.approveLeave(leaveId, remarks);
           if (res.data?.status) {
             await get().fetchLeaves();
             return { success: true, message: res.data.message };
@@ -84,9 +84,9 @@ const useVtpStore = create(
         }
       },
 
-      rejectLeave: async (leaveId, reason) => {
+      rejectLeave: async (leaveId, remarks = '') => {
         try {
-          const res = await vtpService.rejectLeave(leaveId, reason);
+          const res = await vtpService.rejectLeave(leaveId, remarks);
           if (res.data?.status) {
             await get().fetchLeaves();
             return { success: true, message: res.data.message };
