@@ -50,13 +50,13 @@ const AuthLayout = ({ children }) => {
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <div className="flex items-center gap-3.5 mb-2">
-            <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-white/10 shadow-lg">
+            {/* <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-white/10 shadow-lg">
               <img
                 src={vtpIcon}
                 alt="Chhattisgarh government logo"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </div> */}
             <div>
               <h1 className="text-xl font-heading font-bold text-white tracking-tight">
                 Kushal Chhattisgarh
