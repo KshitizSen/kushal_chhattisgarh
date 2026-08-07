@@ -275,7 +275,7 @@ const AttendanceRequests = () => {
     },
     {
       key: 'hm_status',
-      header: 'HOS Status',
+      header: 'HM (Head Master) Status',
       render: (_, row) => <StatusBadge status={row.hm_status || 'pending'} />,
     },
     {
@@ -543,11 +543,11 @@ const AttendanceRequests = () => {
               <h3 className="font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Approval Flow</h3>
               <div className="space-y-4 text-sm">
 
-                {/* HOS Section */}
+                {/* HM (Head Master) Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900 dark:text-white">HOS Status</span>
+                      <span className="font-medium text-gray-900 dark:text-white">HM (Head Master) Status</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full border capitalize ${getStatusColor(selectedRequest.hm_status)}`}>
                         {selectedRequest.hm_status === 'approved' && '✅ '}
                         {selectedRequest.hm_status === 'rejected' && '❌ '}

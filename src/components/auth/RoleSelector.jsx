@@ -6,7 +6,7 @@ import { Shield, GraduationCap, Landmark, Users, Loader2 } from 'lucide-react';
 const ROLE_DISPLAY = {
   admin:                       { label: 'Admin',     description: 'Administrator',         icon: Shield },
   vocational_teacher_provider: { label: 'VTP',       description: 'VT Provider',           icon: GraduationCap },
-  headmaster:                  { label: 'Principal',  description: 'School Head',           icon: Landmark },
+  headmaster:                  { label: 'HM',  description: 'Head Master',           icon: Landmark },
   deo:                         { label: 'DEO',        description: 'District Edu. Officer', icon: Users },
 };
 

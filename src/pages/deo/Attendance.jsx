@@ -1222,8 +1222,8 @@ const Attendance = () => {
                               </p>
                               {!isSchoolActionAllowed(school) && (
                                 <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
-                                  {/* Approve/Reject All tab tak disabled rahega jab tak is school ke sabhi teachers ka HOS Status Approved na ho. */}
-                                  Approve/Reject All will remain disabled until all teachers of this school have HOS Status Approved.
+                                  {/* Approve/Reject All tab tak disabled rahega jab tak is school ke sabhi teachers ka HM (Head Master) Status Approved na ho. */}
+                                  Approve/Reject All will remain disabled until all teachers of this school have HM (Head Master) Status Approved.
                                 </p>
                               )}
                             </div>
@@ -1281,7 +1281,7 @@ const Attendance = () => {
                                   </div>
                                   <div className="flex items-center gap-3 sm:ml-auto">
                                     <div className="flex flex-col items-end gap-1">
-                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">HOS Status</span>
+                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">HM (Head Master) Status</span>
                                       <StatusPill status={vt.hmApprovalStatus} />
                                     </div>
                                     <div className="flex flex-col items-end gap-1">
@@ -1303,7 +1303,7 @@ const Attendance = () => {
                                             ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Approve'
-                                              : 'HOS approval pending'
+                                              : 'HM (Head Master) approval pending'
                                         }
                                         variant="approve"
                                         disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}
@@ -1316,7 +1316,7 @@ const Attendance = () => {
                                             ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Reject'
-                                              : 'HOS approval pending'
+                                              : 'HM (Head Master) approval pending'
                                         }
                                         variant="reject"
                                         disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}

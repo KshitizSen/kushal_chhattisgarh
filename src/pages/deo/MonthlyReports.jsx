@@ -255,7 +255,7 @@ const MonthlyReports = () => {
     {
       key: 'hm_approval_status',
       header: 'Principal',
-      render: (value) => <ApprovalPill status={value} label={value === 'approved' ? 'HOS Approved' : value === 'rejected' ? 'HOS Rejected' : 'HOS Pending'} />,
+      render: (value) => <ApprovalPill status={value} label={value === 'approved' ? 'HM (Head Master) Approved' : value === 'rejected' ? 'HM (Head Master) Rejected' : 'HM (Head Master) Pending'} />,
     },
     {
       key: 'deo_approval_status',
@@ -285,7 +285,7 @@ const MonthlyReports = () => {
             {/* Approve */}
             {row.deo_approval_status === 'pending' && (
               <>
-                <div title={!hmApproved ? 'Not approved by Principal/HOS' : ''}>
+                <div title={!hmApproved ? 'Not approved by Principal/HM (Head Master)' : ''}>
                   <Button
                     variant="success"
                     size="sm"
@@ -299,7 +299,7 @@ const MonthlyReports = () => {
                 {!hmApproved && (
                   <p className="text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
-                    Awaiting HOS approval
+                    Awaiting HM (Head Master) approval
                   </p>
                 )}
                 <Button
@@ -415,7 +415,7 @@ const MonthlyReports = () => {
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
             <span className="font-semibold">{counts.pending_my_action}</span> report
-            {counts.pending_my_action !== 1 ? 's have' : ' has'} HOS approval and are waiting for your DEO approval.
+            {counts.pending_my_action !== 1 ? 's have' : ' has'} HM (Head Master) approval and are waiting for your DEO approval.
           </p>
         </motion.div>
       )}
@@ -581,7 +581,7 @@ const MonthlyReports = () => {
               <p className="font-semibold text-gray-900 dark:text-white">{approveModal.report.vt_name}</p>
               <p className="text-sm text-gray-500">{approveModal.report.school_name} · {approveModal.report.trade}</p>
               <div className="flex gap-2 mt-1">
-                <ApprovalPill status={approveModal.report.hm_approval_status} label="HOS Approved" />
+                <ApprovalPill status={approveModal.report.hm_approval_status} label="HM (Head Master) Approved" />
               </div>
             </div>
           )}

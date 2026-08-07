@@ -185,7 +185,7 @@ const VtApprovals = () => {
     },
     {
       key: 'vt_approval_status',
-      header: 'HOS (Principal)',
+      header: 'HM (Head Master) (Principal)',
       render: (value) => <ApprovalPill status={value} />,
     },
     {
@@ -463,7 +463,7 @@ const VtApprovals = () => {
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-500">HOS Status:</span>
+                  <span className="text-gray-500">HM (Head Master) Status:</span>
                   <ApprovalPill status={selectedVt.vt_approval_status} />
                 </div>
                 <div>

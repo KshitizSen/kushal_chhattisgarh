@@ -46,7 +46,7 @@ const ApprovalPill = ({ status, short }) => {
 
 // Returns the first blocking authority text, or null if VTP can approve
 const getBlockingAuthority = (report) => {
-  if (report.hm_approval_status !== 'approved')  return 'Not approved by Principal/HOS';
+  if (report.hm_approval_status !== 'approved')  return 'Not approved by Principal/HM (Head Master)';
   if (report.deo_approval_status !== 'approved') return 'Not approved by DEO';
   return null;
 };
@@ -216,7 +216,7 @@ const MonthlyAttendanceReports = () => {
       render: (_, row) => (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-gray-500 w-8">HOS:</span>
+            <span className="text-xs text-gray-500 w-8">HM (Head Master):</span>
             <ApprovalPill status={row.hm_approval_status} />
           </div>
           <div className="flex items-center gap-1.5">
@@ -389,7 +389,7 @@ const MonthlyAttendanceReports = () => {
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
             <span className="font-semibold">{counts.pending_my_action}</span> report
-            {counts.pending_my_action !== 1 ? 's have' : ' has'} passed both HOS and DEO approval and need{counts.pending_my_action !== 1 ? '' : 's'} your final VTP approval.
+            {counts.pending_my_action !== 1 ? 's have' : ' has'} passed both HM (Head Master) and DEO approval and need{counts.pending_my_action !== 1 ? '' : 's'} your final VTP approval.
           </p>
         </motion.div>
       )}
