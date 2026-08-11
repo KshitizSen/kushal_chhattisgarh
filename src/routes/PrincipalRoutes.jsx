@@ -11,6 +11,7 @@ import Holidays from '../pages/principal/Holidays';
 import Reports from '../pages/principal/Reports';
 import AttendanceRequests from '../pages/principal/AttendanceRequests';
 import ProtectedRoute from './ProtectedRoute';
+import DeviceChangeRequests from '../pages/common/DeviceChangeRequests';
 
 const PrincipalRoutes = () => {
   const allowedRoles = ['principal'];
@@ -100,6 +101,10 @@ const PrincipalRoutes = () => {
             <Reports />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="device-change-requests"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><DeviceChangeRequests /></ProtectedRoute>}
       />
       <Route
         path="vocational-training-requests"

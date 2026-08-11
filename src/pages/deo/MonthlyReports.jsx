@@ -14,6 +14,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import Pagination from '../../components/common/Pagination';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const MONTHS = [
@@ -255,12 +256,12 @@ const MonthlyReports = () => {
     {
       key: 'hm_approval_status',
       header: 'Principal',
-      render: (value) => <ApprovalPill status={value} label={value === 'approved' ? 'HM (Head Master) Approved' : value === 'rejected' ? 'HM (Head Master) Rejected' : 'HM (Head Master) Pending'} />,
+      render: (value, row) => <div className="flex flex-col items-start gap-1"><ApprovalPill status={value} label={value === 'approved' ? 'HM (Head Master) Approved' : value === 'rejected' ? 'HM (Head Master) Rejected' : 'HM (Head Master) Pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
       key: 'deo_approval_status',
       header: 'My Approval (DEO)',
-      render: (value) => <ApprovalPill status={value} label={value === 'approved' ? 'Approved' : value === 'rejected' ? 'Rejected' : 'Pending'} />,
+      render: (value, row) => <div className="flex flex-col items-start gap-1"><ApprovalPill status={value} label={value === 'approved' ? 'Approved' : value === 'rejected' ? 'Rejected' : 'Pending'} /><ApprovalSourceBadge type={row.deo_approval_type} /></div>,
     },
     {
       key: 'actions',

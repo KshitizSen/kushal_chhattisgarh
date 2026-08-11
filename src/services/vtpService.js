@@ -45,6 +45,15 @@ const vtpService = {
 
   updateOnDutyStatus: (id, status, remarks = '') => {
     return api.patch(`/od/vtp/${id}/status`, { status, remarks });
+  },
+
+  // Attendance Regularization Requests
+  getRegularizationRequests: (payload) => {
+    return api.post('/regularization/vtp', payload);
+  },
+
+  updateRegularizationStatus: (id, status, remarks = '') => {
+    return api.patch(`/regularization/vtp/${id}/status`, { status, remarks });
   }
 };
 

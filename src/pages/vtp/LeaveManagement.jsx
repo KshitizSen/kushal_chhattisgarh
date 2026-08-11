@@ -27,6 +27,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (iso) =>
@@ -94,7 +95,7 @@ const LeaveManagement = () => {
   }, [statusFilter]);
 
   // ── Client-side search (server handles status filter) ─────────────────
-  const filteredLeaves = leaves.filter((l) => {
+  const filteredLeaves = (Array.isArray(leaves) ? leaves : []).filter((l) => {
     const q = searchQuery.toLowerCase();
     return (
       l.teacher_name?.toLowerCase().includes(q) ||
@@ -226,9 +227,10 @@ const LeaveManagement = () => {
     {
       key: 'principal_status',
       header: 'HM (Head Master) Status',
-      render: (value) => (
+      render: (value, row) => (
         <div className="flex flex-col gap-1">
           <StatusBadge status={value} />
+          <ApprovalSourceBadge type={row.principal_approval_type} />
           <span className="text-[10px] text-gray-400 text-center">Principal Layer</span>
         </div>
       ),
@@ -239,6 +241,7 @@ const LeaveManagement = () => {
       render: (value, row) => (
         <div className="flex flex-col gap-1">
           <StatusBadge status={value} />
+          <ApprovalSourceBadge type={row.vtp_approval_type} />
           {row.leave_approved && (
             <div className="flex items-center justify-center gap-1 mt-0.5 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 px-2 py-0.5 border border-emerald-200 dark:from-emerald-900/30 dark:to-teal-900/30 dark:border-emerald-800 shadow-sm">
               <CheckCircle className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />

@@ -14,6 +14,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import Pagination from '../../components/common/Pagination';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const MONTHS = [
@@ -281,7 +282,7 @@ const Reports = () => {
     {
       key: 'hm_approval_status',
       header: 'My Approval',
-      render: (value) => <ApprovalPill status={value} />,
+      render: (value, row) => <div className="flex flex-col items-start gap-1"><ApprovalPill status={value} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
       key: 'actions',

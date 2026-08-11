@@ -15,7 +15,6 @@ import {
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import vtpService from '../../services/vtpService';
-import useAuthStore from '../../store/authStore';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge, { StatusBadge } from '../../components/common/Badge';
@@ -24,6 +23,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (iso) =>
@@ -48,8 +48,6 @@ const fmtDateTime = (iso) =>
 
 // ── Component ─────────────────────────────────────────────────────────────────
 const AttendanceRequests = () => {
-  const { user } = useAuthStore();
-
   // ── List & pagination state ───────────────────────────────────────────
   const [requests, setRequests] = useState([]);
   const [counts, setCounts] = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });
@@ -68,6 +66,7 @@ const AttendanceRequests = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [remarks, setRemarks] = useState('');
+  const [activeTab, setActiveTab] = useState('onduty');
 
   // ── Build payload ─────────────────────────────────────────────────────
   const buildPayload = useCallback((limit = 20, p = page, status = statusFilter) => {
@@ -81,7 +80,9 @@ const AttendanceRequests = () => {
     setLoading(true);
     try {
       const payload = buildPayload();
-      const res = await vtpService.getOnDutyRequests(payload);
+      const res = activeTab === 'onduty'
+        ? await vtpService.getOnDutyRequests(payload)
+        : await vtpService.getRegularizationRequests(payload);
 
       if (res.data?.status || res.data?.success) {
         const data = res.data.data || [];
@@ -115,13 +116,15 @@ const AttendanceRequests = () => {
     } finally {
       setLoading(false);
     }
-  }, [buildPayload, statusFilter]);
+  }, [activeTab, buildPayload, statusFilter]);
 
   // ── Fetch all-status counts ───────────────────────────────────────────
   const fetchCounts = useCallback(async () => {
     try {
       const payload = buildPayload(100, 1, '');
-      const res = await vtpService.getOnDutyRequests(payload);
+      const res = activeTab === 'onduty'
+        ? await vtpService.getOnDutyRequests(payload)
+        : await vtpService.getRegularizationRequests(payload);
 
       if (res.data?.status || res.data?.success) {
         const all = res.data.data || [];
@@ -135,8 +138,8 @@ const AttendanceRequests = () => {
         const pag = res.data.pagination || {};
         setCounts({ ...s, total: pag.totalRecords ?? pag.total ?? res.data.total ?? 0 });
       }
-    } catch (_) { /* silently ignore count fetch errors */ }
-  }, [buildPayload]);
+    } catch { /* silently ignore count fetch errors */ }
+  }, [activeTab, buildPayload]);
 
   useEffect(() => {
     fetchRequests();
@@ -170,7 +173,11 @@ const AttendanceRequests = () => {
     setActionLoading(true);
     try {
       const id = selectedRequest.id || selectedRequest.od_id;
-      await vtpService.updateOnDutyStatus(id, 'approved', remarks.trim());
+      if (activeTab === 'onduty') {
+        await vtpService.updateOnDutyStatus(id, 'approved', remarks.trim());
+      } else {
+        await vtpService.updateRegularizationStatus(id, 'approved', remarks.trim());
+      }
 
       toast.success(`Request approved successfully`);
       setIsApproveModalOpen(false);
@@ -191,7 +198,11 @@ const AttendanceRequests = () => {
     setActionLoading(true);
     try {
       const id = selectedRequest.id || selectedRequest.od_id;
-      await vtpService.updateOnDutyStatus(id, 'rejected', remarks.trim());
+      if (activeTab === 'onduty') {
+        await vtpService.updateOnDutyStatus(id, 'rejected', remarks.trim());
+      } else {
+        await vtpService.updateRegularizationStatus(id, 'rejected', remarks.trim());
+      }
 
       toast.success(`Request rejected successfully`);
       setIsRejectModalOpen(false);
@@ -241,16 +252,18 @@ const AttendanceRequests = () => {
       header: 'Type',
       render: (_, row) => (
         <Badge variant="primary" size="sm" outline>
-          {row.od_type || 'On Duty'}
+          {activeTab === 'onduty' ? (row.od_type || 'On Duty') : 'Regularization'}
         </Badge>
       ),
     },
     {
       key: 'date',
-      header: 'Duration',
+      header: activeTab === 'onduty' ? 'Duration' : 'Date',
       render: (_, row) => (
         <span className="text-sm text-gray-700 dark:text-gray-300">
-          {fmtDate(row.from_date)} → {fmtDate(row.to_date)}
+          {activeTab === 'onduty'
+            ? `${fmtDate(row.from_date)} → ${fmtDate(row.to_date)}`
+            : fmtDate(row.date)}
         </span>
       ),
     },
@@ -276,12 +289,12 @@ const AttendanceRequests = () => {
     {
       key: 'hm_status',
       header: 'HM (Head Master) Status',
-      render: (_, row) => <StatusBadge status={row.hm_status || 'pending'} />,
+      render: (_, row) => <div className="flex flex-col items-start gap-1"><StatusBadge status={row.hm_status || 'pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
       key: 'vtp_status',
       header: 'VTP Status',
-      render: (_, row) => <StatusBadge status={row.vtp_status || 'pending'} />,
+      render: (_, row) => <div className="flex flex-col items-start gap-1"><StatusBadge status={row.vtp_status || 'pending'} /><ApprovalSourceBadge type={row.vtp_approval_type} /></div>,
     },
     {
       key: 'actions',
@@ -332,7 +345,7 @@ const AttendanceRequests = () => {
             VT Requests
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage and approve OnDuty VT requests
+            Manage and approve OnDuty and Regularization VT requests
           </p>
         </div>
         <Button
@@ -343,6 +356,25 @@ const AttendanceRequests = () => {
         >
           Refresh
         </Button>
+      </div>
+
+      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+        {[
+          ['onduty', 'OnDuty Requests'],
+          ['regularization', 'Regularization Requests'],
+        ].map(([key, label]) => (
+          <button key={key} type="button" onClick={() => {
+            setActiveTab(key);
+            setPage(1);
+            setStatusFilter('');
+            setSearchQuery('');
+          }}
+            className={`px-4 py-2 font-medium transition-colors ${activeTab === key
+              ? 'border-b-2 border-primary-600 text-primary-600'
+              : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}>
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* Stats Cards */}
@@ -428,7 +460,7 @@ const AttendanceRequests = () => {
       <Card variant="elevated">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            OnDuty Requests
+            {activeTab === 'onduty' ? 'OnDuty Requests' : 'Regularization Requests'}
             {statusFilter && (
               <span className="ml-2 text-sm font-normal text-gray-500 capitalize">
                 ({statusFilter})
@@ -442,7 +474,7 @@ const AttendanceRequests = () => {
 
         {loading ? (
           <div className="py-12 text-center">
-            <Loader text="Loading requests..." />
+            <Loader text={`Loading ${activeTab === 'onduty' ? 'OnDuty' : 'Regularization'} requests...`} />
           </div>
         ) : (
           <Table
@@ -487,7 +519,7 @@ const AttendanceRequests = () => {
       <Modal
         isOpen={isViewModalOpen}
         onClose={() => { setIsViewModalOpen(false); setSelectedRequest(null); }}
-        title="OnDuty Request Details"
+        title={`${activeTab === 'onduty' ? 'OnDuty' : 'Regularization'} Request Details`}
         size="lg"
       >
         {selectedRequest && (
@@ -519,17 +551,28 @@ const AttendanceRequests = () => {
                 <h3 className="font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Request Info</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">OD Type:</span>
-                    <span className="font-medium text-gray-900 dark:text-white">{selectedRequest.od_type || 'On Duty'}</span>
+                    <span className="text-gray-500">Type:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {activeTab === 'onduty' ? (selectedRequest.od_type || 'On Duty') : 'Regularization'}
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">From Date:</span>
-                    <span className="font-medium text-gray-900 dark:text-white">{fmtDate(selectedRequest.from_date)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">To Date:</span>
-                    <span className="font-medium text-gray-900 dark:text-white">{fmtDate(selectedRequest.to_date)}</span>
-                  </div>
+                  {activeTab === 'onduty' ? (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">From Date:</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{fmtDate(selectedRequest.from_date)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">To Date:</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{fmtDate(selectedRequest.to_date)}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Date:</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{fmtDate(selectedRequest.date)}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -653,13 +696,15 @@ const AttendanceRequests = () => {
               <div className="flex justify-between">
                 <span className="text-gray-500">Type:</span>
                 <span className="font-medium capitalize">
-                  {selectedRequest.od_type || 'On Duty'}
+                  {activeTab === 'onduty' ? (selectedRequest.od_type || 'On Duty') : 'Regularization'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Duration:</span>
+                <span className="text-gray-500">{activeTab === 'onduty' ? 'Duration:' : 'Date:'}</span>
                 <span className="font-medium">
-                  {`${fmtDate(selectedRequest.from_date)} → ${fmtDate(selectedRequest.to_date)}`}
+                  {activeTab === 'onduty'
+                    ? `${fmtDate(selectedRequest.from_date)} → ${fmtDate(selectedRequest.to_date)}`
+                    : fmtDate(selectedRequest.date)}
                 </span>
               </div>
               <div className="flex justify-between">

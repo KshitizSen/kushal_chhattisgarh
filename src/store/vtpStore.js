@@ -47,12 +47,12 @@ const useVtpStore = create(
           const res = await vtpService.getLeaves(params);
           if (res.data?.success) {
             set({
-              leaves: res.data.data,
+              leaves: Array.isArray(res.data.data) ? res.data.data : [],
               pagination: {
-                total: res.data.total,
-                total_pages: res.data.total_pages,
-                page: res.data.page,
-                limit: res.data.limit,
+                total: Number(res.data.total) || 0,
+                total_pages: Number(res.data.total_pages) || 1,
+                page: Number(res.data.page) || 1,
+                limit: Number(res.data.limit) || 20,
               },
               leaveLoading: false,
             });
@@ -65,6 +65,8 @@ const useVtpStore = create(
                 // In production, backend should return counts in every request
               }
             }
+          } else {
+            set({ leaves: [], leaveLoading: false, leaveError: res.data?.message || 'Unable to load leave requests.' });
           }
         } catch (error) {
           set({ leaveLoading: false, leaveError: error.message });

@@ -6,6 +6,7 @@ import LeaveManagement from '../pages/vtp/LeaveManagement';
 import AttendanceRequests from '../pages/vtp/AttendanceRequests';
 import MonthlyAttendanceReports from '../pages/vtp/MonthlyAttendanceReports';
 import ProtectedRoute from './ProtectedRoute';
+import DeviceChangeRequests from '../pages/common/DeviceChangeRequests';
 
 const VTPRoutes = () => {
   const allowedRoles = ['vtp', 'vocational_teacher_provider'];
@@ -39,6 +40,10 @@ const VTPRoutes = () => {
       <Route
         path="attendance-requests"
         element={<Navigate to="/vtp/vocational-training-requests" replace />}
+      />
+      <Route
+        path="device-change-requests"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><DeviceChangeRequests /></ProtectedRoute>}
       />
       <Route
         path="monthly-reports"

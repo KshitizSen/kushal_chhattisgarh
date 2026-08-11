@@ -24,6 +24,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (iso) =>
@@ -101,9 +102,10 @@ const AttendanceRequests = () => {
         } else {
           const s = { pending: 0, approved: 0, rejected: 0 };
           data.forEach((r) => {
-            if (r.status === 'pending') s.pending++;
-            if (r.status === 'approved') s.approved++;
-            if (r.status === 'rejected') s.rejected++;
+            const approvalStatus = r.hm_status || r.status;
+            if (approvalStatus === 'pending') s.pending++;
+            if (approvalStatus === 'approved') s.approved++;
+            if (approvalStatus === 'rejected') s.rejected++;
           });
           setCounts({ ...s, total: pag.totalRecords ?? pag.total ?? res.data.total ?? 0 });
         }
@@ -129,9 +131,10 @@ const AttendanceRequests = () => {
         const all = res.data.data || [];
         const s = { pending: 0, approved: 0, rejected: 0 };
         all.forEach((r) => {
-          if (r.status === 'pending') s.pending++;
-          if (r.status === 'approved') s.approved++;
-          if (r.status === 'rejected') s.rejected++;
+          const approvalStatus = r.hm_status || r.status;
+          if (approvalStatus === 'pending') s.pending++;
+          if (approvalStatus === 'approved') s.approved++;
+          if (approvalStatus === 'rejected') s.rejected++;
         });
 
         const pag = res.data.pagination || {};
@@ -295,24 +298,27 @@ const AttendanceRequests = () => {
     {
       key: 'hm_status',
       header: 'HM (Head Master) Status',
-      render: (_, row) => <StatusBadge status={row.hm_status || row.status || 'pending'} />,
+      render: (_, row) => <div className="flex flex-col items-start gap-1"><StatusBadge status={row.hm_status || row.status || 'pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
       key: 'vtp_status',
       header: 'VTP Status',
       render: (_, row) => (
-        activeTab === 'onduty' ? (
-          <StatusBadge status={row.vtp_status || 'pending'} />
-        ) : (
-          <span className="text-xs text-gray-500">—</span>
-        )
+        // activeTab === 'onduty' ? (
+          <div className="flex flex-col items-start gap-1">
+            <StatusBadge status={row.vtp_status || 'pending'} />
+            <ApprovalSourceBadge type={row.vtp_approval_type} />
+          </div>
+        // ) : (
+        //   <span className="text-xs text-gray-500">—</span>
+        // )
       ),
     },
     {
       key: 'actions',
       header: 'Actions',
       render: (_, row) => {
-        const actionStatus = (activeTab === 'onduty' ? (row.hm_status || row.status) : row.status) || 'pending';
+        const actionStatus = (row.hm_status || row.status) || 'pending';
         
         return (
           <div className="flex flex-col gap-1.5">

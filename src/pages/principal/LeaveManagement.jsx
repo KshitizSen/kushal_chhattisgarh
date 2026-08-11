@@ -26,6 +26,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (iso) =>
@@ -329,7 +330,7 @@ const LeaveManagement = () => {
     {
       key: 'status',
       header: 'Status',
-      render: (value) => <StatusBadge status={value} />,
+      render: (value, row) => <div className="flex flex-col items-start gap-1"><StatusBadge status={value} /><ApprovalSourceBadge type={row.principal_approval_type} /></div>,
     },
     {
       key: 'actions',

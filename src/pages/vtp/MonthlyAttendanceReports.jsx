@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  FileText, Download, CheckCircle, XCircle, Clock, AlertCircle,
+  FileText, Download, CheckCircle, XCircle, Clock, AlertCircle, FileSpreadsheet,
   RefreshCw, Search, Filter, ShieldCheck, ShieldX, ShieldAlert,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -14,6 +14,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import Pagination from '../../components/common/Pagination';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const MONTHS = [
@@ -65,6 +66,7 @@ const MonthlyAttendanceReports = () => {
   const [totalItems, setTotalItems]       = useState(0);
 
   const [downloadLoading, setDownloadLoading] = useState(null);
+  const [excelLoading, setExcelLoading] = useState(false);
   const [actionLoading, setActionLoading]     = useState(false);
   const [approveModal, setApproveModal] = useState({ open: false, report: null });
   const [rejectModal, setRejectModal]   = useState({ open: false, report: null });
@@ -137,6 +139,39 @@ const MonthlyAttendanceReports = () => {
       toast.error(err?.response?.data?.message || 'Failed to download PDF');
     } finally {
       setDownloadLoading(null);
+    }
+  };
+
+  const handleExcelExport = async () => {
+    setExcelLoading(true);
+    try {
+      const res = await api.get('/reports/download-vtp-vt-excel', {
+        params: { month: selectedMonth, year: selectedYear },
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(res.data);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `VTP_VT_Attendance_${MONTHS[selectedMonth - 1]}_${selectedYear}.xlsx`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Excel report downloaded');
+    } catch (err) {
+      let message = 'Failed to export Excel report';
+      const responseData = err?.response?.data;
+      if (responseData instanceof Blob) {
+        try {
+          const parsed = JSON.parse(await responseData.text());
+          message = parsed.message || message;
+        } catch (_) {}
+      } else if (responseData?.message) {
+        message = responseData.message;
+      }
+      toast.error(message);
+    } finally {
+      setExcelLoading(false);
     }
   };
 
@@ -218,14 +253,17 @@ const MonthlyAttendanceReports = () => {
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-gray-500 w-8">HM (Head Master):</span>
             <ApprovalPill status={row.hm_approval_status} />
+            <ApprovalSourceBadge type={row.hm_approval_type} />
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-gray-500 w-8">DEO:</span>
             <ApprovalPill status={row.deo_approval_status} />
+            <ApprovalSourceBadge type={row.deo_approval_type} />
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-gray-500 w-8">VTP:</span>
             <ApprovalPill status={row.vtp_approval_status} />
+            <ApprovalSourceBadge type={row.vtp_approval_type} />
           </div>
         </div>
       ),
@@ -440,6 +478,17 @@ const MonthlyAttendanceReports = () => {
           />
         </div>
       </Card>
+
+      <div className="flex justify-end">
+        <Button
+          variant="success"
+          leftIcon={<FileSpreadsheet className="h-4 w-4" />}
+          onClick={handleExcelExport}
+          loading={excelLoading}
+        >
+          Export Excel
+        </Button>
+      </div>
 
       {/* Reports Table */}
       <Card variant="elevated">

@@ -29,6 +29,8 @@ const Table = ({
   emptyState,
   className = '',
 }) => {
+  const safeData = Array.isArray(data) ? data : [];
+  const safeColumns = Array.isArray(columns) ? columns : [];
   const sizeClasses = {
     sm: 'text-sm',
     md: 'text-base',
@@ -41,7 +43,7 @@ const Table = ({
     }
   };
 
-  if (data.length === 0) {
+  if (safeData.length === 0) {
     return emptyState || (
       <div className="text-center py-12 border border-gray-200 dark:border-gray-700 rounded-lg">
         <div className="text-gray-400 dark:text-gray-500">No data available</div>
@@ -55,9 +57,9 @@ const Table = ({
         <table className={`w-full ${sizeClasses[size]}`}>
           <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
           <tr>
-            {columns.map((col) => (
+            {safeColumns.map((col, columnIndex) => (
               <th
-                key={col.key}
+                key={`${col.key}-${columnIndex}`}
                 className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'} ${col.sortable ? 'cursor-pointer select-none' : ''}`}
                 style={{ width: col.width }}
                 onClick={() => handleSort(col)}
@@ -80,7 +82,7 @@ const Table = ({
           </tr>
           </thead>
           <tbody>
-            {data.map((row, rowIndex) => {
+            {safeData.map((row, rowIndex) => {
               if (renderRow) {
                 return renderRow(row, rowIndex);
               }
@@ -89,9 +91,9 @@ const Table = ({
                   key={keyExtractor ? keyExtractor(row, rowIndex) : row.id ?? rowIndex}
                   className={`${striped && rowIndex % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800/50' : ''} ${hover ? 'hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors' : ''} border-b border-gray-200 dark:border-gray-700 last:border-b-0`}
                 >
-                  {columns.map((col) => (
+                  {safeColumns.map((col, columnIndex) => (
                     <td
-                      key={col.key}
+                      key={`${col.key}-${columnIndex}`}
                       className={`px-4 py-3 text-gray-800 dark:text-gray-200 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}
                     >
                       {col.render ? col.render(row[col.key], row, rowIndex) : row[col.key]}

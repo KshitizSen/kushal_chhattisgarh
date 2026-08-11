@@ -88,7 +88,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: '/vtp/vt-approvals', label: 'Register Approvals', icon: <ShieldCheck className="h-5 w-5" /> },
           { path: '/vtp/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
-          { path: '/vtp/vocational-training-requests', label: 'OnDuty Requests', icon: <CheckCircle className="h-5 w-5" /> },
+          { path: '/vtp/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },
+          { path: '/vtp/device-change-requests', label: 'Device Requests', icon: <Shield className="h-5 w-5" /> },
         ],
       },
       {
@@ -107,6 +108,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: '/principal/teacher-approval', label: 'Register Approvals', icon: <UserCheck className="h-5 w-5" /> },
           { path: '/principal/vocational-training-approval', label: 'VT Status', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/principal/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },
+          { path: '/principal/device-change-requests', label: 'Device Requests', icon: <Shield className="h-5 w-5" /> },
         ],
       },
       {
