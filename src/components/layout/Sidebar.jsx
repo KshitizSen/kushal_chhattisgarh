@@ -84,8 +84,15 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
 
     const vtpItems = [
       {
+        title: 'Overview',
+        items: [
+          { path: '/vtp/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
+        ],
+      },
+      {
         title: 'Approvals',
         items: [
+          { path: '/vtp/vt-list', label: "VT's List", icon: <Users className="h-5 w-5" /> },
           { path: '/vtp/vt-approvals', label: 'Register Approvals', icon: <ShieldCheck className="h-5 w-5" /> },
           { path: '/vtp/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
           { path: '/vtp/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },

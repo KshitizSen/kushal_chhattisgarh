@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/vtp/Dashboard';
 import VtApprovals from '../pages/vtp/VtApprovals';
+import VtStaffList from '../pages/vtp/VtStaffList';
 import LeaveManagement from '../pages/vtp/LeaveManagement';
 import AttendanceRequests from '../pages/vtp/AttendanceRequests';
 import MonthlyAttendanceReports from '../pages/vtp/MonthlyAttendanceReports';
@@ -13,6 +14,10 @@ const VTPRoutes = () => {
 
   return (
     <Routes>
+      <Route
+        path="dashboard"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><Dashboard /></ProtectedRoute>}
+      />
       <Route
         path="vt-approvals"
         element={
@@ -38,6 +43,10 @@ const VTPRoutes = () => {
         }
       />
       <Route
+        path="vt-list"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><VtStaffList /></ProtectedRoute>}
+      />
+      <Route
         path="attendance-requests"
         element={<Navigate to="/vtp/vocational-training-requests" replace />}
       />
@@ -53,7 +62,7 @@ const VTPRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/vtp/vt-approvals" replace />} />
+      <Route path="*" element={<Navigate to="/vtp/dashboard" replace />} />
     </Routes>
   );
 };
