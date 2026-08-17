@@ -99,6 +99,19 @@ const useVtpStore = create(
         }
       },
 
+      approveLeaveCancellation: async (cancellationRequestId, remarks = '') => {
+        try {
+          const res = await vtpService.approveLeaveCancellation(cancellationRequestId, remarks);
+          if (res.data?.status) {
+            await Promise.all([get().fetchLeaves(), get().fetchBalances()]);
+            return { success: true, message: res.data.message };
+          }
+          return { success: false, message: res.data?.message };
+        } catch (error) {
+          return { success: false, message: error.response?.data?.message || error.message };
+        }
+      },
+
       // Actions - Balances
       fetchBalances: async () => {
         set({ balanceLoading: true });
@@ -111,7 +124,7 @@ const useVtpStore = create(
               balanceLoading: false,
             });
           }
-        } catch (error) {
+        } catch {
           set({ balanceLoading: false });
         }
       },

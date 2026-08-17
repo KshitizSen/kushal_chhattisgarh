@@ -14,6 +14,14 @@ const vtpService = {
     return api.patch(`/vtp/${userId}/reject`, { remarks });
   },
 
+  getVtMobileUpdateRequests: (params = {}) => {
+    return api.get('/vtp/vt-mobile-update-requests', { params });
+  },
+
+  updateVtMobileRequestStatus: (staffId, status) => {
+    return api.patch(`/vtp/vt-mobile-update-requests/${staffId}/status`, { status });
+  },
+
   // Leave Management
   getLeaves: (params) => {
     const query = new URLSearchParams(params).toString();
@@ -26,6 +34,10 @@ const vtpService = {
 
   rejectLeave: (leaveId, remarks = '') => {
     return api.patch(`/vtp/leave/${leaveId}/reject`, { remarks });
+  },
+
+  approveLeaveCancellation: (cancellationRequestId, remarks = '') => {
+    return api.patch(`/vtp/leave-cancellation/${cancellationRequestId}/approve`, { remarks });
   },
 
   // Leave Balances (Scoped to VTP organization)
