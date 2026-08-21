@@ -61,6 +61,7 @@ const LeaveManagement = () => {
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isCancellationModalOpen, setIsCancellationModalOpen] = useState(false);
   const [remarks, setRemarks] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -249,6 +250,28 @@ const LeaveManagement = () => {
     }
   };
 
+  const handleCancellationApprove = async () => {
+    if (!selectedLeave?.cancellation_request_id) return;
+    setActionLoading(true);
+    try {
+      const response = await api.patch(
+        `/headmaster/leave-cancellation/${selectedLeave.cancellation_request_id}/approve`,
+        { remarks: remarks.trim() }
+      );
+      toast.success(response.data?.message || 'Leave cancellation approved');
+      setIsCancellationModalOpen(false);
+      setSelectedLeave(null);
+      setRemarks('');
+      fetchLeaves();
+      fetchCounts();
+      fetchSchoolBalances();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to approve leave cancellation');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // ── Table columns ─────────────────────────────────────────────────────
   const columns = [
     {
@@ -358,9 +381,24 @@ const LeaveManagement = () => {
             </>
           )}
           {row.status === 'approved' && (
-            <Badge variant="success" outline size="sm">
-              <CheckCircle className="h-3 w-3 mr-1 inline" /> Approved
-            </Badge>
+            <>
+              <Badge variant="success" outline size="sm">
+                <CheckCircle className="h-3 w-3 mr-1 inline" /> Approved
+              </Badge>
+              {row.cancellation_status === 'pending' && row.cancellation_hm_status === 'pending' && (
+                <Button
+                  variant="warning"
+                  size="sm"
+                  leftIcon={<Ban className="h-3.5 w-3.5" />}
+                  onClick={() => { setSelectedLeave(row); setRemarks(''); setIsCancellationModalOpen(true); }}
+                >
+                  Approve Cancellation
+                </Button>
+              )}
+              {row.cancellation_status === 'pending' && row.cancellation_hm_status === 'approved' && (
+                <Badge variant="warning" outline size="sm">Awaiting VTP</Badge>
+              )}
+            </>
           )}
           {row.status === 'rejected' && (
             <Badge variant="danger" outline size="sm">
@@ -713,6 +751,41 @@ const LeaveManagement = () => {
       )}
 
       {/* ── Approve Modal ─────────────────────────────────────────────────── */}
+      <Modal
+        isOpen={isCancellationModalOpen}
+        onClose={() => { setIsCancellationModalOpen(false); setSelectedLeave(null); setRemarks(''); }}
+        title="Approve Leave Cancellation"
+        size="md"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => { setIsCancellationModalOpen(false); setSelectedLeave(null); setRemarks(''); }}>
+              Close
+            </Button>
+            <Button variant="warning" onClick={handleCancellationApprove} loading={actionLoading} leftIcon={<Ban className="h-4 w-4" />}>
+              Approve Cancellation
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+            <p className="font-medium text-amber-900 dark:text-amber-200">Approve cancellation for this date?</p>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+              Attendance will be enabled only after both HM and VTP approve.
+            </p>
+          </div>
+          {selectedLeave && (
+            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-2 text-sm">
+              <div className="flex justify-between gap-4"><span className="text-gray-500">VT</span><span className="font-medium">{selectedLeave.teacher_name}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-gray-500">Date</span><span className="font-medium">{fmtDate(selectedLeave.cancellation_date)}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-gray-500">Reason</span><span className="font-medium text-right">{selectedLeave.cancellation_reason || '—'}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-gray-500">VTP Status</span><StatusBadge status={selectedLeave.cancellation_vtp_status} /></div>
+            </div>
+          )}
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
+        </div>
+      </Modal>
+
       <Modal
         isOpen={isApproveModalOpen}
         onClose={() => { setIsApproveModalOpen(false); setSelectedLeave(null); setRemarks(''); }}
