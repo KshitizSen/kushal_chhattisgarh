@@ -33,6 +33,26 @@ export const getAdminVtpList = async ({
   return response.data;
 };
 
+export const getAdminVtpOptions = async () => {
+  const response = await api.get('/admin/vtp-options');
+  return response.data;
+};
+
+export const createAdminVtp = async (payload) => {
+  const response = await api.post('/admin/vtp', payload);
+  return response.data;
+};
+
+export const updateAdminVtp = async (id, payload) => {
+  const response = await api.put(`/admin/vtp/${id}`, payload);
+  return response.data;
+};
+
+export const deleteAdminVtp = async (id) => {
+  const response = await api.delete(`/admin/vtp/${id}`);
+  return response.data;
+};
+
 export const getAdminDeoList = async ({
   page = 1,
   limit = 10,
@@ -44,6 +64,11 @@ export const getAdminDeoList = async ({
   const response = await api.get('/admin/deos', {
     params: { page, limit, search, district_cd, block_cd, cluster_cd },
   });
+  return response.data;
+};
+
+export const updateAdminDeo = async (id, payload) => {
+  const response = await api.put(`/admin/deos/${id}`, payload);
   return response.data;
 };
 

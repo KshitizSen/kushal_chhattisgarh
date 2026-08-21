@@ -20,6 +20,7 @@ import Input from '../../components/common/Input';
 import Pagination from '../../components/common/Pagination';
 import Table from '../../components/common/Table';
 import api from '../../services/api';
+import { getSerialNumber } from '../../utils/paginationUtils';
 
 const PAGE_SIZE_OPTIONS = [10, 15, 30, 50];
 
@@ -153,7 +154,7 @@ const pageConfig = {
       status: row.status || 'active',
     }),
     columns: [
-      { key: 'seno', header: 'Se no', render: (_, __, index) => <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span> },
+      { key: 'seno', header: 'Se no', render: (value) => <span className="text-sm text-gray-500 dark:text-gray-400">{value}</span> },
       { key: 'vtp_name', header: 'VTP Name', render: (value, row) => personCell(value, row.email) },
       { key: 'vc_name', header: 'Contact Person', render: (value, row) => <div><p>{value || '-'}</p><p className="text-xs text-gray-500">{row.mobile || '-'}</p></div> },
       { key: 'district_name', header: 'District', render: (value) => <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4 text-gray-400" />{value || '-'}</span> },
@@ -187,7 +188,7 @@ const pageConfig = {
       vtp_approval_status: row.vtp_approval_status || 'pending',
     }),
     columns: [
-      { key: 'seno', header: 'Se no', render: (_, __, index) => <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span> },
+      { key: 'seno', header: 'Se no', render: (value) => <span className="text-sm text-gray-500 dark:text-gray-400">{value}</span> },
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'block_name', header: 'Block', render: (value, row) => <div><p>{value || '-'}</p><p className="text-xs text-gray-500">{row.district_name || '-'}</p></div> },
       { key: 'hm_approval_status', header: 'HM (Head Master) Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
@@ -213,7 +214,7 @@ const pageConfig = {
       status: row.status || 'pending',
     }),
     columns: [
-      { key: 'seno', header: 'Se no', render: (_, __, index) => <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span> },
+      { key: 'seno', header: 'Se no', render: (value) => <span className="text-sm text-gray-500 dark:text-gray-400">{value}</span> },
       { key: 'vt_name', header: 'VT Name', render: (value, row) => personCell(value, row.trade) },
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'vtp_name', header: 'VTP' },
@@ -395,6 +396,16 @@ const DeoTablePage = ({ type }) => {
     });
   }, [isApiPage, rows, searchQuery, statusFilter, statusKey]);
 
+  const displayRows = useMemo(() => {
+    if (!isApiPage) return filteredRows;
+    const page = pagination.currentPage || currentPage;
+    const limit = pagination.limit || pageSize;
+    return filteredRows.map((row, index) => ({
+      ...row,
+      seno: getSerialNumber(index, page, limit),
+    }));
+  }, [currentPage, filteredRows, isApiPage, pageSize, pagination.currentPage, pagination.limit]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -506,7 +517,7 @@ const DeoTablePage = ({ type }) => {
           </div>
         )}
         <Table
-          data={filteredRows}
+          data={displayRows}
           columns={config.columns}
           keyExtractor={(row, index) => row.id || row.udise_code || index}
           emptyState={

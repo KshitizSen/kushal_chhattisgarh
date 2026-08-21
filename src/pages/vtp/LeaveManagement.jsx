@@ -247,7 +247,7 @@ const LeaveManagement = () => {
       ),
     },
     {
-      key: 'status',
+      key: 'vtp_status',
       header: 'VTP Status',
       render: (value, row) => (
         <div className="flex flex-col gap-1">
@@ -269,7 +269,7 @@ const LeaveManagement = () => {
       header: 'Actions',
       render: (_, row) => (
         <div className="flex flex-col gap-1.5 min-w-[100px]">
-          {row.status === 'pending' && (
+          {row.vtp_status === 'pending' && row.principal_status !== 'rejected' && (
             <>
               <Button
                 variant="success"
@@ -291,7 +291,7 @@ const LeaveManagement = () => {
               </Button>
             </>
           )}
-          {row.status === 'approved' && !row.leave_approved && (
+          {row.vtp_status === 'approved' && row.principal_status === 'pending' && !row.leave_approved && (
             <div className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/10 p-1.5 rounded border border-amber-100 text-center">
               Awaiting Principal
             </div>
@@ -319,9 +319,14 @@ const LeaveManagement = () => {
               )}
             </>
           )}
-          {row.status === 'rejected' && (
+          {row.principal_status === 'rejected' && (
             <Badge variant="danger" outline size="sm" className="w-full justify-center">
-              <XCircle className="h-3 w-3 mr-1 inline" /> Rejected
+              <XCircle className="h-3 w-3 mr-1 inline" /> Principal Rejected
+            </Badge>
+          )}
+          {row.vtp_status === 'rejected' && (
+            <Badge variant="danger" outline size="sm" className="w-full justify-center">
+              <XCircle className="h-3 w-3 mr-1 inline" /> VTP Rejected
             </Badge>
           )}
         </div>

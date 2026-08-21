@@ -7,6 +7,7 @@ import Card from '../../components/common/Card';
 import Pagination from '../../components/common/Pagination';
 import api from '../../services/api';
 import { getAdminSchools } from '../../services/adminService';
+import { getSerialNumber } from '../../utils/paginationUtils';
 
 const PAGE_SIZE_OPTIONS = [10, 15, 30, 50];
 const displayValue = (value) => (value === null || value === undefined || value === '' ? 'N/A' : value);
@@ -214,7 +215,7 @@ const ManageSchools = () => {
             renderRow={(school, index) => (
               <tr key={school.id || school.udise_sch_code} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-gray-900 dark:text-white">{index + 1}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{getSerialNumber(index, currentPage, pageSize)}</p>
                 </td>
                 <td className="px-4 py-3">
                   <p className="font-medium text-gray-900 dark:text-white">{displayValue(school.school_name)}</p>

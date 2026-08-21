@@ -367,6 +367,9 @@ const LeaveManagement = () => {
               <XCircle className="h-3 w-3 mr-1 inline" /> Rejected
             </Badge>
           )}
+          {row.status === 'cancelled' && (
+            <Badge variant="warning" outline size="sm">Cancelled</Badge>
+          )}
         </div>
       ),
     },
