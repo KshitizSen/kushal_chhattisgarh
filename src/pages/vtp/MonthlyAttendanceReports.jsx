@@ -45,13 +45,6 @@ const ApprovalPill = ({ status, short }) => {
   );
 };
 
-// Returns the first blocking authority text, or null if VTP can approve
-const getBlockingAuthority = (report) => {
-  if (report.hm_approval_status !== 'approved')  return 'Not approved by Principal/HM (Head Master)';
-  if (report.deo_approval_status !== 'approved') return 'Not approved by DEO';
-  return null;
-};
-
 // ── Component ─────────────────────────────────────────────────────────────────
 const MonthlyAttendanceReports = () => {
   const [reports, setReports]             = useState([]);
@@ -272,7 +265,6 @@ const MonthlyAttendanceReports = () => {
       key: 'actions',
       header: 'Actions',
       render: (_, row) => {
-        const blocker = getBlockingAuthority(row);
         return (
           <div className="flex flex-col gap-1.5">
             {/* View PDF */}
@@ -289,25 +281,19 @@ const MonthlyAttendanceReports = () => {
             )}
 
             {/* VTP Approve / locked check */}
-            {row.vtp_approval_status === 'pending' && (
+            {(
               <>
-                <div title={blocker || ''}>
+                {row.vtp_approval_status !== 'approved' && <div>
                   <Button
                     variant="success"
                     size="sm"
                     leftIcon={<CheckCircle className="h-3 w-3" />}
-                    disabled={!!blocker}
                     onClick={() => { setApproveModal({ open: true, report: row }); setRemarks(''); }}
                   >
                     Final Approve
                   </Button>
-                </div>
-                {blocker && (
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3 flex-shrink-0" />
-                    {blocker}
-                  </p>
-                )}
+                </div>}
+                {row.vtp_approval_status !== 'rejected' && (
                 <Button
                   variant="danger"
                   size="sm"
@@ -316,6 +302,7 @@ const MonthlyAttendanceReports = () => {
                 >
                   Reject
                 </Button>
+                )}
               </>
             )}
 

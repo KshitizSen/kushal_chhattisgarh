@@ -360,8 +360,7 @@ const LeaveManagement = () => {
       header: 'Actions',
       render: (_, row) => (
         <div className="flex flex-col gap-1.5">
-          {row.status === 'pending' && (
-            <>
+          {row.status !== 'approved' && row.status !== 'cancelled' && (
               <Button
                 variant="success"
                 size="sm"
@@ -370,6 +369,8 @@ const LeaveManagement = () => {
               >
                 Approve
               </Button>
+          )}
+          {row.status !== 'rejected' && row.status !== 'cancelled' && (
               <Button
                 variant="danger"
                 size="sm"
@@ -378,7 +379,6 @@ const LeaveManagement = () => {
               >
                 Reject
               </Button>
-            </>
           )}
           {row.status === 'approved' && (
             <>

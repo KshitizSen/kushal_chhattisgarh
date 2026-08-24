@@ -207,8 +207,7 @@ const VtApprovals = () => {
       header: 'Actions',
       render: (_, row) => (
         <div className="flex flex-col gap-2">
-          {row.vtp_approval_status === 'pending' && (
-            <>
+          {row.vtp_approval_status !== 'accepted' && (
               <Button
                 variant="success"
                 size="sm"
@@ -217,6 +216,8 @@ const VtApprovals = () => {
               >
                 Approve
               </Button>
+          )}
+          {row.vtp_approval_status !== 'rejected' && (
               <Button
                 variant="danger"
                 size="sm"
@@ -225,7 +226,6 @@ const VtApprovals = () => {
               >
                 Reject
               </Button>
-            </>
           )}
           {row.vtp_approval_status === 'accepted' && (
             <Badge variant="success" outline rounded>

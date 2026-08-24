@@ -242,8 +242,7 @@ const TeacherApproval = () => {
       header: 'Actions',
       render: (_, row) => (
         <div className="flex flex-col gap-2">
-          {row.vt_approval_status === 'pending' && (
-            <>
+          {row.vt_approval_status !== 'accepted' && (
               <Button
                 variant="success"
                 size="sm"
@@ -255,6 +254,8 @@ const TeacherApproval = () => {
               >
                 Approve
               </Button>
+          )}
+          {row.vt_approval_status !== 'rejected' && (
               <Button
                 variant="danger"
                 size="sm"
@@ -266,7 +267,6 @@ const TeacherApproval = () => {
               >
                 Reject
               </Button>
-            </>
           )}
           {row.vt_approval_status === 'accepted' && (
             <Badge variant="success" outline rounded>

@@ -299,7 +299,6 @@ const MonthlyReports = () => {
       key: 'actions',
       header: 'Actions',
       render: (_, row) => {
-        const hmApproved = row.hm_approval_status === 'approved';
         return (
           <div className="flex flex-col gap-1.5">
             {/* View PDF */}
@@ -316,25 +315,19 @@ const MonthlyReports = () => {
             )}
 
             {/* Approve */}
-            {row.deo_approval_status === 'pending' && (
+            {(
               <>
-                <div title={!hmApproved ? 'Not approved by Principal/HM (Head Master)' : ''}>
+                {row.deo_approval_status !== 'approved' && <div>
                   <Button
                     variant="success"
                     size="sm"
                     leftIcon={<CheckCircle className="h-3 w-3" />}
-                    disabled={!hmApproved}
                     onClick={() => { setApproveModal({ open: true, report: row }); setRemarks(''); }}
                   >
                     Approve
                   </Button>
-                </div>
-                {!hmApproved && (
-                  <p className="text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    Awaiting HM (Head Master) approval
-                  </p>
-                )}
+                </div>}
+                {row.deo_approval_status !== 'rejected' && (
                 <Button
                   variant="danger"
                   size="sm"
@@ -343,6 +336,7 @@ const MonthlyReports = () => {
                 >
                   Reject
                 </Button>
+                )}
               </>
             )}
             {row.deo_approval_status === 'approved' && (

@@ -309,8 +309,9 @@ const AttendanceRequests = () => {
           >
             View
           </Button>
-          {row.vtp_status === 'pending' && (
+          {(
             <div className="flex gap-1.5">
+              {row.vtp_status !== 'approved' && (
               <Button
                 variant="success"
                 size="sm"
@@ -320,6 +321,8 @@ const AttendanceRequests = () => {
               >
                 Approve
               </Button>
+              )}
+              {row.vtp_status !== 'rejected' && (
               <Button
                 variant="danger"
                 size="sm"
@@ -329,6 +332,7 @@ const AttendanceRequests = () => {
               >
                 Reject
               </Button>
+              )}
             </div>
           )}
         </div>

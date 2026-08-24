@@ -322,8 +322,9 @@ const AttendanceRequests = () => {
         
         return (
           <div className="flex flex-col gap-1.5">
-            {actionStatus === 'pending' ? (
+            {(
               <>
+                {actionStatus !== 'approved' && (
                 <Button
                   variant="success"
                   size="sm"
@@ -332,6 +333,8 @@ const AttendanceRequests = () => {
                 >
                   Approve
                 </Button>
+                )}
+                {actionStatus !== 'rejected' && (
                 <Button
                   variant="danger"
                   size="sm"
@@ -340,16 +343,8 @@ const AttendanceRequests = () => {
                 >
                   Reject
                 </Button>
-              </>
-            ) : (
-              <Badge variant={actionStatus === 'approved' ? 'success' : 'danger'} outline size="sm">
-                {actionStatus === 'approved' ? (
-                  <CheckCircle className="h-3 w-3 mr-1 inline" />
-                ) : (
-                  <XCircle className="h-3 w-3 mr-1 inline" />
                 )}
-                <span className="capitalize">{actionStatus}</span>
-              </Badge>
+              </>
             )}
           </div>
         );

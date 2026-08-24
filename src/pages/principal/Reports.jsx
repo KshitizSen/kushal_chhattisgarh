@@ -289,8 +289,7 @@ const Reports = () => {
       header: 'Actions',
       render: (_, row) => (
         <div className="flex flex-col gap-2">
-          {row.hm_approval_status === 'pending' && (
-            <>
+          {row.hm_approval_status !== 'approved' && (
               <Button
                 variant="success"
                 size="sm"
@@ -299,6 +298,8 @@ const Reports = () => {
               >
                 Approve
               </Button>
+          )}
+          {row.hm_approval_status !== 'rejected' && (
               <Button
                 variant="danger"
                 size="sm"
@@ -307,7 +308,6 @@ const Reports = () => {
               >
                 Reject
               </Button>
-            </>
           )}
           {row.hm_approval_status === 'approved' && (
             <Badge variant="success" outline rounded>

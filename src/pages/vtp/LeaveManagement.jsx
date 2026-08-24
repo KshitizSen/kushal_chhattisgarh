@@ -269,8 +269,7 @@ const LeaveManagement = () => {
       header: 'Actions',
       render: (_, row) => (
         <div className="flex flex-col gap-1.5 min-w-[100px]">
-          {row.vtp_status === 'pending' && row.principal_status !== 'rejected' && (
-            <>
+          {row.vtp_status !== 'approved' && (
               <Button
                 variant="success"
                 size="sm"
@@ -280,6 +279,8 @@ const LeaveManagement = () => {
               >
                 Approve
               </Button>
+          )}
+          {row.vtp_status !== 'rejected' && (
               <Button
                 variant="danger"
                 size="sm"
@@ -289,7 +290,6 @@ const LeaveManagement = () => {
               >
                 Reject
               </Button>
-            </>
           )}
           {row.vtp_status === 'approved' && row.principal_status === 'pending' && !row.leave_approved && (
             <div className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/10 p-1.5 rounded border border-amber-100 text-center">
