@@ -66,17 +66,17 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
           // { path: '/admin/manage-users', label: 'Manage Users', icon: <Users className="h-5 w-5" /> },
-          { path: '/admin/manage-schools', label: 'Manage Schools', icon: <School className="h-5 w-5" /> },
+          { path: '/admin/manage-schools', label: 'Schools List', icon: <School className="h-5 w-5" /> },
           { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <Building2 className="h-5 w-5" /> },
           { path: '/admin/manage-deo', label: 'Manage DEO', icon: <UserCheck className="h-5 w-5" /> },
-          { path: '/admin/vocational-training-approval-tracking', label: 'VT Approval', icon: <Route className="h-5 w-5" /> },
+          { path: '/admin/vocational-training-approval-tracking', label: 'VTs Approval Tracking', icon: <Route className="h-5 w-5" /> },
         ],
       },
       {
         title: 'Governance',
         items: [
           // { path: '/admin/roles', label: 'Role & Permission', icon: <Shield className="h-5 w-5" /> },
-          { path: '/admin/reports', label: 'Reports', icon: <BarChart3 className="h-5 w-5" /> },
+          // { path: '/admin/reports', label: 'Reports', icon: <BarChart3 className="h-5 w-5" /> },
           { path: '/admin/settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
         ],
       },
