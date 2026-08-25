@@ -45,14 +45,14 @@ const Table = ({
 
   if (safeData.length === 0) {
     return emptyState || (
-      <div className="text-center py-12 border border-gray-200 dark:border-gray-700 rounded-lg">
+      <div className="rounded-lg border border-gray-200 py-8 text-center dark:border-gray-700">
         <div className="text-gray-400 dark:text-gray-500">No data available</div>
       </div>
     );
   }
 
   return (
-    <div className={`overflow-hidden rounded-[1.5rem] border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900/40 ${className}`}>
+    <div className={`overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900/40 ${className}`}>
       <div className="overflow-x-auto">
         <table className={`w-full ${sizeClasses[size]}`}>
           <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
@@ -60,7 +60,7 @@ const Table = ({
             {safeColumns.map((col, columnIndex) => (
               <th
                 key={`${col.key}-${columnIndex}`}
-                className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'} ${col.sortable ? 'cursor-pointer select-none' : ''}`}
+                className={`px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-[0.12em] text-gray-500 dark:text-gray-400 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'} ${col.sortable ? 'cursor-pointer select-none' : ''}`}
                 style={{ width: col.width }}
                 onClick={() => handleSort(col)}
                 aria-sort={sortColumn === col.key ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
@@ -94,7 +94,7 @@ const Table = ({
                   {safeColumns.map((col, columnIndex) => (
                     <td
                       key={`${col.key}-${columnIndex}`}
-                      className={`px-4 py-3 text-gray-800 dark:text-gray-200 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}
+                      className={`px-3.5 py-2.5 text-gray-800 dark:text-gray-200 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}
                     >
                       {col.render ? col.render(row[col.key], row, rowIndex) : row[col.key]}
                     </td>

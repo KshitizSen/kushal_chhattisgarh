@@ -283,7 +283,7 @@ const VtApprovals = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Approvals</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Pending Approvals</p>
               <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{counts.pending}</p>
             </div>
             <div className="p-3 rounded-2xl bg-yellow-100 dark:bg-yellow-900/30">
@@ -299,7 +299,7 @@ const VtApprovals = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Approved Teachers</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Approved Teachers</p>
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">{counts.accepted}</p>
             </div>
             <div className="p-3 rounded-2xl bg-green-100 dark:bg-green-900/30">
@@ -315,7 +315,7 @@ const VtApprovals = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rejected</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Rejected</p>
               <p className="text-3xl font-bold text-red-600 dark:text-red-400">{counts.rejected}</p>
             </div>
             <div className="p-3 rounded-2xl bg-red-100 dark:bg-red-900/30">

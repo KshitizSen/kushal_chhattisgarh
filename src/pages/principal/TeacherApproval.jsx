@@ -221,18 +221,6 @@ const TeacherApproval = () => {
       ),
     },
     {
-      key: 'created_at',
-      header: 'Registered',
-      render: (value) => (
-        <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-gray-400" />
-          <span className="text-gray-700 dark:text-gray-300 text-sm">
-            {value ? new Date(value).toLocaleDateString('en-IN') : 'N/A'}
-          </span>
-        </div>
-      ),
-    },
-    {
       key: 'vt_approval_status',
       header: 'Status',
       render: (value) => <StatusBadge status={value} />,
@@ -320,7 +308,7 @@ const TeacherApproval = () => {
         <Card variant="elevated" className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
                 Pending Approvals
               </p>
               <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
@@ -336,7 +324,7 @@ const TeacherApproval = () => {
         <Card variant="elevated" className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
                 Approved Teachers
               </p>
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">
@@ -352,7 +340,7 @@ const TeacherApproval = () => {
         <Card variant="elevated" className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
                 Rejected
               </p>
               <p className="text-3xl font-bold text-red-600 dark:text-red-400">

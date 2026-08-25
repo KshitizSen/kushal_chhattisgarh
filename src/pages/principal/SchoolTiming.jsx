@@ -218,7 +218,7 @@ const SchoolTiming = () => {
               <Sun className="h-6 w-6 text-orange-600 dark:text-orange-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-lg text-gray-600 dark:text-gray-400">
                 School Starts At
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -237,7 +237,7 @@ const SchoolTiming = () => {
               <Moon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-lg text-gray-600 dark:text-gray-400">
                 School Ends At
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -256,7 +256,7 @@ const SchoolTiming = () => {
               <Timer className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-lg text-gray-600 dark:text-gray-400">
                 School Duration
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">

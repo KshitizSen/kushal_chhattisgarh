@@ -452,7 +452,7 @@ const LeaveManagement = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className={`text-sm font-medium text-${color}-700 dark:text-${color}-300`}>{label}</p>
+                <p className={`text-lg font-medium text-${color}-700 dark:text-${color}-300`}>{label}</p>
                 <p className={`text-3xl font-bold text-${color}-600 dark:text-${color}-400`}>{value}</p>
               </div>
               <div className={`p-3 rounded-2xl bg-${color}-100 dark:bg-${color}-900/30`}>
@@ -507,7 +507,7 @@ const LeaveManagement = () => {
           <Card variant="elevated" className="bg-blue-50 dark:bg-blue-900/10">
             <div className="text-center">
               <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{balanceSummary.totalTeachers}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total VTs</p>
+              <p className="text-lg text-gray-600 dark:text-gray-400">Total VTs</p>
             </div>
           </Card>
           <Card variant="elevated" className="bg-green-50 dark:bg-green-900/10">

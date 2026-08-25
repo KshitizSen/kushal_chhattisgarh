@@ -577,7 +577,6 @@ const Holidays = () => {
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Date</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Description</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Remarks</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Declared On</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -590,7 +589,6 @@ const Holidays = () => {
                           <td className="px-4 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">{formatDate(h.generated_holiday_date)}</td>
                           <td className="px-4 py-3 text-gray-700 dark:text-gray-300 max-w-xs truncate">{h.holiday_description}</td>
                           <td className="px-4 py-3 text-gray-500 dark:text-gray-400 max-w-xs truncate">{h.remarks || '—'}</td>
-                          <td className="px-4 py-3 text-gray-500 dark:text-gray-400 whitespace-nowrap text-xs">{formatDate(h.created_at)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -748,7 +746,7 @@ const HolidayCalendar = ({ calMonth, setCalMonth, holidayMap, year, onSelect }) 
 // ═══════════════════════════════════════════════════════════════════════════════
 const DetailBlock = ({ label, value, fullWidth }) => (
   <div className={`p-3 bg-gray-50 dark:bg-gray-800 rounded-xl ${fullWidth ? 'col-span-2' : ''}`}>
-    <p className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">{label}</p>
+    <p className="text-base text-gray-500 mb-1 font-medium uppercase tracking-wide">{label}</p>
     <p className="font-medium text-gray-800 dark:text-gray-200">{value}</p>
   </div>
 );

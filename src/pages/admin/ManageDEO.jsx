@@ -166,9 +166,9 @@ const ManageDEO = () => {
 
   const columns = useMemo(() => [
     { key: 'deo_name', label: 'Se no' },
-    { key: 'deo_name', label: 'DEO Name' },
     { key: 'district_name', label: 'District' },
-    { key: 'designation', label: 'Designation' },
+    { key: 'deo_name', label: 'DEO Name' },
+    // { key: 'designation', label: 'Designation' },
     { key: 'mobile', label: 'Mobile' },
     { key: 'alternate_mobile', label: 'Alternate Mobile' },
     { key: 'email', label: 'Email' },
@@ -188,7 +188,7 @@ const ManageDEO = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total DEO</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Total DEO</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{pagination.total}</p>
             </div>
             <UserCheck className="h-8 w-8 text-primary-500" />
@@ -197,7 +197,7 @@ const ManageDEO = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Current Page</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Current Page</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{currentPage}</p>
             </div>
             <MapPin className="h-8 w-8 text-accent-500" />
@@ -206,7 +206,7 @@ const ManageDEO = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Page Size</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Page Size</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{pageSize}</p>
             </div>
             <Phone className="h-8 w-8 text-success-500" />
@@ -281,13 +281,13 @@ const ManageDEO = () => {
                   <p className="font-medium text-gray-900 dark:text-white">{getSerialNumber(index, currentPage, pageSize)}</p>
                 </td>
                 <td className="px-4 py-3">
-                  <p className="font-medium text-gray-900 dark:text-white">{displayValue(deo.deo_name)}</p>
-                </td>
-                <td className="px-4 py-3">
                   <p>{displayValue(deo.district_name)}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Code: {displayValue(deo.district_cd)}</p>
                 </td>
-                <td className="px-4 py-3">{displayValue(deo.designation)}</td>
+                <td className="px-4 py-3">
+                  <p className="font-medium text-gray-900 dark:text-white">{displayValue(deo.deo_name)}</p>
+                </td>
+                {/* <td className="px-4 py-3">{displayValue(deo.designation)}</td> */}
                 <td className="px-4 py-3">
                   <div className="flex items-center">
                     <Phone className="mr-2 h-4 w-4 text-gray-400" />

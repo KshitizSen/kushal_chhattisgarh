@@ -23,37 +23,37 @@ const Card = ({
   className = '',
   ...rest
 }) => {
-  const baseClasses = 'rounded-[1.5rem] transition-all duration-200';
+  const baseClasses = 'rounded-xl transition-all duration-200';
 
   const variantClasses = {
     default: 'border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900',
-    elevated: 'border border-gray-200 bg-white shadow-[0_12px_28px_rgba(15,23,42,0.06)] dark:border-gray-800 dark:bg-gray-900',
+    elevated: 'border border-gray-200 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.06)] dark:border-gray-800 dark:bg-gray-900',
     outlined: 'border border-gray-300/90 bg-transparent dark:border-gray-700',
     filled: 'border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900/65',
   };
 
   const paddingClasses = {
     none: '',
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8',
+    sm: 'p-3',
+    md: 'p-4',
+    lg: 'p-5',
   };
 
-  const hoverClass = hover ? 'hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(15,23,42,0.12)]' : '';
+  const hoverClass = hover ? 'hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(15,23,42,0.1)]' : '';
   const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${paddingClasses[padding]} ${hoverClass} ${className}`;
 
   return (
     <div className={combinedClasses} {...rest}>
       {header || (title && (
-        <div className="mb-4 border-b border-gray-200/80 pb-4 dark:border-gray-800">
-          <h3 className="font-heading text-xl font-semibold text-gray-900 dark:text-white">{title}</h3>
+        <div className="mb-3 border-b border-gray-200/80 pb-3 dark:border-gray-800">
+          <h3 className="font-heading text-[22px] font-semibold leading-7 text-gray-900 dark:text-white">{title}</h3>
         </div>
       ))}
 
       <div>{children}</div>
 
       {footer && (
-        <div className="mt-6 border-t border-gray-200/80 pt-6 dark:border-gray-800">
+        <div className="mt-4 border-t border-gray-200/80 pt-4 dark:border-gray-800">
           {footer}
         </div>
       )}
@@ -62,13 +62,13 @@ const Card = ({
 };
 
 export const CardHeader = ({ children, className = '' }) => (
-  <div className={`mb-4 border-b border-gray-200/80 pb-4 dark:border-gray-800 ${className}`}>
+  <div className={`mb-3 border-b border-gray-200/80 pb-3 dark:border-gray-800 ${className}`}>
     {children}
   </div>
 );
 
 export const CardTitle = ({ children, className = '' }) => (
-  <h3 className={`font-heading text-xl font-semibold text-gray-900 dark:text-white ${className}`}>
+  <h3 className={`font-heading text-[22px] font-semibold leading-7 text-gray-900 dark:text-white ${className}`}>
     {children}
   </h3>
 );
@@ -78,7 +78,7 @@ export const CardContent = ({ children, className = '' }) => (
 );
 
 export const CardFooter = ({ children, className = '' }) => (
-  <div className={`mt-6 border-t border-gray-200/80 pt-6 dark:border-gray-800 ${className}`}>
+  <div className={`mt-4 border-t border-gray-200/80 pt-4 dark:border-gray-800 ${className}`}>
     {children}
   </div>
 );
@@ -97,14 +97,14 @@ export const StatCard = ({ title, value, change, icon, description, className = 
       variant="elevated"
       hover
       padding="md"
-      className={`h-full min-h-40 ${className}`}
+      className={`h-full min-h-32 ${className}`}
     >
       <div className="flex h-full items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <p className="min-h-10 text-sm font-medium leading-5 text-gray-500 dark:text-gray-400">
+          <p className="text-lg font-medium leading-6 text-gray-500 dark:text-gray-400">
             {title}
           </p>
-          <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+          <p className="mt-1.5 text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
           {change && (
             <div className="mt-2 flex items-center gap-1">
               {/* <span className={`text-sm font-medium ${trendColor}`}>
@@ -118,7 +118,7 @@ export const StatCard = ({ title, value, change, icon, description, className = 
           )}
         </div>
         {icon && (
-          <div className="shrink-0 rounded-2xl bg-primary-50 p-3 text-primary-500 dark:bg-primary-900/20">
+          <div className="shrink-0 rounded-xl bg-primary-50 p-2.5 text-primary-500 dark:bg-primary-900/20">
             {icon}
           </div>
         )}

@@ -5,6 +5,11 @@ export const getAdminDashboardCounts = async () => {
   return response.data;
 };
 
+export const getAdminTrades = async ({ page = 1, limit = 10, search = '' } = {}) => {
+  const response = await api.get('/admin/trades', { params: { page, limit, search } });
+  return response.data;
+};
+
 export const getAdminSchools = async ({
   page = 1,
   limit = 10,
@@ -73,6 +78,7 @@ export const updateAdminDeo = async (id, payload) => {
 };
 
 export const getAdminAttendanceTracking = async ({
+  view = 'all_vts',
   page = 1,
   limit = 10,
   search = '',
@@ -84,7 +90,7 @@ export const getAdminAttendanceTracking = async ({
   cluster_cd = '',
 } = {}) => {
   const response = await api.get('/admin/attendance-tracking', {
-    params: { page, limit, search, month, year, status, district_cd, block_cd, cluster_cd },
+    params: { view, page, limit, search, month, year, status, district_cd, block_cd, cluster_cd },
   });
   return response.data;
 };

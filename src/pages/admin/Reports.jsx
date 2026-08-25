@@ -73,7 +73,7 @@ const Reports = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Enrollment</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Total Enrollment</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">12,847</p>
             </div>
             <TrendingUp className="w-8 h-8 text-primary-500" />
@@ -82,7 +82,7 @@ const Reports = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Completion Rate</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Completion Rate</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">78%</p>
             </div>
             <BarChart3 className="w-8 h-8 text-success-500" />
@@ -91,7 +91,7 @@ const Reports = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Average VT Status</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Average VT Status</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">92%</p>
             </div>
             <Calendar className="w-8 h-8 text-warning-500" />
@@ -100,7 +100,7 @@ const Reports = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Schools</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Active Schools</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">142</p>
             </div>
             <PieChartIcon className="w-8 h-8 text-accent-500" />

@@ -100,15 +100,15 @@ const ManageSchools = () => {
 
   const columns = useMemo(() => [
     { key: 'school_name', label: 'Se no' },
-    { key: 'school_name', label: 'School', width: '70%' },
     { key: 'udise_sch_code', label: 'UDISE' },
-    { key: 'edu_state_name', label: 'State' },
+    { key: 'school_name', label: 'School', width: '70%' },
+    // { key: 'edu_state_name', label: 'State' },
     { key: 'district_name', label: 'District' },
     { key: 'block_name', label: 'Block' },
-    { key: 'cluster_name', label: 'Cluster' },
+    // { key: 'cluster_name', label: 'Cluster' },
     { key: 'address', label: 'Address' },
     { key: 'email', label: 'Email' },
-    { key: 'sch_mobile', label: 'Mobile' },
+    // { key: 'sch_mobile', label: 'Mobile' },
     // { key: 'codes', label: 'Codes' },
   ], []);
 
@@ -125,7 +125,7 @@ const ManageSchools = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total VT Schools</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Total VT Schools</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{pagination.total}</p>
             </div>
             <School className="h-8 w-8 text-primary-500" />
@@ -134,7 +134,7 @@ const ManageSchools = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Current Page</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Current Page</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{currentPage}</p>
             </div>
             <MapPin className="h-8 w-8 text-accent-500" />
@@ -143,7 +143,7 @@ const ManageSchools = () => {
         <Card variant="filled" padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Page Size</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">Page Size</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{pageSize}</p>
             </div>
             <Phone className="h-8 w-8 text-success-500" />
@@ -217,14 +217,14 @@ const ManageSchools = () => {
                 <td className="px-4 py-3">
                   <p className="font-medium text-gray-900 dark:text-white">{getSerialNumber(index, currentPage, pageSize)}</p>
                 </td>
+                <td className="px-4 py-3">{displayValue(school.udise_sch_code)}</td>
                 <td className="px-4 py-3">
                   <p className="font-medium text-gray-900 dark:text-white">{displayValue(school.school_name)}</p>
                 </td>
-                <td className="px-4 py-3">{displayValue(school.udise_sch_code)}</td>
-                <td className="px-4 py-3">
+                {/* <td className="px-4 py-3">
                   <p>{displayValue(school.edu_state_name)}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Code: {displayValue(school.edu_state_cd)}</p>
-                </td>
+                </td> */}
                 <td className="px-4 py-3">
                   <p>{displayValue(school.district_name)}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Code: {displayValue(school.district_cd)}</p>
@@ -233,13 +233,13 @@ const ManageSchools = () => {
                   <p>{displayValue(school.block_name)}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Code: {displayValue(school.block_cd)}</p>
                 </td>
-                <td className="px-4 py-3">
+                {/* <td className="px-4 py-3">
                   <p>{displayValue(school.cluster_name)}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Code: {displayValue(school.cluster_cd)}</p>
-                </td>
+                </td> */}
                 <td className="max-w-xs px-4 py-3">{displayValue(school.address)}</td>
                 <td className="px-4 py-3">{displayValue(school.email)}</td>
-                <td className="px-4 py-3">{displayValue(school.sch_mobile)}</td>
+                {/* <td className="px-4 py-3">{displayValue(school.sch_mobile)}</td> */}
                 {/* <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                   <p>LGD State: {displayValue(school.lgd_state_id)}</p>
                   <p>LGD District: {displayValue(school.lgd_district_id)}</p>

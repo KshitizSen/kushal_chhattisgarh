@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 @layer base {
   html {
@@ -20,6 +20,75 @@
   #root {
     min-height: 100vh;
   }
+}
+
+/* Authenticated workspace density. Scoped to MainLayout so auth pages retain
+   their existing presentation and all theme colours remain unchanged. */
+.app-density [class~="space-y-6"] > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+
+.app-density [class~="gap-6"] {
+  gap: 1rem;
+}
+
+.app-density [class~="gap-5"] {
+  gap: 0.875rem;
+}
+
+.app-density [class~="space-y-5"] > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+
+.app-density [class~="p-8"] {
+  padding: 1.5rem;
+}
+
+.app-density [class~="p-6"] {
+  padding: 1.25rem;
+}
+
+.app-density [class~="p-5"] {
+  padding: 1rem;
+}
+
+.app-density [class~="px-6"] {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.app-density [class~="py-6"] {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.app-density td[class~="py-4"],
+.app-density th[class~="py-4"] {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.app-density [class~="rounded-[1.5rem]"],
+.app-density [class~="rounded-[1.75rem]"],
+.app-density [class~="rounded-[2rem]"],
+.app-density [class~="rounded-2xl"] {
+  border-radius: 0.75rem;
+}
+
+.app-density h1[class~="text-3xl"] {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+/* Direct card section headings use the same +4px scale as CardTitle. */
+.app-density h2[class~="text-lg"][class~="font-semibold"],
+.app-density h3[class~="text-lg"][class~="font-semibold"] {
+  font-size: 22px;
+  line-height: 28px;
 }
 
 @layer components {

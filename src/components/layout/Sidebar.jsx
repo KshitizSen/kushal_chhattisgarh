@@ -70,6 +70,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <Building2 className="h-5 w-5" /> },
           { path: '/admin/manage-deo', label: 'Manage DEO', icon: <UserCheck className="h-5 w-5" /> },
           { path: '/admin/vocational-training-approval-tracking', label: 'VTs Approval Tracking', icon: <Route className="h-5 w-5" /> },
+          { path: '/admin/trades', label: 'Trades List', icon: <BookOpen className="h-5 w-5" /> },
         ],
       },
       {
@@ -182,15 +183,15 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
 
   return (
     <aside
-      className="relative flex h-full flex-col rounded-[1.5rem] border border-gray-200 bg-white text-gray-900 shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+      className="relative flex h-full flex-col rounded-xl border border-gray-200 bg-white text-gray-900 shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-white"
     >
-      <div className="border-b border-gray-200 px-3 py-3 dark:border-gray-800">
+      <div className="border-b border-gray-200 px-2.5 py-2 dark:border-gray-800">
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-start gap-2 px-2'}`}>
           <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
             <img
               src="/vtp_icon.jpeg"
               alt="Logo"
-              className="h-16 w-18 object-contain drop-shadow-sm"
+              className="h-12 w-14 object-contain drop-shadow-sm"
             />
             {!collapsed && (
               <div>
@@ -209,10 +210,10 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>
 
-      <nav className="flex-1 space-y-2 overflow-y-auto px-2 py-2.5">
+      <nav className="flex-1 space-y-1.5 overflow-y-auto px-2 py-2">
         {getNavSections().map((section) => (
           <div key={section.title}>
-            <ul className="space-y-1.5">
+            <ul className="space-y-1">
               {section.items.map((item) => {
                 const isActive = isPathActive(location.pathname, item.path);
 
@@ -223,7 +224,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
                       onClick={onClose}
                       title={collapsed ? item.label : undefined}
                       className={() =>
-                        `group flex items-center rounded-2xl px-3 py-3 transition-all ${collapsed ? 'justify-center' : 'gap-2'
+                        `group flex items-center rounded-lg px-2.5 py-2 transition-all ${collapsed ? 'justify-center' : 'gap-2'
                         } ${isActive
                           ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
                           : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
@@ -231,7 +232,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
                       }
                     >
                       <span
-                        className={`flex h-10 w-10 items-center justify-center rounded-2xl transition ${isActive
+                        className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${isActive
                           ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-950 dark:text-primary-300'
                           : 'bg-gray-100 text-gray-500 group-hover:bg-white group-hover:text-primary-600 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:bg-gray-900 dark:group-hover:text-primary-300'
                           }`}
@@ -256,7 +257,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         <button
           onClick={handleLogout}
           title={collapsed ? 'Logout' : undefined}
-          className={`flex w-full items-center rounded-2xl border border-gray-200 bg-white px-3 py-2.5 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white ${collapsed ? 'justify-center' : 'gap-3'
+          className={`flex w-full items-center rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white ${collapsed ? 'justify-center' : 'gap-3'
             }`}
         >
           <LogOut className="h-5 w-5" />

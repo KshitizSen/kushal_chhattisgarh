@@ -286,16 +286,6 @@ const AttendanceRequests = () => {
       ),
     },
     {
-      key: 'created_at',
-      header: 'Applied On',
-      render: (value) => (
-        <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-          <Clock className="h-4 w-4" />
-          {fmtDate(value)}
-        </div>
-      ),
-    },
-    {
       key: 'hm_status',
       header: 'HM (Head Master) Status',
       render: (_, row) => <div className="flex flex-col items-start gap-1"><StatusBadge status={row.hm_status || row.status || 'pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
@@ -391,7 +381,7 @@ const AttendanceRequests = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className={`text-sm font-medium text-${color}-700 dark:text-${color}-300`}>{label}</p>
+                <p className={`text-lg font-medium text-${color}-700 dark:text-${color}-300`}>{label}</p>
                 <p className={`text-3xl font-bold text-${color}-600 dark:text-${color}-400`}>{value}</p>
               </div>
               <div className={`p-3 rounded-2xl bg-${color}-100 dark:bg-${color}-900/30`}>

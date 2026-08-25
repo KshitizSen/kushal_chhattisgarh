@@ -9,6 +9,7 @@ import Reports from '../pages/admin/Reports';
 import Settings from '../pages/admin/Settings';
 import ManageRoles from '../pages/admin/ManageRoles';
 import AttendanceTracking from '../pages/admin/AttendanceTracking';
+import TradesList from '../pages/admin/TradesList';
 import ProtectedRoute from './ProtectedRoute';
 
 const AdminRoutes = () => {
@@ -63,6 +64,14 @@ const AdminRoutes = () => {
             <AttendanceTracking />
           </ProtectedRoute>
         } 
+      />
+      <Route
+        path="trades"
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <TradesList />
+          </ProtectedRoute>
+        }
       />
       <Route
         path="attendance-tracking"

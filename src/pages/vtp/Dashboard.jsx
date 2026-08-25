@@ -55,7 +55,7 @@ const VTPDashboard = () => {
       {cards.map(({ title, value, Icon, color, background }) => <Card key={title} variant="elevated">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+            <p className="text-lg font-medium text-gray-500 dark:text-gray-400">{title}</p>
             <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{Number(value || 0).toLocaleString('en-IN')}</p>
           </div>
           <div className={`rounded-2xl p-4 ${background}`}><Icon className={`h-7 w-7 ${color}`} /></div>

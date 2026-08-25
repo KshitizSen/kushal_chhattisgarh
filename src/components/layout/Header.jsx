@@ -51,6 +51,10 @@ const Header = ({ onMenuToggle }) => {
       return 'Reports';
     }
 
+    if (pathname.startsWith('/admin/trades')) {
+      return 'Trades List';
+    }
+
     if (pathname.startsWith('/admin/settings')) {
       return 'Settings';
     }
@@ -74,26 +78,26 @@ const Header = ({ onMenuToggle }) => {
   };
 
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-950/95 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/95 px-3 py-2 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-950/95 sm:px-5 lg:px-6">
       <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <button
               onClick={onMenuToggle}
-              className="inline-flex rounded-xl border border-gray-200 bg-white p-2.5 text-gray-600 transition hover:border-gray-300 hover:bg-gray-50 lg:hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-800"
+              className="inline-flex rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:border-gray-300 hover:bg-gray-50 lg:hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-800"
               aria-label="Toggle menu"
             >
               <Menu className="h-5 w-5" />
             </button>
 
             <div className="min-w-0">
-              <h1 className="font-heading text-2xl font-semibold text-gray-950 dark:text-white">
+              <h1 className="font-heading text-xl font-semibold text-gray-950 dark:text-white">
                 {pageMeta}
               </h1>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+          <div className="flex items-center gap-2 lg:justify-end">
             {/* <div className="relative min-w-[220px] flex-1 lg:min-w-[260px] lg:flex-none">
                 <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">
                   <Search className="h-4 w-4"  />
@@ -107,7 +111,7 @@ const Header = ({ onMenuToggle }) => {
 
             <button
               onClick={toggleDarkMode}
-              className="inline-flex rounded-xl border border-gray-200 bg-white p-2.5 text-gray-600 transition hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-800"
+              className="inline-flex rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-800"
               aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -115,7 +119,7 @@ const Header = ({ onMenuToggle }) => {
 
             <div className="relative">
               <button
-                className="relative inline-flex rounded-xl border border-gray-200 bg-white p-2.5 text-gray-600 transition hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-800"
+                className="relative inline-flex rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-800"
                 aria-label="Notifications"
               >
                 <Bell className="h-5 w-5" />
@@ -131,14 +135,14 @@ const Header = ({ onMenuToggle }) => {
               </button>
             </div>
 
-            <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900">
+            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 dark:border-gray-700 dark:bg-gray-900">
               <div className="hidden text-right sm:block">
                 <p className="font-medium text-gray-900 dark:text-white">{user?.name || 'User Name'}</p>
-                <p className="text-sm uppercase text-gray-500 dark:text-gray-400">
+                <p className="text-xs uppercase text-gray-500 dark:text-gray-400">
                   {user?.role ? user.role.replace(/[_-]+/g, ' ') : 'Role'}
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
                 <User className="h-5 w-5" />
               </div>
             </div>

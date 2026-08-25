@@ -493,7 +493,7 @@ const LeaveManagement = () => {
                   <Wallet className="h-6 w-6 text-indigo-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-indigo-600 font-medium">Total VTs</p>
+                  <p className="text-lg text-indigo-600 font-medium">Total VTs</p>
                   <p className="text-2xl font-bold text-indigo-900 dark:text-indigo-200">{balanceSummary.totalTeachers || 0}</p>
                 </div>
               </div>
@@ -504,7 +504,7 @@ const LeaveManagement = () => {
                   <CheckCircle className="h-6 w-6 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-emerald-600 font-medium">Healthy Balance (≥10)</p>
+                  <p className="text-lg text-emerald-600 font-medium">Healthy Balance (≥10)</p>
                   <p className="text-2xl font-bold text-emerald-900 dark:text-emerald-200">{balanceSummary.healthyBalance || 0}</p>
                 </div>
               </div>
@@ -515,7 +515,7 @@ const LeaveManagement = () => {
                   <AlertCircle className="h-6 w-6 text-amber-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-amber-600 font-medium">Low Balance</p>
+                  <p className="text-lg text-amber-600 font-medium">Low Balance</p>
                   <p className="text-2xl font-bold text-amber-900 dark:text-amber-200">{balanceSummary.lowBalance || 0}</p>
                 </div>
               </div>
@@ -526,7 +526,7 @@ const LeaveManagement = () => {
                   <Ban className="h-6 w-6 text-rose-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-rose-600 font-medium">Zero Balance</p>
+                  <p className="text-lg text-rose-600 font-medium">Zero Balance</p>
                   <p className="text-2xl font-bold text-rose-900 dark:text-rose-200">{balanceSummary.zeroBalance || 0}</p>
                 </div>
               </div>
