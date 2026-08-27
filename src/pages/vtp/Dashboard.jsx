@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { BriefcaseBusiness, RefreshCw, School, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
@@ -31,9 +32,9 @@ const VTPDashboard = () => {
   }, [fetchCounts]);
 
   const cards = [
-    { title: 'Number of Schools', value: counts.total_schools, Icon: School, color: 'text-blue-600', background: 'bg-blue-100 dark:bg-blue-900/30' },
-    { title: "Number of VT's", value: counts.total_vts, Icon: Users, color: 'text-emerald-600', background: 'bg-emerald-100 dark:bg-emerald-900/30' },
-    { title: 'Number of Trades', value: counts.total_trades, Icon: BriefcaseBusiness, color: 'text-violet-600', background: 'bg-violet-100 dark:bg-violet-900/30' },
+    { title: 'Number of Schools', value: counts.total_schools, Icon: School, color: 'text-blue-600', background: 'bg-blue-100 dark:bg-blue-900/30', to: '/vtp/schools' },
+    { title: "Number of VT's", value: counts.total_vts, Icon: Users, color: 'text-emerald-600', background: 'bg-emerald-100 dark:bg-emerald-900/30', to: '/vtp/vt-list' },
+    { title: 'Number of Trades', value: counts.total_trades, Icon: BriefcaseBusiness, color: 'text-violet-600', background: 'bg-violet-100 dark:bg-violet-900/30', to: '/vtp/trades' },
   ];
 
   if (loading && !Object.values(counts).some(Boolean)) {
@@ -52,7 +53,7 @@ const VTPDashboard = () => {
     </div>
 
     <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-      {cards.map(({ title, value, Icon, color, background }) => <Card key={title} variant="elevated">
+      {cards.map(({ title, value, Icon, color, background, to }) => <Link key={title} to={to} className="block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary-500"><Card variant="elevated">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-lg font-medium text-gray-500 dark:text-gray-400">{title}</p>
@@ -60,7 +61,7 @@ const VTPDashboard = () => {
           </div>
           <div className={`rounded-2xl p-4 ${background}`}><Icon className={`h-7 w-7 ${color}`} /></div>
         </div>
-      </Card>)}
+      </Card></Link>)}
     </div>
   </div>;
 };

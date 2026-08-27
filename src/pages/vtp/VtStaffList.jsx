@@ -134,15 +134,15 @@ const VtStaffList = () => {
 
   const columns = [
     { key: 'serial', header: 'S.No.' },
-    { key: 'vt_name', header: 'VT Name', render: display },
-    { key: 'vt_email', header: 'Email', render: display },
-    { key: 'vt_mob', header: 'Mobile', render: (value) => display(String(value || '')) },
-    { key: 'dob', header: 'DOB', render: formatDate },
-    { key: 'trade', header: 'Trade Name', render: display },
     { key: 'district_name', header: 'District', render: display },
     { key: 'block_name', header: 'Block', render: display },
     { key: 'cluster_name', header: 'Cluster', render: display },
     { key: 'school_name', header: 'School', render: (value, row) => <div><p>{display(value)}</p><p className="text-xs text-gray-500">UDISE: {display(row.udise_code)}</p></div> },
+    { key: 'vt_name', header: 'VT Name', render: display },
+    { key: 'trade', header: 'Trade Name', render: display },
+    { key: 'vt_email', header: 'Email', render: display },
+    { key: 'vt_mob', header: 'Mobile', render: (value) => display(String(value || '')) },
+    // { key: 'dob', header: 'DOB', render: formatDate },
     { key: 'vtp_pan', header: 'PAN', render: display },
     { key: 'vt_aadhar', header: 'Aadhaar', render: (value) => display(String(value || '')) },
     {

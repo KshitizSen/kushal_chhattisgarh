@@ -78,7 +78,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           // { path: '/admin/roles', label: 'Role & Permission', icon: <Shield className="h-5 w-5" /> },
           // { path: '/admin/reports', label: 'Reports', icon: <BarChart3 className="h-5 w-5" /> },
-          { path: '/admin/settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
+          // { path: '/admin/settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
         ],
       },
     ];
@@ -94,6 +94,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         title: 'Approvals',
         items: [
           { path: '/vtp/vt-list', label: "VT's List", icon: <Users className="h-5 w-5" /> },
+          { path: '/vtp/schools', label: 'Schools List', icon: <School className="h-5 w-5" /> },
+          { path: '/vtp/trades', label: 'Trades List', icon: <BookOpen className="h-5 w-5" /> },
           { path: '/vtp/vt-approvals', label: 'Register Approvals', icon: <ShieldCheck className="h-5 w-5" /> },
           { path: '/vtp/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
           { path: '/vtp/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },

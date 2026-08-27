@@ -63,6 +63,9 @@ const Header = ({ onMenuToggle }) => {
       return 'Dashboard';
     }
 
+    if (pathname.startsWith('/vtp/schools')) return 'Schools List';
+    if (pathname.startsWith('/vtp/trades')) return 'Trades List';
+
     return 'Workspace';
   }, [location.pathname]);
 

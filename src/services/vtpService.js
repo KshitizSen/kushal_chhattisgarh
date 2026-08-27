@@ -1,6 +1,10 @@
 import api from './api';
 
 const vtpService = {
+  getSchools: (params = {}) => api.get('/vtp/schools', { params }),
+  getSchoolOptions: (params = {}) => api.get('/vtp/schools/options', { params }),
+  getTrades: (params = {}) => api.get('/vtp/trades', { params }),
+
   // VT Approvals
   getVts: (status = 'all') => {
     return api.get(`/vtp/vts?status=${status}`);

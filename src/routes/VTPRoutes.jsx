@@ -8,6 +8,8 @@ import AttendanceRequests from '../pages/vtp/AttendanceRequests';
 import MonthlyAttendanceReports from '../pages/vtp/MonthlyAttendanceReports';
 import ProtectedRoute from './ProtectedRoute';
 import DeviceChangeRequests from '../pages/common/DeviceChangeRequests';
+import SchoolsList from '../pages/vtp/SchoolsList';
+import TradesList from '../pages/vtp/TradesList';
 
 const VTPRoutes = () => {
   const allowedRoles = ['vtp', 'vocational_teacher_provider'];
@@ -46,6 +48,8 @@ const VTPRoutes = () => {
         path="vt-list"
         element={<ProtectedRoute allowedRoles={allowedRoles}><VtStaffList /></ProtectedRoute>}
       />
+      <Route path="schools" element={<ProtectedRoute allowedRoles={allowedRoles}><SchoolsList /></ProtectedRoute>} />
+      <Route path="trades" element={<ProtectedRoute allowedRoles={allowedRoles}><TradesList /></ProtectedRoute>} />
       <Route
         path="attendance-requests"
         element={<Navigate to="/vtp/vocational-training-requests" replace />}
