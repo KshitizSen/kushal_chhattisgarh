@@ -9,6 +9,7 @@ import Reports from '../pages/admin/Reports';
 import Settings from '../pages/admin/Settings';
 import ManageRoles from '../pages/admin/ManageRoles';
 import AttendanceTracking from '../pages/admin/AttendanceTracking';
+import AttendanceStatus from '../pages/admin/AttendanceStatus';
 import TradesList from '../pages/admin/TradesList';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -48,6 +49,14 @@ const AdminRoutes = () => {
             <ManageVTP />
           </ProtectedRoute>
         } 
+      />
+      <Route
+        path="attendance-status"
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <AttendanceStatus />
+          </ProtectedRoute>
+        }
       />
       <Route 
         path="manage-deo" 

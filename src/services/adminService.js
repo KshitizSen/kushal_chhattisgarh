@@ -5,6 +5,22 @@ export const getAdminDashboardCounts = async () => {
   return response.data;
 };
 
+export const getAdminAttendanceStatus = async ({ district_cd = '', block_cd = '', signal } = {}) => {
+  const response = await api.get('/admin/attendance-status', {
+    params: { district_cd, block_cd },
+    signal,
+  });
+  return response.data;
+};
+
+export const getAdminLocationOptions = async ({ type, district_cd = '', signal } = {}) => {
+  const response = await api.get('/reports/location-master', {
+    params: { type, district_cd },
+    signal,
+  });
+  return response.data;
+};
+
 export const getAdminTrades = async ({ page = 1, limit = 10, search = '' } = {}) => {
   const response = await api.get('/admin/trades', { params: { page, limit, search } });
   return response.data;

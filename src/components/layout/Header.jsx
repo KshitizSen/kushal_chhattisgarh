@@ -39,6 +39,10 @@ const Header = ({ onMenuToggle }) => {
       return 'Manage Users';
     }
 
+    if (pathname.startsWith('/admin/attendance-status')) {
+      return 'Attendance Status';
+    }
+
     if (pathname.startsWith('/admin/manage-schools')) {
       return 'Manage Schools';
     }
@@ -66,7 +70,7 @@ const Header = ({ onMenuToggle }) => {
     if (pathname.startsWith('/vtp/schools')) return 'Schools List';
     if (pathname.startsWith('/vtp/trades')) return 'Trades List';
 
-    return 'Workspace';
+    return 'District education officer master list';
   }, [location.pathname]);
 
   useEffect(() => {
