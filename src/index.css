@@ -22,6 +22,21 @@
   }
 }
 
+/* Authenticated pages use the global navbar as their single page heading. */
+.page-route-content div:has(> h1) {
+  display: none;
+}
+
+/* Remove now-empty title-only rows, including rows with a leading title icon. */
+.page-route-content div:has(> div > h1):not(:has(button)):not(:has(select)):not(:has(a)) {
+  display: none;
+}
+
+/* Keep page actions that shared a row with the removed title aligned right. */
+.page-route-content div:has(> div > h1):has(button, select) {
+  justify-content: flex-end;
+}
+
 /* Authenticated workspace density. Scoped to MainLayout so auth pages retain
    their existing presentation and all theme colours remain unchanged. */
 .app-density [class~="space-y-6"] > :not([hidden]) ~ :not([hidden]) {

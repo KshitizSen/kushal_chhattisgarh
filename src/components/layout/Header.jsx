@@ -3,6 +3,7 @@ import { Bell, Search, Menu, Moon, Sun, User } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import Badge from '../common/Badge';
+import { getPageMetadata } from '../../config/pageMetadata';
 
 /**
  * Header component with notifications, search, and user menu
@@ -28,50 +29,10 @@ const Header = ({ onMenuToggle }) => {
     { id: 3, title: 'System maintenance', time: '2 hours ago', read: true },
   ]);
 
-  const pageMeta = useMemo(() => {
-    const pathname = location.pathname;
-
-    if (pathname.startsWith('/admin/roles')) {
-      return 'Role & Permission';
-    }
-
-    if (pathname.startsWith('/admin/manage-users')) {
-      return 'Manage Users';
-    }
-
-    if (pathname.startsWith('/admin/attendance-status')) {
-      return 'Attendance Status';
-    }
-
-    if (pathname.startsWith('/admin/manage-schools')) {
-      return 'Manage Schools';
-    }
-
-    if (pathname.startsWith('/admin/manage-vtp')) {
-      return 'Manage VTP';
-    }
-
-    if (pathname.startsWith('/admin/reports')) {
-      return 'Reports';
-    }
-
-    if (pathname.startsWith('/admin/trades')) {
-      return 'Trades List';
-    }
-
-    if (pathname.startsWith('/admin/settings')) {
-      return 'Settings';
-    }
-
-    if (pathname.startsWith('/admin/dashboard')) {
-      return 'Dashboard';
-    }
-
-    if (pathname.startsWith('/vtp/schools')) return 'Schools List';
-    if (pathname.startsWith('/vtp/trades')) return 'Trades List';
-
-    return 'District education officer master list';
-  }, [location.pathname]);
+  const pageMeta = useMemo(
+    () => getPageMetadata(location.pathname, user),
+    [location.pathname, user]
+  );
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -98,9 +59,14 @@ const Header = ({ onMenuToggle }) => {
             </button>
 
             <div className="min-w-0">
-              <h1 className="font-heading text-xl font-semibold text-gray-950 dark:text-white">
-                {pageMeta}
+              <h1 className="font-heading text-xl font-semibold leading-6 text-gray-950 dark:text-white">
+                {pageMeta.title}
               </h1>
+              {pageMeta.description && (
+                <p className="mt-0.5 block max-w-[55vw] truncate text-xs text-gray-500 dark:text-gray-400 sm:max-w-2xl">
+                  {pageMeta.description}
+                </p>
+              )}
             </div>
           </div>
 

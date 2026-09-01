@@ -53,7 +53,7 @@ const MainLayout = () => {
         <div className="flex min-w-0 flex-1 flex-col">
           <Header onMenuToggle={() => setMobileSidebarOpen(true)} />
           <main className="app-density flex-1 px-3 pb-5 pt-3 sm:px-5 lg:px-6">
-            <div className="mx-auto max-w-7xl">
+            <div className="page-route-content mx-auto max-w-7xl">
               <Outlet />
             </div>
           </main>

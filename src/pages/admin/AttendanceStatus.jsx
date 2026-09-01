@@ -80,10 +80,6 @@ const AttendanceStatus = () => {
   ], [data.counts]);
 
   const chartTitle = `${data.chart.group_by === 'school' ? 'School' : data.chart.group_by === 'block' ? 'Block' : 'District'}-wise Attendance Status`;
-  const displayDate = data.as_of_date
-    ? new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(`${data.as_of_date}T00:00:00`))
-    : '';
-
   const handleDistrictChange = (event) => {
     const value = event.target.value;
     setSelectedDistrict(value);
@@ -109,11 +105,7 @@ const AttendanceStatus = () => {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Attendance Status</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Live status of active VTs{displayDate ? ` for ${displayDate}` : ''}</p>
-        </div>
+      <div className="flex justify-end">
         <Button variant="ghost" leftIcon={<RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />} onClick={handleRefresh} disabled={isLoading}>
           Refresh
         </Button>
@@ -121,16 +113,16 @@ const AttendanceStatus = () => {
 
       <Card padding="md">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <label className="space-y-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
-            <span>District</span>
-            <select className={selectClass} value={selectedDistrict} onChange={handleDistrictChange}>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="sr-only">District</span>
+            <select aria-label="District" className={selectClass} value={selectedDistrict} onChange={handleDistrictChange}>
               <option value="">All Districts</option>
               {districts.map((district) => <option key={district.district_cd} value={district.district_cd}>{district.district_name}</option>)}
             </select>
           </label>
-          <label className="space-y-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
-            <span>Block</span>
-            <select className={selectClass} value={selectedBlock} onChange={handleBlockChange} disabled={!selectedDistrict || isBlocksLoading}>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="sr-only">Block</span>
+            <select aria-label="Block" className={selectClass} value={selectedBlock} onChange={handleBlockChange} disabled={!selectedDistrict || isBlocksLoading}>
               <option value="">{isBlocksLoading ? 'Loading Blocks...' : 'All Blocks'}</option>
               {blocks.map((block) => <option key={block.block_cd} value={block.block_cd}>{block.block_name}</option>)}
             </select>
