@@ -10,6 +10,7 @@ import ProtectedRoute from './ProtectedRoute';
 import DeviceChangeRequests from '../pages/common/DeviceChangeRequests';
 import SchoolsList from '../pages/vtp/SchoolsList';
 import TradesList from '../pages/vtp/TradesList';
+import AttendanceStatus from '../pages/vtp/AttendanceStatus';
 
 const VTPRoutes = () => {
   const allowedRoles = ['vtp', 'vocational_teacher_provider'];
@@ -20,6 +21,7 @@ const VTPRoutes = () => {
         path="dashboard"
         element={<ProtectedRoute allowedRoles={allowedRoles}><Dashboard /></ProtectedRoute>}
       />
+      <Route path="attendance-status" element={<ProtectedRoute allowedRoles={allowedRoles}><AttendanceStatus /></ProtectedRoute>} />
       <Route
         path="vt-approvals"
         element={

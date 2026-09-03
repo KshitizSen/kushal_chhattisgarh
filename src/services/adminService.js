@@ -13,6 +13,21 @@ export const getAdminAttendanceStatus = async ({ district_cd = '', block_cd = ''
   return response.data;
 };
 
+export const getAdminAttendanceStatusVts = async ({
+  status,
+  district_cd = '',
+  block_cd = '',
+  page = 1,
+  limit = 10,
+  signal,
+} = {}) => {
+  const response = await api.get('/admin/attendance-status/vts', {
+    params: { status, district_cd, block_cd, page, limit },
+    signal,
+  });
+  return response.data;
+};
+
 export const getAdminLocationOptions = async ({ type, district_cd = '', signal } = {}) => {
   const response = await api.get('/reports/location-master', {
     params: { type, district_cd },

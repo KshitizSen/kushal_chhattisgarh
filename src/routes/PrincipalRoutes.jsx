@@ -12,6 +12,7 @@ import Reports from '../pages/principal/Reports';
 import AttendanceRequests from '../pages/principal/AttendanceRequests';
 import ProtectedRoute from './ProtectedRoute';
 import DeviceChangeRequests from '../pages/common/DeviceChangeRequests';
+import AttendanceStatus from '../pages/principal/AttendanceStatus';
 
 const PrincipalRoutes = () => {
   const allowedRoles = ['principal'];
@@ -66,6 +67,7 @@ const PrincipalRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route path="attendance-status" element={<ProtectedRoute allowedRoles={allowedRoles}><AttendanceStatus /></ProtectedRoute>} />
       <Route
         path="attendance"
         element={<Navigate to="/principal/vocational-training-approval" replace />}

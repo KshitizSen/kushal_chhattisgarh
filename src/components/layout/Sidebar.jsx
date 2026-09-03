@@ -89,6 +89,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         title: 'Overview',
         items: [
           { path: '/vtp/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
+          { path: '/vtp/attendance-status', label: 'Attendance Status', icon: <CalendarCheck className="h-5 w-5" /> },
         ],
       },
       {
@@ -116,6 +117,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         title: 'Overview',
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
+          { path: '/principal/attendance-status', label: 'Attendance Status', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/principal/teacher-approval', label: 'Register Approvals', icon: <UserCheck className="h-5 w-5" /> },
           { path: '/principal/vocational-training-approval', label: 'VT Status', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/principal/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },
@@ -151,6 +153,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         title: 'Overview',
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
+          { path: '/deo/attendance-status', label: 'Attendance Status', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/deo/vocational-training-approval', label: 'Report Approvals', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/deo/vtps', label: "VTP's", icon: <Building2 className="h-5 w-5" /> },
           { path: '/deo/vt-schools', label: 'VT School', icon: <School className="h-5 w-5" /> },

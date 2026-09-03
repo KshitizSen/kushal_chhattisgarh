@@ -6,6 +6,7 @@ import VTSchools from '../pages/deo/VTSchools';
 import VTTeachers from '../pages/deo/VTTeachers';
 import MonthlyReports from '../pages/deo/MonthlyReports';
 import ProtectedRoute from './ProtectedRoute';
+import AttendanceStatus from '../pages/deo/AttendanceStatus';
 
 const DEORoutes = () => {
   const allowedRoles = ['deo'];
@@ -28,6 +29,7 @@ const DEORoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route path="attendance-status" element={<ProtectedRoute allowedRoles={allowedRoles}><AttendanceStatus /></ProtectedRoute>} />
       <Route
         path="attendance"
         element={<Navigate to="/deo/vocational-training-approval" replace />}
