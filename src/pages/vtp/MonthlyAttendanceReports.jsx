@@ -45,6 +45,10 @@ const ApprovalPill = ({ status, short }) => {
   );
 };
 
+const hasRequiredApprovals = (report) => (
+  report?.hm_approval_status === 'approved' && report?.deo_approval_status === 'approved'
+);
+
 // ── Component ─────────────────────────────────────────────────────────────────
 const MonthlyAttendanceReports = () => {
   const [reports, setReports]             = useState([]);
@@ -172,6 +176,10 @@ const MonthlyAttendanceReports = () => {
   const handleApprove = async () => {
     const report = approveModal.report;
     if (!report) return;
+    if (!hasRequiredApprovals(report)) {
+      toast.error('HM and DEO approval is required before VTP approval.');
+      return;
+    }
     setActionLoading(true);
     try {
       const res = await api.post('/reports/approve', {
@@ -197,6 +205,10 @@ const MonthlyAttendanceReports = () => {
   const handleReject = async () => {
     const report = rejectModal.report;
     if (!report) return;
+    if (!hasRequiredApprovals(report)) {
+      toast.error('HM and DEO approval is required before VTP rejection.');
+      return;
+    }
     setActionLoading(true);
     try {
       const res = await api.post('/reports/approve', {
@@ -265,6 +277,7 @@ const MonthlyAttendanceReports = () => {
       key: 'actions',
       header: 'Actions',
       render: (_, row) => {
+        const upstreamApproved = hasRequiredApprovals(row);
         return (
           <div className="flex flex-col gap-1.5">
             {/* View PDF */}
@@ -288,6 +301,7 @@ const MonthlyAttendanceReports = () => {
                     variant="success"
                     size="sm"
                     leftIcon={<CheckCircle className="h-3 w-3" />}
+                    disabled={!upstreamApproved}
                     onClick={() => { setApproveModal({ open: true, report: row }); setRemarks(''); }}
                   >
                     Final Approve
@@ -298,10 +312,16 @@ const MonthlyAttendanceReports = () => {
                   variant="danger"
                   size="sm"
                   leftIcon={<XCircle className="h-3 w-3" />}
+                  disabled={!upstreamApproved}
                   onClick={() => { setRejectModal({ open: true, report: row }); setRemarks(''); }}
                 >
                   Reject
                 </Button>
+                )}
+                {!upstreamApproved && (
+                  <p className="max-w-36 text-xs leading-4 text-amber-600 dark:text-amber-400">
+                    HM and DEO approval required.
+                  </p>
                 )}
               </>
             )}
