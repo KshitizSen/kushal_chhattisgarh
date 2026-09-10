@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  FileText, Download, CheckCircle, XCircle, Clock, AlertCircle,
+  FileText, Download, CheckCircle, XCircle, Clock, AlertCircle, FileSpreadsheet,
   RefreshCw, Search, Filter, ShieldCheck, ShieldX, ShieldAlert,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -14,6 +14,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import Pagination from '../../components/common/Pagination';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const MONTHS = [
@@ -44,12 +45,9 @@ const ApprovalPill = ({ status, short }) => {
   );
 };
 
-// Returns the first blocking authority text, or null if VTP can approve
-const getBlockingAuthority = (report) => {
-  if (report.hm_approval_status !== 'approved')  return 'Not approved by Principal/HOS';
-  if (report.deo_approval_status !== 'approved') return 'Not approved by DEO';
-  return null;
-};
+const hasRequiredApprovals = (report) => (
+  report?.hm_approval_status === 'approved' && report?.deo_approval_status === 'approved'
+);
 
 // ── Component ─────────────────────────────────────────────────────────────────
 const MonthlyAttendanceReports = () => {
@@ -65,6 +63,7 @@ const MonthlyAttendanceReports = () => {
   const [totalItems, setTotalItems]       = useState(0);
 
   const [downloadLoading, setDownloadLoading] = useState(null);
+  const [excelLoading, setExcelLoading] = useState(false);
   const [actionLoading, setActionLoading]     = useState(false);
   const [approveModal, setApproveModal] = useState({ open: false, report: null });
   const [rejectModal, setRejectModal]   = useState({ open: false, report: null });
@@ -140,10 +139,47 @@ const MonthlyAttendanceReports = () => {
     }
   };
 
+  const handleExcelExport = async () => {
+    setExcelLoading(true);
+    try {
+      const res = await api.get('/reports/download-vtp-vt-excel', {
+        params: { month: selectedMonth, year: selectedYear },
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(res.data);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `VTP_VT_Attendance_${MONTHS[selectedMonth - 1]}_${selectedYear}.xlsx`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Excel report downloaded');
+    } catch (err) {
+      let message = 'Failed to export Excel report';
+      const responseData = err?.response?.data;
+      if (responseData instanceof Blob) {
+        try {
+          const parsed = JSON.parse(await responseData.text());
+          message = parsed.message || message;
+        } catch (_) {}
+      } else if (responseData?.message) {
+        message = responseData.message;
+      }
+      toast.error(message);
+    } finally {
+      setExcelLoading(false);
+    }
+  };
+
   // ── Approve ───────────────────────────────────────────────────────────────
   const handleApprove = async () => {
     const report = approveModal.report;
     if (!report) return;
+    if (!hasRequiredApprovals(report)) {
+      toast.error('HM and DEO approval is required before VTP approval.');
+      return;
+    }
     setActionLoading(true);
     try {
       const res = await api.post('/reports/approve', {
@@ -169,6 +205,10 @@ const MonthlyAttendanceReports = () => {
   const handleReject = async () => {
     const report = rejectModal.report;
     if (!report) return;
+    if (!hasRequiredApprovals(report)) {
+      toast.error('HM and DEO approval is required before VTP rejection.');
+      return;
+    }
     setActionLoading(true);
     try {
       const res = await api.post('/reports/approve', {
@@ -216,16 +256,19 @@ const MonthlyAttendanceReports = () => {
       render: (_, row) => (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-gray-500 w-8">HOS:</span>
+            <span className="text-xs text-gray-500 w-8">HM (Head Master):</span>
             <ApprovalPill status={row.hm_approval_status} />
+            <ApprovalSourceBadge type={row.hm_approval_type} />
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-gray-500 w-8">DEO:</span>
             <ApprovalPill status={row.deo_approval_status} />
+            <ApprovalSourceBadge type={row.deo_approval_type} />
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-gray-500 w-8">VTP:</span>
             <ApprovalPill status={row.vtp_approval_status} />
+            <ApprovalSourceBadge type={row.vtp_approval_type} />
           </div>
         </div>
       ),
@@ -234,7 +277,7 @@ const MonthlyAttendanceReports = () => {
       key: 'actions',
       header: 'Actions',
       render: (_, row) => {
-        const blocker = getBlockingAuthority(row);
+        const upstreamApproved = hasRequiredApprovals(row);
         return (
           <div className="flex flex-col gap-1.5">
             {/* View PDF */}
@@ -251,33 +294,35 @@ const MonthlyAttendanceReports = () => {
             )}
 
             {/* VTP Approve / locked check */}
-            {row.vtp_approval_status === 'pending' && (
+            {(
               <>
-                <div title={blocker || ''}>
+                {row.vtp_approval_status !== 'approved' && <div>
                   <Button
                     variant="success"
                     size="sm"
                     leftIcon={<CheckCircle className="h-3 w-3" />}
-                    disabled={!!blocker}
+                    disabled={!upstreamApproved}
                     onClick={() => { setApproveModal({ open: true, report: row }); setRemarks(''); }}
                   >
                     Final Approve
                   </Button>
-                </div>
-                {blocker && (
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3 flex-shrink-0" />
-                    {blocker}
-                  </p>
-                )}
+                </div>}
+                {row.vtp_approval_status !== 'rejected' && (
                 <Button
                   variant="danger"
                   size="sm"
                   leftIcon={<XCircle className="h-3 w-3" />}
+                  disabled={!upstreamApproved}
                   onClick={() => { setRejectModal({ open: true, report: row }); setRemarks(''); }}
                 >
                   Reject
                 </Button>
+                )}
+                {!upstreamApproved && (
+                  <p className="max-w-36 text-xs leading-4 text-amber-600 dark:text-amber-400">
+                    HM and DEO approval required.
+                  </p>
+                )}
               </>
             )}
 
@@ -339,7 +384,7 @@ const MonthlyAttendanceReports = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Final Approval</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Pending Final Approval</p>
               <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{counts.pending_my_action}</p>
             </div>
             <div className="p-3 rounded-2xl bg-yellow-100 dark:bg-yellow-900/30">
@@ -354,7 +399,7 @@ const MonthlyAttendanceReports = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Fully Approved</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Fully Approved</p>
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">{counts.approved}</p>
             </div>
             <div className="p-3 rounded-2xl bg-green-100 dark:bg-green-900/30">
@@ -369,7 +414,7 @@ const MonthlyAttendanceReports = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rejected</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Rejected</p>
               <p className="text-3xl font-bold text-red-600 dark:text-red-400">{counts.rejected}</p>
             </div>
             <div className="p-3 rounded-2xl bg-red-100 dark:bg-red-900/30">
@@ -389,7 +434,7 @@ const MonthlyAttendanceReports = () => {
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
             <span className="font-semibold">{counts.pending_my_action}</span> report
-            {counts.pending_my_action !== 1 ? 's have' : ' has'} passed both HOS and DEO approval and need{counts.pending_my_action !== 1 ? '' : 's'} your final VTP approval.
+            {counts.pending_my_action !== 1 ? 's have' : ' has'} passed both HM (Head Master) and DEO approval and need{counts.pending_my_action !== 1 ? '' : 's'} your final VTP approval.
           </p>
         </motion.div>
       )}
@@ -440,6 +485,17 @@ const MonthlyAttendanceReports = () => {
           />
         </div>
       </Card>
+
+      <div className="flex justify-end">
+        <Button
+          variant="success"
+          leftIcon={<FileSpreadsheet className="h-4 w-4" />}
+          onClick={handleExcelExport}
+          loading={excelLoading}
+        >
+          Export Excel
+        </Button>
+      </div>
 
       {/* Reports Table */}
       <Card variant="elevated">

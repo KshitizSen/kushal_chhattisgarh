@@ -41,8 +41,8 @@ const Input = forwardRef(({
 
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2.5 text-base',
-    lg: 'px-5 py-3 text-lg',
+    md: 'px-3 py-2 text-sm sm:text-base',
+    lg: 'px-4 py-2.5 text-base',
   };
 
   const errorClasses = error ? 'border-danger-500 focus:border-danger-500 focus:ring-danger-500' : '';
@@ -52,7 +52,7 @@ const Input = forwardRef(({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
           {required && <span className="text-danger-500 ml-1">*</span>}
         </label>

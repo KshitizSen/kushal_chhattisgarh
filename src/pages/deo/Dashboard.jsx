@@ -93,7 +93,7 @@ const DeoDashboard = () => {
               <p className="text-2xl font-bold leading-none text-gray-900 dark:text-white">
                 {loading ? '...' : value}
               </p>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{label}</p>
+              <p className="mt-1 text-lg text-gray-500 dark:text-gray-400">{label}</p>
             </div>
           </div>
         ))}

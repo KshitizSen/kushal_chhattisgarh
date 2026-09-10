@@ -52,18 +52,18 @@ const Modal = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/50 p-4 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/50 p-3 backdrop-blur-sm animate-fade-in sm:p-4"
       onClick={handleOverlayClick}
       aria-modal="true"
       role="dialog"
       aria-labelledby="modal-title"
     >
       <div
-        className={`w-full ${sizeClasses[size]} animate-slide-up rounded-[1.75rem] border border-white/80 bg-white/95 shadow-[0_32px_80px_rgba(15,23,42,0.18)] dark:border-gray-800 dark:bg-gray-900/95`}
+        className={`w-full ${sizeClasses[size]} animate-slide-up overflow-hidden rounded-xl border border-white/80 bg-white/95 shadow-[0_20px_50px_rgba(15,23,42,0.16)] dark:border-gray-800 dark:bg-gray-900/95`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200/80 p-6 dark:border-gray-800">
-          <h3 id="modal-title" className="font-heading text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between border-b border-gray-200/80 px-4 py-3.5 dark:border-gray-800 sm:px-5">
+          <h3 id="modal-title" className="font-heading text-lg font-semibold text-gray-900 dark:text-white">
             {title}
           </h3>
           {showCloseButton && (
@@ -78,11 +78,11 @@ const Modal = ({
         </div>
 
         {/* Body */}
-        <div className="p-6 max-h-[70vh] overflow-y-auto">{children}</div>
+        <div className="max-h-[72vh] overflow-y-auto p-4 sm:p-5">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 border-t border-gray-200/80 p-6 dark:border-gray-800">
+          <div className="flex items-center justify-end gap-2.5 border-t border-gray-200/80 px-4 py-3.5 dark:border-gray-800 sm:px-5">
             {footer}
           </div>
         )}

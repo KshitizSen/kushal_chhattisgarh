@@ -82,7 +82,7 @@ const Pagination = ({
   const endItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
       {/* Items info */}
       <div className="text-sm text-gray-600 dark:text-gray-400">
         Showing <span className="font-semibold">{startItem}-{endItem}</span> of{' '}

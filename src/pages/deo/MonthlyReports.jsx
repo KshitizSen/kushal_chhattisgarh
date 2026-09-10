@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FileText, Download, CheckCircle, XCircle, Clock, AlertCircle,
-  RefreshCw, Search, Filter, ShieldCheck, ShieldX, ShieldAlert,
+  RefreshCw, Search, Filter, ShieldCheck, ShieldX, ShieldAlert, FileSpreadsheet,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -14,6 +14,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import Pagination from '../../components/common/Pagination';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const MONTHS = [
@@ -67,6 +68,7 @@ const MonthlyReports = () => {
   const [loadingClusters, setLoadingClusters]   = useState(false);
 
   const [downloadLoading, setDownloadLoading] = useState(null);
+  const [excelLoading, setExcelLoading] = useState(false);
   const [actionLoading, setActionLoading]     = useState(false);
   const [approveModal, setApproveModal] = useState({ open: false, report: null });
   const [rejectModal, setRejectModal]   = useState({ open: false, report: null });
@@ -179,6 +181,37 @@ const MonthlyReports = () => {
     }
   };
 
+  const handleExcelExport = async () => {
+    setExcelLoading(true);
+    try {
+      const res = await api.get('/reports/download-deo-vt-excel', {
+        params: { month: selectedMonth, year: selectedYear },
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(res.data);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `DEO_VT_Attendance_${MONTHS[selectedMonth - 1]}_${selectedYear}.xlsx`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Excel report downloaded');
+    } catch (err) {
+      let message = 'Failed to export Excel report';
+      const responseData = err?.response?.data;
+      if (responseData instanceof Blob) {
+        try {
+          const parsed = JSON.parse(await responseData.text());
+          message = parsed.message || message;
+        } catch (_) {}
+      } else if (responseData?.message) message = responseData.message;
+      toast.error(message);
+    } finally {
+      setExcelLoading(false);
+    }
+  };
+
   // ── Approve ───────────────────────────────────────────────────────────────
   const handleApprove = async () => {
     const report = approveModal.report;
@@ -255,18 +288,17 @@ const MonthlyReports = () => {
     {
       key: 'hm_approval_status',
       header: 'Principal',
-      render: (value) => <ApprovalPill status={value} label={value === 'approved' ? 'HOS Approved' : value === 'rejected' ? 'HOS Rejected' : 'HOS Pending'} />,
+      render: (value, row) => <div className="flex flex-col items-start gap-1"><ApprovalPill status={value} label={value === 'approved' ? 'HM (Head Master) Approved' : value === 'rejected' ? 'HM (Head Master) Rejected' : 'HM (Head Master) Pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
       key: 'deo_approval_status',
       header: 'My Approval (DEO)',
-      render: (value) => <ApprovalPill status={value} label={value === 'approved' ? 'Approved' : value === 'rejected' ? 'Rejected' : 'Pending'} />,
+      render: (value, row) => <div className="flex flex-col items-start gap-1"><ApprovalPill status={value} label={value === 'approved' ? 'Approved' : value === 'rejected' ? 'Rejected' : 'Pending'} /><ApprovalSourceBadge type={row.deo_approval_type} /></div>,
     },
     {
       key: 'actions',
       header: 'Actions',
       render: (_, row) => {
-        const hmApproved = row.hm_approval_status === 'approved';
         return (
           <div className="flex flex-col gap-1.5">
             {/* View PDF */}
@@ -283,25 +315,19 @@ const MonthlyReports = () => {
             )}
 
             {/* Approve */}
-            {row.deo_approval_status === 'pending' && (
+            {(
               <>
-                <div title={!hmApproved ? 'Not approved by Principal/HOS' : ''}>
+                {row.deo_approval_status !== 'approved' && <div>
                   <Button
                     variant="success"
                     size="sm"
                     leftIcon={<CheckCircle className="h-3 w-3" />}
-                    disabled={!hmApproved}
                     onClick={() => { setApproveModal({ open: true, report: row }); setRemarks(''); }}
                   >
                     Approve
                   </Button>
-                </div>
-                {!hmApproved && (
-                  <p className="text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    Awaiting HOS approval
-                  </p>
-                )}
+                </div>}
+                {row.deo_approval_status !== 'rejected' && (
                 <Button
                   variant="danger"
                   size="sm"
@@ -310,6 +336,7 @@ const MonthlyReports = () => {
                 >
                   Reject
                 </Button>
+                )}
               </>
             )}
             {row.deo_approval_status === 'approved' && (
@@ -365,7 +392,7 @@ const MonthlyReports = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending My Action</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Pending My Action</p>
               <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{counts.pending_my_action}</p>
             </div>
             <div className="p-3 rounded-2xl bg-yellow-100 dark:bg-yellow-900/30">
@@ -380,7 +407,7 @@ const MonthlyReports = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Approved by Me</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Approved by Me</p>
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">{counts.approved}</p>
             </div>
             <div className="p-3 rounded-2xl bg-green-100 dark:bg-green-900/30">
@@ -395,7 +422,7 @@ const MonthlyReports = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rejected</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Rejected</p>
               <p className="text-3xl font-bold text-red-600 dark:text-red-400">{counts.rejected}</p>
             </div>
             <div className="p-3 rounded-2xl bg-red-100 dark:bg-red-900/30">
@@ -415,7 +442,7 @@ const MonthlyReports = () => {
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
             <span className="font-semibold">{counts.pending_my_action}</span> report
-            {counts.pending_my_action !== 1 ? 's have' : ' has'} HOS approval and are waiting for your DEO approval.
+            {counts.pending_my_action !== 1 ? 's have' : ' has'} HM (Head Master) approval and are waiting for your DEO approval.
           </p>
         </motion.div>
       )}
@@ -520,6 +547,17 @@ const MonthlyReports = () => {
         </div>
       </Card>
 
+      <div className="flex justify-end">
+        <Button
+          variant="success"
+          leftIcon={<FileSpreadsheet className="h-4 w-4" />}
+          onClick={handleExcelExport}
+          loading={excelLoading}
+        >
+          Export Excel
+        </Button>
+      </div>
+
       {/* Reports Table */}
       <Card variant="elevated">
         <div className="flex items-center justify-between mb-4">
@@ -581,7 +619,7 @@ const MonthlyReports = () => {
               <p className="font-semibold text-gray-900 dark:text-white">{approveModal.report.vt_name}</p>
               <p className="text-sm text-gray-500">{approveModal.report.school_name} · {approveModal.report.trade}</p>
               <div className="flex gap-2 mt-1">
-                <ApprovalPill status={approveModal.report.hm_approval_status} label="HOS Approved" />
+                <ApprovalPill status={approveModal.report.hm_approval_status} label="HM (Head Master) Approved" />
               </div>
             </div>
           )}

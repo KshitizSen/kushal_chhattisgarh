@@ -2,16 +2,26 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/vtp/Dashboard';
 import VtApprovals from '../pages/vtp/VtApprovals';
+import VtStaffList from '../pages/vtp/VtStaffList';
 import LeaveManagement from '../pages/vtp/LeaveManagement';
 import AttendanceRequests from '../pages/vtp/AttendanceRequests';
 import MonthlyAttendanceReports from '../pages/vtp/MonthlyAttendanceReports';
 import ProtectedRoute from './ProtectedRoute';
+import DeviceChangeRequests from '../pages/common/DeviceChangeRequests';
+import SchoolsList from '../pages/vtp/SchoolsList';
+import TradesList from '../pages/vtp/TradesList';
+import AttendanceStatus from '../pages/vtp/AttendanceStatus';
 
 const VTPRoutes = () => {
   const allowedRoles = ['vtp', 'vocational_teacher_provider'];
 
   return (
     <Routes>
+      <Route
+        path="dashboard"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><Dashboard /></ProtectedRoute>}
+      />
+      <Route path="attendance-status" element={<ProtectedRoute allowedRoles={allowedRoles}><AttendanceStatus /></ProtectedRoute>} />
       <Route
         path="vt-approvals"
         element={
@@ -37,8 +47,18 @@ const VTPRoutes = () => {
         }
       />
       <Route
+        path="vt-list"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><VtStaffList /></ProtectedRoute>}
+      />
+      <Route path="schools" element={<ProtectedRoute allowedRoles={allowedRoles}><SchoolsList /></ProtectedRoute>} />
+      <Route path="trades" element={<ProtectedRoute allowedRoles={allowedRoles}><TradesList /></ProtectedRoute>} />
+      <Route
         path="attendance-requests"
         element={<Navigate to="/vtp/vocational-training-requests" replace />}
+      />
+      <Route
+        path="device-change-requests"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><DeviceChangeRequests /></ProtectedRoute>}
       />
       <Route
         path="monthly-reports"
@@ -48,7 +68,7 @@ const VTPRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/vtp/vt-approvals" replace />} />
+      <Route path="*" element={<Navigate to="/vtp/dashboard" replace />} />
     </Routes>
   );
 };

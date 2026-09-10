@@ -89,7 +89,7 @@ const PrincipalDashboard = () => {
       icon:    <Users className="h-6 w-6" />,
       color:   'bg-blue-500',
       trend:   'neutral',
-      onClick: () => navigate('/principal/staff-management'),
+      onClick: () => navigate('/principal/teacher-approval'),
     },
     {
       title:   'Pending Approvals',

@@ -69,6 +69,7 @@ export const StatusBadge = ({ status, showIcon = true }) => {
     approved: { label: 'Approved', variant: 'success', icon: '✓' },
     accepted: { label: 'Accepted', variant: 'success', icon: '✓' },
     rejected: { label: 'Rejected', variant: 'danger', icon: '✕' },
+    cancelled: { label: 'Cancelled', variant: 'warning', icon: '⊘' },
     completed: { label: 'Completed', variant: 'primary', icon: '✓' },
     warning: { label: 'Warning', variant: 'warning', icon: '!' },
     review: { label: 'Review', variant: 'info', icon: '•' },

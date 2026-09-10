@@ -7,7 +7,7 @@ export const ROLES = {
 
 export const ROLE_DASHBOARDS = {
   admin: '/admin/dashboard',
-  vtp: '/vtp/vt-approvals',
+  vtp: '/vtp/dashboard',
   principal: '/principal/dashboard',
   deo: '/deo/dashboard',
 };

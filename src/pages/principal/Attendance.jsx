@@ -316,7 +316,7 @@ const Attendance = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className={`text-sm font-medium text-${color}-700 dark:text-${color}-300`}>{label}</p>
+                <p className={`text-lg font-medium text-${color}-700 dark:text-${color}-300`}>{label}</p>
                 <p className={`text-3xl font-bold text-${color}-600 dark:text-${color}-400`}>{value}</p>
               </div>
               <div className={`p-3 rounded-2xl bg-${color}-100 dark:bg-${color}-900/30`}>

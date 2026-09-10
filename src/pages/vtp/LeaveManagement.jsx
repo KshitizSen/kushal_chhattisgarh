@@ -15,7 +15,6 @@ import {
   Info,
   School,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import useVtpStore from '../../store/vtpStore';
 import vtpService from '../../services/vtpService';
@@ -27,6 +26,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (iso) =>
@@ -53,6 +53,7 @@ const LeaveManagement = () => {
     fetchLeaves,
     approveLeave,
     rejectLeave,
+    approveLeaveCancellation,
     balances,
     balanceSummary,
     balanceLoading,
@@ -69,6 +70,7 @@ const LeaveManagement = () => {
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isCancellationModalOpen, setIsCancellationModalOpen] = useState(false);
   const [remarks, setRemarks] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [selectedLeaveBalance, setSelectedLeaveBalance] = useState(null);
@@ -88,13 +90,8 @@ const LeaveManagement = () => {
     }
   }, [activeTab, fetchBalances]);
 
-  // Reset to page 1 when filter changes
-  useEffect(() => {
-    setPage(1);
-  }, [statusFilter]);
-
   // ── Client-side search (server handles status filter) ─────────────────
-  const filteredLeaves = leaves.filter((l) => {
+  const filteredLeaves = (Array.isArray(leaves) ? leaves : []).filter((l) => {
     const q = searchQuery.toLowerCase();
     return (
       l.teacher_name?.toLowerCase().includes(q) ||
@@ -116,6 +113,21 @@ const LeaveManagement = () => {
       setRemarks('');
     } else {
       toast.error(res.message || 'Failed to approve leave');
+    }
+    setActionLoading(false);
+  };
+
+  const handleCancellationApprove = async () => {
+    if (!selectedLeave?.cancellation_request_id) return;
+    setActionLoading(true);
+    const res = await approveLeaveCancellation(selectedLeave.cancellation_request_id, remarks.trim());
+    if (res.success) {
+      toast.success(res.message);
+      setIsCancellationModalOpen(false);
+      setSelectedLeave(null);
+      setRemarks('');
+    } else {
+      toast.error(res.message || 'Failed to approve leave cancellation');
     }
     setActionLoading(false);
   };
@@ -225,20 +237,22 @@ const LeaveManagement = () => {
     },
     {
       key: 'principal_status',
-      header: 'HOS Status',
-      render: (value) => (
+      header: 'HM (Head Master) Status',
+      render: (value, row) => (
         <div className="flex flex-col gap-1">
           <StatusBadge status={value} />
+          <ApprovalSourceBadge type={row.principal_approval_type} />
           <span className="text-[10px] text-gray-400 text-center">Principal Layer</span>
         </div>
       ),
     },
     {
-      key: 'status',
+      key: 'vtp_status',
       header: 'VTP Status',
       render: (value, row) => (
         <div className="flex flex-col gap-1">
           <StatusBadge status={value} />
+          <ApprovalSourceBadge type={row.vtp_approval_type} />
           {row.leave_approved && (
             <div className="flex items-center justify-center gap-1 mt-0.5 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 px-2 py-0.5 border border-emerald-200 dark:from-emerald-900/30 dark:to-teal-900/30 dark:border-emerald-800 shadow-sm">
               <CheckCircle className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
@@ -255,8 +269,7 @@ const LeaveManagement = () => {
       header: 'Actions',
       render: (_, row) => (
         <div className="flex flex-col gap-1.5 min-w-[100px]">
-          {row.status === 'pending' && (
-            <>
+          {row.vtp_status !== 'approved' && (
               <Button
                 variant="success"
                 size="sm"
@@ -266,6 +279,8 @@ const LeaveManagement = () => {
               >
                 Approve
               </Button>
+          )}
+          {row.vtp_status !== 'rejected' && (
               <Button
                 variant="danger"
                 size="sm"
@@ -275,21 +290,48 @@ const LeaveManagement = () => {
               >
                 Reject
               </Button>
-            </>
           )}
-          {row.status === 'approved' && !row.leave_approved && (
+          {row.vtp_status === 'approved' && row.principal_status === 'pending' && !row.leave_approved && (
             <div className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/10 p-1.5 rounded border border-amber-100 text-center">
               Awaiting Principal
             </div>
           )}
           {row.leave_approved && (
-            <Badge variant="success" outline size="sm" className="w-full justify-center">
-              <CheckCircle className="h-3 w-3 mr-1 inline" /> Completed
+            <>
+              <Badge variant="success" outline size="sm" className="w-full justify-center">
+                <CheckCircle className="h-3 w-3 mr-1 inline" /> Completed
+              </Badge>
+              {row.cancellation_status === 'pending' && row.cancellation_vtp_status === 'pending' && (
+                <Button
+                  variant="warning"
+                  size="sm"
+                  leftIcon={<Ban className="h-3.5 w-3.5" />}
+                  onClick={() => { setSelectedLeave(row); setRemarks(''); setIsCancellationModalOpen(true); }}
+                  className="w-full"
+                >
+                  Approve Cancellation
+                </Button>
+              )}
+              {row.cancellation_status === 'pending' && row.cancellation_vtp_status === 'approved' && (
+                <Badge variant="warning" outline size="sm" className="w-full justify-center">
+                  Awaiting HM Approval
+                </Badge>
+              )}
+              {row.cancellation_status === 'approved' && (
+                <Badge variant="warning" outline size="sm" className="w-full justify-center">
+                  <Ban className="h-3 w-3 mr-1 inline" /> Cancelled {fmtDate(row.cancellation_date)}
+                </Badge>
+              )}
+            </>
+          )}
+          {row.principal_status === 'rejected' && (
+            <Badge variant="danger" outline size="sm" className="w-full justify-center">
+              <XCircle className="h-3 w-3 mr-1 inline" /> Principal Rejected
             </Badge>
           )}
-          {row.status === 'rejected' && (
+          {row.vtp_status === 'rejected' && (
             <Badge variant="danger" outline size="sm" className="w-full justify-center">
-              <XCircle className="h-3 w-3 mr-1 inline" /> Rejected
+              <XCircle className="h-3 w-3 mr-1 inline" /> VTP Rejected
             </Badge>
           )}
         </div>
@@ -359,7 +401,7 @@ const LeaveManagement = () => {
                 <Filter className="h-5 w-5 text-gray-400" />
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
                   className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-indigo-500 min-w-[160px]"
                 >
                   <option value="">All Status</option>
@@ -451,7 +493,7 @@ const LeaveManagement = () => {
                   <Wallet className="h-6 w-6 text-indigo-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-indigo-600 font-medium">Total VTs</p>
+                  <p className="text-lg text-indigo-600 font-medium">Total VTs</p>
                   <p className="text-2xl font-bold text-indigo-900 dark:text-indigo-200">{balanceSummary.totalTeachers || 0}</p>
                 </div>
               </div>
@@ -462,7 +504,7 @@ const LeaveManagement = () => {
                   <CheckCircle className="h-6 w-6 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-emerald-600 font-medium">Healthy Balance (≥10)</p>
+                  <p className="text-lg text-emerald-600 font-medium">Healthy Balance (≥10)</p>
                   <p className="text-2xl font-bold text-emerald-900 dark:text-emerald-200">{balanceSummary.healthyBalance || 0}</p>
                 </div>
               </div>
@@ -473,7 +515,7 @@ const LeaveManagement = () => {
                   <AlertCircle className="h-6 w-6 text-amber-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-amber-600 font-medium">Low Balance</p>
+                  <p className="text-lg text-amber-600 font-medium">Low Balance</p>
                   <p className="text-2xl font-bold text-amber-900 dark:text-amber-200">{balanceSummary.lowBalance || 0}</p>
                 </div>
               </div>
@@ -484,7 +526,7 @@ const LeaveManagement = () => {
                   <Ban className="h-6 w-6 text-rose-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-rose-600 font-medium">Zero Balance</p>
+                  <p className="text-lg text-rose-600 font-medium">Zero Balance</p>
                   <p className="text-2xl font-bold text-rose-900 dark:text-rose-200">{balanceSummary.zeroBalance || 0}</p>
                 </div>
               </div>
@@ -564,7 +606,6 @@ const LeaveManagement = () => {
                     render: (bal) => {
                       const earned = parseFloat(bal?.totalEarned || 0);
                       const used = parseFloat(bal?.totalUsed || 0);
-                      const excess = Math.max(0, used - earned);
                       const closing = parseFloat(bal?.remainingBalance || 0);
                       return (
                         <div className="text-xs space-y-1 min-w-[140px]">
@@ -602,6 +643,41 @@ const LeaveManagement = () => {
       )}
 
       {/* ── Approve Modal ─────────────────────────────────────────────────── */}
+      <Modal
+        isOpen={isCancellationModalOpen}
+        onClose={() => { setIsCancellationModalOpen(false); setSelectedLeave(null); setRemarks(''); }}
+        title="Approve Leave Cancellation"
+        size="md"
+        footer={
+          <div className="flex gap-3 w-full justify-end">
+            <Button variant="ghost" onClick={() => { setIsCancellationModalOpen(false); setSelectedLeave(null); setRemarks(''); }}>
+              Close
+            </Button>
+            <Button variant="warning" onClick={handleCancellationApprove} loading={actionLoading} leftIcon={<Ban className="h-4 w-4" />}>
+              Approve Cancellation
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-5">
+          <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl">
+            <p className="font-semibold text-amber-900 dark:text-amber-200">Approve cancellation for this date?</p>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+              Attendance and leave balance will update only after both VTP and HM approve.
+            </p>
+          </div>
+          {selectedLeave && (
+            <div className="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 space-y-3">
+              <div className="flex justify-between gap-4"><span className="text-gray-500">Vocational Trainer</span><span className="font-semibold text-right">{selectedLeave.teacher_name}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-gray-500">Cancellation Date</span><span className="font-medium">{fmtDate(selectedLeave.cancellation_date)}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-gray-500">Reason</span><span className="font-medium text-right">{selectedLeave.cancellation_reason || '—'}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-gray-500">HM Status</span><StatusBadge status={selectedLeave.cancellation_hm_status} /></div>
+            </div>
+          )}
+          <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />
+        </div>
+      </Modal>
+
       <Modal
         isOpen={isApproveModalOpen}
         onClose={() => { setIsApproveModalOpen(false); setSelectedLeave(null); setRemarks(''); }}

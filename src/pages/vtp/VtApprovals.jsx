@@ -185,7 +185,7 @@ const VtApprovals = () => {
     },
     {
       key: 'vt_approval_status',
-      header: 'HOS (Principal)',
+      header: 'HM (Head Master) (Principal)',
       render: (value) => <ApprovalPill status={value} />,
     },
     {
@@ -207,8 +207,7 @@ const VtApprovals = () => {
       header: 'Actions',
       render: (_, row) => (
         <div className="flex flex-col gap-2">
-          {row.vtp_approval_status === 'pending' && (
-            <>
+          {row.vtp_approval_status !== 'accepted' && (
               <Button
                 variant="success"
                 size="sm"
@@ -217,6 +216,8 @@ const VtApprovals = () => {
               >
                 Approve
               </Button>
+          )}
+          {row.vtp_approval_status !== 'rejected' && (
               <Button
                 variant="danger"
                 size="sm"
@@ -225,7 +226,6 @@ const VtApprovals = () => {
               >
                 Reject
               </Button>
-            </>
           )}
           {row.vtp_approval_status === 'accepted' && (
             <Badge variant="success" outline rounded>
@@ -283,7 +283,7 @@ const VtApprovals = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Approvals</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Pending Approvals</p>
               <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{counts.pending}</p>
             </div>
             <div className="p-3 rounded-2xl bg-yellow-100 dark:bg-yellow-900/30">
@@ -299,7 +299,7 @@ const VtApprovals = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Approved Teachers</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Approved Teachers</p>
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">{counts.accepted}</p>
             </div>
             <div className="p-3 rounded-2xl bg-green-100 dark:bg-green-900/30">
@@ -315,7 +315,7 @@ const VtApprovals = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rejected</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Rejected</p>
               <p className="text-3xl font-bold text-red-600 dark:text-red-400">{counts.rejected}</p>
             </div>
             <div className="p-3 rounded-2xl bg-red-100 dark:bg-red-900/30">
@@ -463,7 +463,7 @@ const VtApprovals = () => {
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-500">HOS Status:</span>
+                  <span className="text-gray-500">HM (Head Master) Status:</span>
                   <ApprovalPill status={selectedVt.vt_approval_status} />
                 </div>
                 <div>

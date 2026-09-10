@@ -24,6 +24,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (iso) =>
@@ -101,9 +102,10 @@ const AttendanceRequests = () => {
         } else {
           const s = { pending: 0, approved: 0, rejected: 0 };
           data.forEach((r) => {
-            if (r.status === 'pending') s.pending++;
-            if (r.status === 'approved') s.approved++;
-            if (r.status === 'rejected') s.rejected++;
+            const approvalStatus = r.hm_status || r.status;
+            if (approvalStatus === 'pending') s.pending++;
+            if (approvalStatus === 'approved') s.approved++;
+            if (approvalStatus === 'rejected') s.rejected++;
           });
           setCounts({ ...s, total: pag.totalRecords ?? pag.total ?? res.data.total ?? 0 });
         }
@@ -129,9 +131,10 @@ const AttendanceRequests = () => {
         const all = res.data.data || [];
         const s = { pending: 0, approved: 0, rejected: 0 };
         all.forEach((r) => {
-          if (r.status === 'pending') s.pending++;
-          if (r.status === 'approved') s.approved++;
-          if (r.status === 'rejected') s.rejected++;
+          const approvalStatus = r.hm_status || r.status;
+          if (approvalStatus === 'pending') s.pending++;
+          if (approvalStatus === 'approved') s.approved++;
+          if (approvalStatus === 'rejected') s.rejected++;
         });
 
         const pag = res.data.pagination || {};
@@ -283,41 +286,35 @@ const AttendanceRequests = () => {
       ),
     },
     {
-      key: 'created_at',
-      header: 'Applied On',
-      render: (value) => (
-        <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-          <Clock className="h-4 w-4" />
-          {fmtDate(value)}
-        </div>
-      ),
-    },
-    {
       key: 'hm_status',
-      header: 'HOS Status',
-      render: (_, row) => <StatusBadge status={row.hm_status || row.status || 'pending'} />,
+      header: 'HM (Head Master) Status',
+      render: (_, row) => <div className="flex flex-col items-start gap-1"><StatusBadge status={row.hm_status || row.status || 'pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
       key: 'vtp_status',
       header: 'VTP Status',
       render: (_, row) => (
-        activeTab === 'onduty' ? (
-          <StatusBadge status={row.vtp_status || 'pending'} />
-        ) : (
-          <span className="text-xs text-gray-500">—</span>
-        )
+        // activeTab === 'onduty' ? (
+          <div className="flex flex-col items-start gap-1">
+            <StatusBadge status={row.vtp_status || 'pending'} />
+            <ApprovalSourceBadge type={row.vtp_approval_type} />
+          </div>
+        // ) : (
+        //   <span className="text-xs text-gray-500">—</span>
+        // )
       ),
     },
     {
       key: 'actions',
       header: 'Actions',
       render: (_, row) => {
-        const actionStatus = (activeTab === 'onduty' ? (row.hm_status || row.status) : row.status) || 'pending';
+        const actionStatus = (row.hm_status || row.status) || 'pending';
         
         return (
           <div className="flex flex-col gap-1.5">
-            {actionStatus === 'pending' ? (
+            {(
               <>
+                {actionStatus !== 'approved' && (
                 <Button
                   variant="success"
                   size="sm"
@@ -326,6 +323,8 @@ const AttendanceRequests = () => {
                 >
                   Approve
                 </Button>
+                )}
+                {actionStatus !== 'rejected' && (
                 <Button
                   variant="danger"
                   size="sm"
@@ -334,16 +333,8 @@ const AttendanceRequests = () => {
                 >
                   Reject
                 </Button>
-              </>
-            ) : (
-              <Badge variant={actionStatus === 'approved' ? 'success' : 'danger'} outline size="sm">
-                {actionStatus === 'approved' ? (
-                  <CheckCircle className="h-3 w-3 mr-1 inline" />
-                ) : (
-                  <XCircle className="h-3 w-3 mr-1 inline" />
                 )}
-                <span className="capitalize">{actionStatus}</span>
-              </Badge>
+              </>
             )}
           </div>
         );
@@ -390,7 +381,7 @@ const AttendanceRequests = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className={`text-sm font-medium text-${color}-700 dark:text-${color}-300`}>{label}</p>
+                <p className={`text-lg font-medium text-${color}-700 dark:text-${color}-300`}>{label}</p>
                 <p className={`text-3xl font-bold text-${color}-600 dark:text-${color}-400`}>{value}</p>
               </div>
               <div className={`p-3 rounded-2xl bg-${color}-100 dark:bg-${color}-900/30`}>

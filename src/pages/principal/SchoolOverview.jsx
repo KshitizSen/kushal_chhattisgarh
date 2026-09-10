@@ -153,7 +153,7 @@ const SchoolOverview = () => {
             <p className="font-semibold">{schoolInfo.campusArea}</p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Total Classes</p>
+            <p className="text-lg text-gray-600 dark:text-gray-400">Total Classes</p>
             <p className="font-semibold">{schoolInfo.totalClasses}</p>
           </div>
         </div>
@@ -288,7 +288,7 @@ const SchoolOverview = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">1,245</div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Total Students</p>
+            <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">Total Students</p>
           </div>
           <div className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="text-3xl font-bold text-green-600 dark:text-green-400">94%</div>
@@ -296,7 +296,7 @@ const SchoolOverview = () => {
           </div>
           <div className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">74</div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Total Staff</p>
+            <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">Total Staff</p>
           </div>
           <div className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">97%</div>

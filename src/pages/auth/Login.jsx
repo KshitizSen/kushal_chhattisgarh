@@ -149,7 +149,7 @@ const Login = () => {
                 transition={{ duration: 0.2 }}
               >
                 <AuthInput
-                  label="HOS Code"
+                  label="HM (Head Master) Code"
                   type="text"
                   icon={Code}
                   error={errors.email?.message}
@@ -285,7 +285,7 @@ const Login = () => {
               <>
                 <LogIn className="w-4 h-4" />
                 Sign In
-                <ArrowRight className="w-3.5 h-3.5 ml-0.5 opacity-60" />
+                {/* <ArrowRight className="w-3.5 h-3.5 ml-0.5 opacity-60" /> */}
               </>
             )}
           </motion.button>

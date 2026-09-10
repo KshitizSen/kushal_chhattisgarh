@@ -267,7 +267,7 @@ const StaffManagement = () => {
               <Users className="w-6 h-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm text-gray-600">Total Staff</p>
+              <p className="text-lg text-gray-600">Total Staff</p>
               <p className="text-2xl font-bold text-gray-900">45</p>
             </div>
           </div>

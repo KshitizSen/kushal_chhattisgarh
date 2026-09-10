@@ -42,13 +42,6 @@ const roleSchema = z.object({
     .max(240, 'Remarks must be under 240 characters'),
 });
 
-const formatDate = (value) =>
-  new Intl.DateTimeFormat('en-IN', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(value));
-
 const createRoleCode = (name) =>
   name
     .trim()
@@ -151,7 +144,6 @@ const ManageRoles = () => {
     { key: 'role', label: 'Role', sortable: false },
     { key: 'permissions', label: 'Permissions', sortable: false },
     { key: 'remarks', label: 'Remarks', sortable: false },
-    { key: 'updatedAt', label: 'Updated', sortable: false },
     { key: 'actions', label: 'Actions', align: 'right', sortable: false },
   ];
 
@@ -276,7 +268,7 @@ const ManageRoles = () => {
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{stat.title}</p>
+                <p className="text-lg font-medium text-gray-500 dark:text-gray-400">{stat.title}</p>
                 <p className="mt-2 text-3xl font-semibold text-gray-950 dark:text-white">{stat.value}</p>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{stat.description}</p>
               </div>
@@ -374,9 +366,6 @@ const ManageRoles = () => {
                   </td>
                   <td className="px-5 py-4">
                     <p className="max-w-sm text-sm leading-6 text-gray-600 dark:text-gray-400">{role.remarks}</p>
-                  </td>
-                  <td className="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">
-                    {formatDate(role.updatedAt)}
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-2">

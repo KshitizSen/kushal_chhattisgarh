@@ -14,6 +14,7 @@ import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import Loader from '../../components/common/Loader';
 import Pagination from '../../components/common/Pagination';
+import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const MONTHS = [
@@ -281,15 +282,14 @@ const Reports = () => {
     {
       key: 'hm_approval_status',
       header: 'My Approval',
-      render: (value) => <ApprovalPill status={value} />,
+      render: (value, row) => <div className="flex flex-col items-start gap-1"><ApprovalPill status={value} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
       key: 'actions',
       header: 'Actions',
       render: (_, row) => (
         <div className="flex flex-col gap-2">
-          {row.hm_approval_status === 'pending' && (
-            <>
+          {row.hm_approval_status !== 'approved' && (
               <Button
                 variant="success"
                 size="sm"
@@ -298,6 +298,8 @@ const Reports = () => {
               >
                 Approve
               </Button>
+          )}
+          {row.hm_approval_status !== 'rejected' && (
               <Button
                 variant="danger"
                 size="sm"
@@ -306,7 +308,6 @@ const Reports = () => {
               >
                 Reject
               </Button>
-            </>
           )}
           {row.hm_approval_status === 'approved' && (
             <Badge variant="success" outline rounded>
@@ -384,7 +385,7 @@ const Reports = () => {
         <Card variant="elevated" className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending My Action</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Pending My Action</p>
               <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{counts.pending_my_action}</p>
             </div>
             <div className="p-3 rounded-2xl bg-yellow-100 dark:bg-yellow-900/30">
@@ -395,7 +396,7 @@ const Reports = () => {
         <Card variant="elevated" className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Approved by Me</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Approved by Me</p>
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">{counts.approved}</p>
             </div>
             <div className="p-3 rounded-2xl bg-green-100 dark:bg-green-900/30">
@@ -406,7 +407,7 @@ const Reports = () => {
         <Card variant="elevated" className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rejected</p>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Rejected</p>
               <p className="text-3xl font-bold text-red-600 dark:text-red-400">{counts.rejected}</p>
             </div>
             <div className="p-3 rounded-2xl bg-red-100 dark:bg-red-900/30">

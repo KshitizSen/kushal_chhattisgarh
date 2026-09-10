@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AlertCircle, BookOpen, Building2, Calendar, Download, MoreVertical, School, ShieldCheck, Users } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import Card, { StatCard, StatCardGrid } from '../../components/common/Card';
@@ -49,30 +50,35 @@ const AdminDashboard = () => {
       value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_schools),
       icon: <School className="w-6 h-6" />,
       description: 'VT enabled schools',
+      to: '/admin/manage-schools',
     },
     {
       title: 'Total VC',
       value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_vc),
       icon: <Building2 className="w-6 h-6" />,
       description: 'Vocational coordinators',
+      to: '/admin/manage-vtp',
     },
     {
       title: 'Total DEO',
       value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_deo),
       icon: <ShieldCheck className="w-6 h-6" />,
       description: 'District education officers',
+      to: '/admin/manage-deo',
     },
     {
       title: 'VT Staff',
       value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_vt_staff),
       icon: <Users className="w-6 h-6" />,
       description: 'VT staff',
+      to: '/admin/vocational-training-approval-tracking',
     },
     {
       title: 'Total Trades',
       value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_trades),
       icon: <BookOpen className="w-6 h-6" />,
       description: 'Distinct vocational trades',
+      to: '/admin/trades',
     },
   ], [dashboardCounts, isCountsLoading]);
 
@@ -143,8 +149,15 @@ const AdminDashboard = () => {
       )}
 
       <StatCardGrid>
-        {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
+        {stats.map(({ to, ...stat }) => (
+          <Link
+            key={stat.title}
+            to={to}
+            aria-label={`Open ${stat.title}`}
+            className="block h-full rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
+          >
+            <StatCard {...stat} />
+          </Link>
         ))}
       </StatCardGrid>
 

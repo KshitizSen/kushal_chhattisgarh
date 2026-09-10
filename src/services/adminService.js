@@ -5,6 +5,42 @@ export const getAdminDashboardCounts = async () => {
   return response.data;
 };
 
+export const getAdminAttendanceStatus = async ({ district_cd = '', block_cd = '', signal } = {}) => {
+  const response = await api.get('/admin/attendance-status', {
+    params: { district_cd, block_cd },
+    signal,
+  });
+  return response.data;
+};
+
+export const getAdminAttendanceStatusVts = async ({
+  status,
+  district_cd = '',
+  block_cd = '',
+  page = 1,
+  limit = 10,
+  signal,
+} = {}) => {
+  const response = await api.get('/admin/attendance-status/vts', {
+    params: { status, district_cd, block_cd, page, limit },
+    signal,
+  });
+  return response.data;
+};
+
+export const getAdminLocationOptions = async ({ type, district_cd = '', signal } = {}) => {
+  const response = await api.get('/reports/location-master', {
+    params: { type, district_cd },
+    signal,
+  });
+  return response.data;
+};
+
+export const getAdminTrades = async ({ page = 1, limit = 10, search = '' } = {}) => {
+  const response = await api.get('/admin/trades', { params: { page, limit, search } });
+  return response.data;
+};
+
 export const getAdminSchools = async ({
   page = 1,
   limit = 10,
@@ -33,6 +69,26 @@ export const getAdminVtpList = async ({
   return response.data;
 };
 
+export const getAdminVtpOptions = async () => {
+  const response = await api.get('/admin/vtp-options');
+  return response.data;
+};
+
+export const createAdminVtp = async (payload) => {
+  const response = await api.post('/admin/vtp', payload);
+  return response.data;
+};
+
+export const updateAdminVtp = async (id, payload) => {
+  const response = await api.put(`/admin/vtp/${id}`, payload);
+  return response.data;
+};
+
+export const deleteAdminVtp = async (id) => {
+  const response = await api.delete(`/admin/vtp/${id}`);
+  return response.data;
+};
+
 export const getAdminDeoList = async ({
   page = 1,
   limit = 10,
@@ -47,7 +103,13 @@ export const getAdminDeoList = async ({
   return response.data;
 };
 
+export const updateAdminDeo = async (id, payload) => {
+  const response = await api.put(`/admin/deos/${id}`, payload);
+  return response.data;
+};
+
 export const getAdminAttendanceTracking = async ({
+  view = 'all_vts',
   page = 1,
   limit = 10,
   search = '',
@@ -59,7 +121,7 @@ export const getAdminAttendanceTracking = async ({
   cluster_cd = '',
 } = {}) => {
   const response = await api.get('/admin/attendance-tracking', {
-    params: { page, limit, search, month, year, status, district_cd, block_cd, cluster_cd },
+    params: { view, page, limit, search, month, year, status, district_cd, block_cd, cluster_cd },
   });
   return response.data;
 };
