@@ -16,7 +16,7 @@ import Loader from '../../components/common/Loader';
 import Pagination from '../../components/common/Pagination';
 import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Helpers ───────────────────────────────────────────────────────────────────
 const MONTHS = [
   'January','February','March','April','May','June',
   'July','August','September','October','November','December',
@@ -35,7 +35,7 @@ const ApprovalPill = ({ status, short }) => {
   const s = map[status] || { variant: 'default', Icon: ShieldAlert };
   const { variant, Icon } = s;
   const label = short
-    ? (status === 'approved' ? 'âœ“' : status === 'rejected' ? 'âœ•' : 'â€¦')
+    ? (status === 'approved' ? '✓' : status === 'rejected' ? '✕' : '…')
     : (status === 'approved' ? 'Approved' : status === 'rejected' ? 'Rejected' : 'Pending');
   return (
     <Badge variant={variant} size="sm" outline>
@@ -49,7 +49,7 @@ const hasRequiredApprovals = (report) => (
   report?.hm_approval_status === 'approved' && report?.deo_approval_status === 'approved'
 );
 
-// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Component ─────────────────────────────────────────────────────────────────
 const MonthlyAttendanceReports = () => {
   const [reports, setReports]             = useState([]);
   const [counts, setCounts]               = useState({ total: 0, pending_my_action: 0, approved: 0, rejected: 0 });
@@ -69,7 +69,7 @@ const MonthlyAttendanceReports = () => {
   const [rejectModal, setRejectModal]   = useState({ open: false, report: null });
   const [remarks, setRemarks]           = useState('');
 
-  // â”€â”€ Fetch reports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Fetch reports ─────────────────────────────────────────────────────────
   const fetchReports = useCallback(async () => {
     setLoading(true);
     try {
@@ -103,7 +103,7 @@ const MonthlyAttendanceReports = () => {
   useEffect(() => { fetchReports(); fetchCounts(); }, [fetchReports, fetchCounts]);
   useEffect(() => { setCurrentPage(1); }, [selectedMonth, selectedYear, statusFilter]);
 
-  // â”€â”€ Client-side search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Client-side search ────────────────────────────────────────────────────
   const filteredReports = useMemo(() => {
     if (!searchQuery.trim()) return reports;
     const q = searchQuery.toLowerCase();
@@ -115,7 +115,7 @@ const MonthlyAttendanceReports = () => {
     );
   }, [reports, searchQuery]);
 
-  // â”€â”€ Download PDF â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Download PDF ──────────────────────────────────────────────────────────
   const handleDownload = async (report) => {
     setDownloadLoading(report.user_id);
     try {
@@ -172,7 +172,7 @@ const MonthlyAttendanceReports = () => {
     }
   };
 
-  // â”€â”€ Approve â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Approve ───────────────────────────────────────────────────────────────
   const handleApprove = async () => {
     const report = approveModal.report;
     if (!report) return;
@@ -188,7 +188,7 @@ const MonthlyAttendanceReports = () => {
         status: 'approved', remarks: remarks.trim(),
       });
       if (res.data?.status) {
-        toast.success('Report approved â€” workflow complete!');
+        toast.success('Report approved — workflow complete!');
         setApproveModal({ open: false, report: null }); setRemarks('');
         fetchReports(); fetchCounts();
       } else {
@@ -201,7 +201,7 @@ const MonthlyAttendanceReports = () => {
     }
   };
 
-  // â”€â”€ Reject â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Reject ────────────────────────────────────────────────────────────────
   const handleReject = async () => {
     const report = rejectModal.report;
     if (!report) return;
@@ -230,15 +230,15 @@ const MonthlyAttendanceReports = () => {
     }
   };
 
-  // â”€â”€ Table columns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Table columns ─────────────────────────────────────────────────────────
   const columns = [
     {
       key: 'vt_name',
       header: 'VT / School',
       render: (_, row) => (
         <div>
-          <p className="font-medium text-gray-900 dark:text-white">{row.vt_name || 'â€”'}</p>
-          <p className="text-xs text-gray-500">{row.school_name || 'â€”'}</p>
+          <p className="font-medium text-gray-900 dark:text-white">{row.vt_name || '—'}</p>
+          <p className="text-xs text-gray-500">{row.school_name || '—'}</p>
           <p className="text-xs text-gray-400">{row.block_name}, {row.district_name}</p>
         </div>
       ),
@@ -247,7 +247,7 @@ const MonthlyAttendanceReports = () => {
       key: 'trade',
       header: 'Trade',
       render: (value) => (
-        <span className="text-sm text-gray-700 dark:text-gray-300">{value || 'â€”'}</span>
+        <span className="text-sm text-gray-700 dark:text-gray-300">{value || '—'}</span>
       ),
     },
     {
@@ -501,7 +501,7 @@ const MonthlyAttendanceReports = () => {
       <Card variant="elevated">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Reports â€” {MONTHS[selectedMonth - 1]} {selectedYear}
+            Reports — {MONTHS[selectedMonth - 1]} {selectedYear}
           </h2>
           <Badge variant="primary" outline>{totalItems} record{totalItems !== 1 ? 's' : ''}</Badge>
         </div>
@@ -528,7 +528,7 @@ const MonthlyAttendanceReports = () => {
         )}
       </Card>
 
-      {/* â”€â”€ Final Approve Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Final Approve Modal ────────────────────────────────────────────────── */}
       <Modal
         isOpen={approveModal.open}
         onClose={() => { setApproveModal({ open: false, report: null }); setRemarks(''); }}
@@ -558,7 +558,7 @@ const MonthlyAttendanceReports = () => {
           {approveModal.report && (
             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-2">
               <p className="font-semibold text-gray-900 dark:text-white">{approveModal.report.vt_name}</p>
-              <p className="text-sm text-gray-500">{approveModal.report.school_name} Â· {approveModal.report.trade}</p>
+              <p className="text-sm text-gray-500">{approveModal.report.school_name} · {approveModal.report.trade}</p>
               <div className="flex gap-2 flex-wrap mt-1">
                 <ApprovalPill status={approveModal.report.hm_approval_status} />
                 <ApprovalPill status={approveModal.report.deo_approval_status} />
@@ -578,7 +578,7 @@ const MonthlyAttendanceReports = () => {
         </div>
       </Modal>
 
-      {/* â”€â”€ Reject Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Reject Modal ───────────────────────────────────────────────────────── */}
       <Modal
         isOpen={rejectModal.open}
         onClose={() => { setRejectModal({ open: false, report: null }); setRemarks(''); }}

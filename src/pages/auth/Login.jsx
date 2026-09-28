@@ -14,10 +14,10 @@ import AuthInput from '../../components/auth/AuthInput';
 import RoleSelector from '../../components/auth/RoleSelector';
 import api from '../../services/api';
 
-// â”€â”€â”€ Roles excluded from the login selector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Roles excluded from the login selector ───────────────────────────────────
 const EXCLUDED_ROLES = ['programmer', 'super_admin', 'vocational_teacher'];
 
-// â”€â”€â”€ Map backend role name â†’ frontend route key â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Map backend role name → frontend route key ───────────────────────────────
 // headmaster is shown as "Principal" in UI but maps to /principal/dashboard
 const BACKEND_TO_FRONTEND_ROLE = {
   headmaster: 'principal',
@@ -26,14 +26,14 @@ const BACKEND_TO_FRONTEND_ROLE = {
   deo: 'deo',
 };
 
-// â”€â”€â”€ Validation schema â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Validation schema ────────────────────────────────────────────────────────
 const loginSchema = z.object({
   email: z.string().min(1, 'Required field'),
   password: z.string().min(1, 'Required field'),
   role_id: z.number({ required_error: 'Please select a role', invalid_type_error: 'Please select a role' }),
 });
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ────────────────────────────────────────────────────────────────
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,11 +57,11 @@ const Login = () => {
 
   const selectedRoleId = watch('role_id');
 
-  // â”€â”€ Derive the selected role object â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Derive the selected role object ─────────────────────────────────────────
   const selectedRole = roles.find((r) => r.id === selectedRoleId) || null;
   const isHeadmaster = selectedRole?.name === 'headmaster';
 
-  // â”€â”€ Fetch roles from API on mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Fetch roles from API on mount ────────────────────────────────────────────
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -85,7 +85,7 @@ const Login = () => {
     fetchRoles();
   }, [setValue]);
 
-  // â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Submit ───────────────────────────────────────────────────────────────────
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
@@ -102,7 +102,7 @@ const Login = () => {
       if (result.status) {
         const { user, tokens, headmaster_details, deo_details, vtp_details } = result.data;
 
-        // Map backend role name â†’ frontend route key
+        // Map backend role name → frontend route key
         const frontendRole = BACKEND_TO_FRONTEND_ROLE[user.role] || user.role;
 
         const loggedInUser = {
@@ -138,7 +138,7 @@ const Login = () => {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
 
-          {/* Email / Teacher Code â€” switches label for headmaster */}
+          {/* Email / Teacher Code — switches label for headmaster */}
           <AnimatePresence mode="wait">
             {isHeadmaster ? (
               <motion.div
@@ -177,7 +177,7 @@ const Login = () => {
             )}
           </AnimatePresence>
 
-          {/* Password / Mobile â€” switches label for headmaster */}
+          {/* Password / Mobile — switches label for headmaster */}
           <AnimatePresence mode="wait">
             {isHeadmaster ? (
               <motion.div
@@ -226,7 +226,7 @@ const Login = () => {
             )}
           </AnimatePresence>
 
-          {/* Role Selector â€” dynamic from API */}
+          {/* Role Selector — dynamic from API */}
           <Controller
             name="role_id"
             control={control}
@@ -279,7 +279,7 @@ const Login = () => {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Signing inâ€¦
+                Signing in…
               </>
             ) : (
               <>
