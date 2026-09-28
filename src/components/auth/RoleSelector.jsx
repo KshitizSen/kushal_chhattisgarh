@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, GraduationCap, Landmark, Users, Loader2 } from 'lucide-react';
 
@@ -6,7 +6,7 @@ import { Shield, GraduationCap, Landmark, Users, Loader2 } from 'lucide-react';
 const ROLE_DISPLAY = {
   admin:                       { label: 'Admin',     description: 'Administrator',         icon: Shield },
   vocational_teacher_provider: { label: 'VTP',       description: 'VT Provider',           icon: GraduationCap },
-  headmaster:                  { label: 'HM',  description: 'Head Master',           icon: Landmark },
+  headmaster:                  { label: 'Principle',  description: 'Principle',           icon: Landmark },
   deo:                         { label: 'DEO',        description: 'District Edu. Officer', icon: Users },
 };
 
@@ -20,7 +20,7 @@ const RoleSelector = ({ value, onChange, error, roles = [], isLoading = false })
       {isLoading ? (
         <div className="flex items-center justify-center h-[72px] rounded-xl bg-white/[0.03] border border-white/[0.06]">
           <Loader2 className="w-4 h-4 animate-spin text-white/40" />
-          <span className="ml-2 text-xs text-white/40">Loading roles…</span>
+          <span className="ml-2 text-xs text-white/40">Loading rolesâ€¦</span>
         </div>
       ) : (
         <div

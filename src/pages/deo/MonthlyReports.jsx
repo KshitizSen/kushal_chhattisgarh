@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FileText, Download, CheckCircle, XCircle, Clock, AlertCircle,
   RefreshCw, Search, Filter, ShieldCheck, ShieldX, ShieldAlert, FileSpreadsheet,
@@ -269,8 +269,8 @@ const MonthlyReports = () => {
       header: 'VT / School',
       render: (_, row) => (
         <div>
-          <p className="font-medium text-gray-900 dark:text-white">{row.vt_name || '—'}</p>
-          <p className="text-xs text-gray-500">{row.school_name || '—'}</p>
+          <p className="font-medium text-gray-900 dark:text-white">{row.vt_name || 'â€”'}</p>
+          <p className="text-xs text-gray-500">{row.school_name || 'â€”'}</p>
           <p className="text-xs text-gray-400">{row.block_name}</p>
         </div>
       ),
@@ -280,15 +280,15 @@ const MonthlyReports = () => {
       header: 'Trade / VTP',
       render: (_, row) => (
         <div>
-          <p className="text-sm text-gray-700 dark:text-gray-300">{row.trade || '—'}</p>
-          <p className="text-xs text-gray-500">{row.vtp_name || '—'}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">{row.trade || 'â€”'}</p>
+          <p className="text-xs text-gray-500">{row.vtp_name || 'â€”'}</p>
         </div>
       ),
     },
     {
       key: 'hm_approval_status',
       header: 'Principal',
-      render: (value, row) => <div className="flex flex-col items-start gap-1"><ApprovalPill status={value} label={value === 'approved' ? 'HM (Head Master) Approved' : value === 'rejected' ? 'HM (Head Master) Rejected' : 'HM (Head Master) Pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
+      render: (value, row) => <div className="flex flex-col items-start gap-1"><ApprovalPill status={value} label={value === 'approved' ? 'Principle Approved' : value === 'rejected' ? 'Principle Rejected' : 'Principle Pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
       key: 'deo_approval_status',
@@ -442,7 +442,7 @@ const MonthlyReports = () => {
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
             <span className="font-semibold">{counts.pending_my_action}</span> report
-            {counts.pending_my_action !== 1 ? 's have' : ' has'} HM (Head Master) approval and are waiting for your DEO approval.
+            {counts.pending_my_action !== 1 ? 's have' : ' has'} Principle approval and are waiting for your DEO approval.
           </p>
         </motion.div>
       )}
@@ -492,7 +492,7 @@ const MonthlyReports = () => {
           />
         </div>
 
-        {/* Row 2: District / Block / Cluster (cascading) */}
+        {/* Row 2: District / Block (cascading) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
           {/* District */}
           <div>
@@ -527,23 +527,6 @@ const MonthlyReports = () => {
             </select>
           </div>
 
-          {/* Cluster */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
-              Cluster {loadingClusters && <span className="text-primary-500">(loading...)</span>}
-            </label>
-            <select
-              value={selectedCluster}
-              onChange={(e) => setSelectedCluster(e.target.value)}
-              disabled={!selectedBlock || loadingClusters}
-              className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <option value="">All Clusters</option>
-              {clusters.map((c) => (
-                <option key={c.cluster_cd} value={c.cluster_cd}>{c.cluster_name}</option>
-              ))}
-            </select>
-          </div>
         </div>
       </Card>
 
@@ -619,7 +602,7 @@ const MonthlyReports = () => {
               <p className="font-semibold text-gray-900 dark:text-white">{approveModal.report.vt_name}</p>
               <p className="text-sm text-gray-500">{approveModal.report.school_name} · {approveModal.report.trade}</p>
               <div className="flex gap-2 mt-1">
-                <ApprovalPill status={approveModal.report.hm_approval_status} label="HM (Head Master) Approved" />
+                <ApprovalPill status={approveModal.report.hm_approval_status} label="Principle Approved" />
               </div>
             </div>
           )}

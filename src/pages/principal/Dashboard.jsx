@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import {
   Users,
   Calendar,
@@ -109,15 +109,7 @@ const PrincipalDashboard = () => {
       trend:   'up',
       onClick: () => navigate('/principal/vocational-training-approval'),
     },
-    {
-      title:   'Late Teachers',
-      value:   loading ? '…' : attCounts.late,
-      change:  'After grace time',
-      icon:    <Clock className="h-6 w-6" />,
-      color:   'bg-yellow-500',
-      trend:   attCounts.late > 0 ? 'down' : 'neutral',
-      onClick: () => navigate('/principal/vocational-training-approval'),
-    },
+
     {
       title:   'Absent Today',
       value:   loading ? '…' : attCounts.absent,

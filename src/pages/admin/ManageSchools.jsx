@@ -154,7 +154,7 @@ const ManageSchools = () => {
       <Card padding="md">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input
-            placeholder="Search by school, UDISE, district, block, or cluster..."
+            placeholder="Search by school, UDISE, district, or block..."
             leftIcon={<Search className="h-4 w-4" />}
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
@@ -191,17 +191,6 @@ const ManageSchools = () => {
               <option key={block.block_cd} value={block.block_cd}>{block.block_name}</option>
             ))}
           </select>
-          <select
-            value={selectedCluster}
-            onChange={(event) => setSelectedCluster(event.target.value)}
-            disabled={!selectedBlock}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-          >
-            <option value="">All Clusters</option>
-            {clusters.map((cluster) => (
-              <option key={cluster.cluster_cd} value={cluster.cluster_cd}>{cluster.cluster_name}</option>
-            ))}
-          </select>
         </div>
       </Card>
 
@@ -234,8 +223,6 @@ const ManageSchools = () => {
                   <p className="text-sm text-gray-500 dark:text-gray-400">Code: {displayValue(school.block_cd)}</p>
                 </td>
                 {/* <td className="px-4 py-3">
-                  <p>{displayValue(school.cluster_name)}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Code: {displayValue(school.cluster_cd)}</p>
                 </td> */}
                 <td className="max-w-xs px-4 py-3">{displayValue(school.address)}</td>
                 <td className="px-4 py-3">{displayValue(school.email)}</td>

@@ -4,6 +4,7 @@ import {
   RefreshCw,
   School,
   Users,
+  BookOpen,
 } from 'lucide-react';
 import { StatCardGrid } from '../../components/common/Card';
 import Button from '../../components/common/Button';
@@ -13,6 +14,7 @@ const initialCounts = {
   schools: 0,
   vts: 0,
   vtps: 0,
+  trades: 0,
 };
 
 const DeoDashboard = () => {
@@ -32,6 +34,7 @@ const DeoDashboard = () => {
         schools: apiCounts.schools ?? 0,
         vts: apiCounts.vts ?? 0,
         vtps: apiCounts.vtps ?? 0,
+        trades: apiCounts.trades ?? 0,
       });
     } catch (err) {
       setError(err?.response?.data?.message || 'Unable to load DEO dashboard counts.');
@@ -50,6 +53,7 @@ const DeoDashboard = () => {
       { label: 'Total Schools', value: counts.schools, Icon: School, bg: 'bg-blue-500' },
       { label: 'Total VTs', value: counts.vts, Icon: Users, bg: 'bg-indigo-500' },
       { label: 'Total VTPs', value: counts.vtps, Icon: Clock, bg: 'bg-yellow-500' },
+      { label: 'Total Trades', value: counts.trades, Icon: BookOpen, bg: 'bg-emerald-500' },
     ],
     [counts]
   );

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import {
   CalendarDays,
   CheckCircle,
@@ -66,7 +66,7 @@ const AttendanceRequests = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [remarks, setRemarks] = useState('');
-  const [activeTab, setActiveTab] = useState('onduty');
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   // ── Build payload ─────────────────────────────────────────────────────
   const buildPayload = useCallback((limit = 20, p = page, status = statusFilter) => {
@@ -278,7 +278,7 @@ const AttendanceRequests = () => {
     },
     {
       key: 'hm_status',
-      header: 'HM (Head Master) Status',
+      header: 'Principle Status',
       render: (_, row) => <div className="flex flex-col items-start gap-1"><StatusBadge status={row.hm_status || 'pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
@@ -352,7 +352,7 @@ const AttendanceRequests = () => {
         </Button>
       </div>
 
-      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+      {!hideTabs && <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
         {[
           ['onduty', 'OnDuty Requests'],
           ['regularization', 'Regularization Requests'],
@@ -369,7 +369,7 @@ const AttendanceRequests = () => {
             {label}
           </button>
         ))}
-      </div>
+      </div>}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -580,11 +580,11 @@ const AttendanceRequests = () => {
               <h3 className="font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Approval Flow</h3>
               <div className="space-y-4 text-sm">
 
-                {/* HM (Head Master) Section */}
+                {/* Principle Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900 dark:text-white">HM (Head Master) Status</span>
+                      <span className="font-medium text-gray-900 dark:text-white">Principle Status</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full border capitalize ${getStatusColor(selectedRequest.hm_status)}`}>
                         {selectedRequest.hm_status === 'approved' && '✅ '}
                         {selectedRequest.hm_status === 'rejected' && '❌ '}
@@ -594,7 +594,7 @@ const AttendanceRequests = () => {
                     </div>
                     {selectedRequest.hm_status !== 'pending' && (
                       <div className="text-xs text-gray-500 mt-1">
-                        By: {selectedRequest.hm_approved_by_name || 'Headmaster'} <br />
+                        By: {selectedRequest.hm_approved_by_name || 'Principle'} <br />
                         At: {fmtDateTime(selectedRequest.hm_action_at)}
                       </div>
                     )}

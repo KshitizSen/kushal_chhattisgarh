@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+﻿/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AlertCircle,
@@ -138,7 +138,7 @@ const pageConfig = {
     columns: attendanceColumns,
   },
   vtps: {
-    title: "VTP's",
+    title: "VTP's - VC's List",
     subtitle: 'VT provider list',
     searchPlaceholder: 'Search VTP by name, contact, email or district...',
     icon: Building2,
@@ -164,7 +164,7 @@ const pageConfig = {
     ],
   },
   schools: {
-    title: 'VT School',
+    title: 'Monthly Approval Status',
     subtitle: 'Pending school reports for DEO review',
     searchPlaceholder: 'Search school by name, UDISE, block or district...',
     icon: School,
@@ -191,7 +191,7 @@ const pageConfig = {
       { key: 'seno', header: 'Se no', render: (value) => <span className="text-sm text-gray-500 dark:text-gray-400">{value}</span> },
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'block_name', header: 'Block', render: (value, row) => <div><p>{value || '-'}</p><p className="text-xs text-gray-500">{row.district_name || '-'}</p></div> },
-      { key: 'hm_approval_status', header: 'HM (Head Master) Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
+      { key: 'hm_approval_status', header: 'Principle Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
       { key: 'deo_approval_status', header: 'DEO Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
       { key: 'vtp_approval_status', header: 'VTP Status', render: (value) => <StatusBadge status={value || 'pending'} /> },
     ],
@@ -481,20 +481,6 @@ const DeoTablePage = ({ type }) => {
                 <option value="">All Blocks</option>
                 {blocks.map((block) => (
                   <option key={block.block_cd} value={block.block_cd}>{block.block_name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Cluster</label>
-              <select
-                value={selectedCluster}
-                onChange={(event) => setSelectedCluster(event.target.value)}
-                disabled={!selectedBlock || loadingClusters}
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-              >
-                <option value="">All Clusters</option>
-                {clusters.map((cluster) => (
-                  <option key={cluster.cluster_cd} value={cluster.cluster_cd}>{cluster.cluster_name}</option>
                 ))}
               </select>
             </div>

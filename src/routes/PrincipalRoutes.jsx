@@ -2,16 +2,13 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/principal/Dashboard';
 import SchoolOverview from '../pages/principal/SchoolOverview';
 import StaffManagement from '../pages/principal/StaffManagement';
-import TeacherApproval from '../pages/principal/TeacherApproval';
 import SchoolTiming from '../pages/principal/SchoolTiming';
 import Attendance from '../pages/principal/Attendance';
 import Activities from '../pages/principal/Activities';
-import LeaveManagement from '../pages/principal/LeaveManagement';
 import Holidays from '../pages/principal/Holidays';
 import Reports from '../pages/principal/Reports';
-import AttendanceRequests from '../pages/principal/AttendanceRequests';
+import VocationalTrainingRequests from '../pages/common/VocationalTrainingRequests';
 import ProtectedRoute from './ProtectedRoute';
-import DeviceChangeRequests from '../pages/common/DeviceChangeRequests';
 import AttendanceStatus from '../pages/principal/AttendanceStatus';
 
 const PrincipalRoutes = () => {
@@ -45,11 +42,7 @@ const PrincipalRoutes = () => {
       />
       <Route
         path="teacher-approval"
-        element={
-          <ProtectedRoute allowedRoles={allowedRoles}>
-            <TeacherApproval />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/principal/vocational-training-requests" replace />}
       />
       <Route
         path="school-timing"
@@ -82,11 +75,7 @@ const PrincipalRoutes = () => {
       />
       <Route
         path="leave-management"
-        element={
-          <ProtectedRoute allowedRoles={allowedRoles}>
-            <LeaveManagement />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/principal/vocational-training-requests?tab=leave" replace />}
       />
       <Route
         path="holidays"
@@ -106,13 +95,13 @@ const PrincipalRoutes = () => {
       />
       <Route
         path="device-change-requests"
-        element={<ProtectedRoute allowedRoles={allowedRoles}><DeviceChangeRequests /></ProtectedRoute>}
+        element={<Navigate to="/principal/vocational-training-requests" replace />}
       />
       <Route
         path="vocational-training-requests"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
-            <AttendanceRequests />
+            <VocationalTrainingRequests />
           </ProtectedRoute>
         }
       />

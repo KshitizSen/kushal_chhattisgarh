@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Bell, Search, Menu, Moon, Sun, User } from 'lucide-react';
+import { Search, Menu, Moon, Sun, User } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import Badge from '../common/Badge';
 import { getPageMetadata } from '../../config/pageMetadata';
 
 /**
@@ -23,11 +22,6 @@ const Header = ({ onMenuToggle }) => {
 
     return document.documentElement.classList.contains('dark');
   });
-  const [notifications] = useState([
-    { id: 1, title: 'New student enrolled', time: '5 min ago', read: false },
-    { id: 2, title: 'VT status report ready', time: '1 hour ago', read: false },
-    { id: 3, title: 'System maintenance', time: '2 hours ago', read: true },
-  ]);
 
   const pageMeta = useMemo(
     () => getPageMetadata(location.pathname, user),
@@ -39,7 +33,6 @@ const Header = ({ onMenuToggle }) => {
     window.localStorage.setItem('theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -89,24 +82,6 @@ const Header = ({ onMenuToggle }) => {
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
-
-            <div className="relative">
-              <button
-                className="relative inline-flex rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-800"
-                aria-label="Notifications"
-              >
-                <Bell className="h-5 w-5" />
-                {unreadCount > 0 && (
-                  <Badge
-                    variant="danger"
-                    size="sm"
-                    className="absolute -right-1 -top-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full px-1.5"
-                  >
-                    {unreadCount}
-                  </Badge>
-                )}
-              </button>
-            </div>
 
             <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 dark:border-gray-700 dark:bg-gray-900">
               <div className="hidden text-right sm:block">

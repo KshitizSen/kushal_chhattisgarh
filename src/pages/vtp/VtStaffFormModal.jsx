@@ -8,7 +8,7 @@ import Input from '../../components/common/Input';
 const emptyForm = {
   vt_name: '', vt_email: '', vt_mob: '', district_name: '', block_name: '',
   school_name: '', udise_code: '', vt_aadhar: '', vtp_pan: '', trade: '', remarks: '',
-  district_cd: '', block_cd: '', cluster_cd: '', vtp_name: '',
+  district_cd: '', block_cd: '', vtp_name: '',
 };
 
 const SelectField = ({ label, value, onChange, disabled, required, children }) => (
@@ -23,7 +23,7 @@ const SelectField = ({ label, value, onChange, disabled, required, children }) =
 
 const VtStaffFormModal = ({ isOpen, mode, staffId, onClose, onSaved }) => {
   const [form, setForm] = useState(emptyForm);
-  const [options, setOptions] = useState({ districts: [], blocks: [], clusters: [], schools: [], trades: [], vtp: [] });
+  const [options, setOptions] = useState({ districts: [], blocks: [], schools: [], trades: [], vtp: [] });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [schoolSearch, setSchoolSearch] = useState('');
@@ -51,12 +51,11 @@ const VtStaffFormModal = ({ isOpen, mode, staffId, onClose, onSaved }) => {
           const next = { ...emptyForm, ...detail, vt_mob: String(detail.vt_mob || ''), vt_aadhar: String(detail.vt_aadhar || ''), udise_code: String(detail.udise_code || '') };
           setForm(next);
           const blocks = await loadOptions('blocks', { district_cd: next.district_cd });
-          const clusters = await loadOptions('clusters', { district_cd: next.district_cd, block_cd: next.block_cd });
-          await loadOptions('schools', { district_cd: next.district_cd, block_cd: next.block_cd, cluster_cd: next.cluster_cd });
-          setOptions((old) => ({ ...old, districts, trades, vtp, blocks, clusters }));
+          await loadOptions('schools', { district_cd: next.district_cd, block_cd: next.block_cd });
+          setOptions((old) => ({ ...old, districts, trades, vtp, blocks }));
         } else {
           setForm({ ...emptyForm, vtp_name: vtp[0]?.vtp_name || '', trade: trades[0]?.trade || '' });
-          setOptions((old) => ({ ...old, districts, trades, vtp, blocks: [], clusters: [], schools: [] }));
+          setOptions((old) => ({ ...old, districts, trades, vtp, blocks: [], schools: [] }));
         }
       } catch (error) {
         toast.error(error?.response?.data?.message || error.message || 'Unable to load VT form.');
@@ -68,9 +67,9 @@ const VtStaffFormModal = ({ isOpen, mode, staffId, onClose, onSaved }) => {
   }, [isOpen, mode, staffId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!isOpen || !form.cluster_cd) return;
+    if (!isOpen || !form.block_cd) return;
     const timer = setTimeout(() => loadOptions('schools', {
-      district_cd: form.district_cd, block_cd: form.block_cd, cluster_cd: form.cluster_cd, search: schoolSearch,
+      district_cd: form.district_cd, block_cd: form.block_cd, search: schoolSearch,
     }).catch(() => toast.error('Unable to search schools.')), 300);
     return () => clearTimeout(timer);
   }, [schoolSearch]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -79,22 +78,16 @@ const VtStaffFormModal = ({ isOpen, mode, staffId, onClose, onSaved }) => {
   const changeDistrict = async (event) => {
     const district_cd = event.target.value;
     const district = options.districts.find((item) => String(item.district_cd) === district_cd);
-    setForm((old) => ({ ...old, district_cd, district_name: district?.district_name || '', block_cd: '', block_name: '', cluster_cd: '', school_name: '', udise_code: '' }));
-    setOptions((old) => ({ ...old, blocks: [], clusters: [], schools: [] }));
+    setForm((old) => ({ ...old, district_cd, district_name: district?.district_name || '', block_cd: '', block_name: '', school_name: '', udise_code: '' }));
+    setOptions((old) => ({ ...old, blocks: [], schools: [] }));
     if (district_cd) await loadOptions('blocks', { district_cd });
   };
   const changeBlock = async (event) => {
     const block_cd = event.target.value;
     const block = options.blocks.find((item) => String(item.block_cd) === block_cd);
-    setForm((old) => ({ ...old, block_cd, block_name: block?.block_name || '', cluster_cd: '', school_name: '', udise_code: '' }));
-    setOptions((old) => ({ ...old, clusters: [], schools: [] }));
-    if (block_cd) await loadOptions('clusters', { district_cd: form.district_cd, block_cd });
-  };
-  const changeCluster = async (event) => {
-    const cluster_cd = event.target.value;
-    setForm((old) => ({ ...old, cluster_cd, school_name: '', udise_code: '' }));
+    setForm((old) => ({ ...old, block_cd, block_name: block?.block_name || '', school_name: '', udise_code: '' }));
     setOptions((old) => ({ ...old, schools: [] }));
-    if (cluster_cd) await loadOptions('schools', { district_cd: form.district_cd, block_cd: form.block_cd, cluster_cd });
+    if (block_cd) await loadOptions('schools', { district_cd: form.district_cd, block_cd });
   };
   const changeSchool = (event) => {
     const udise_code = event.target.value;
@@ -125,8 +118,7 @@ const VtStaffFormModal = ({ isOpen, mode, staffId, onClose, onSaved }) => {
       <Input label="VTP" value={form.vtp_name || options.vtp[0]?.vtp_name || ''} disabled />
       <SelectField label="District" required value={String(form.district_cd || '')} onChange={changeDistrict}><option value="">Select district</option>{options.districts.map((x) => <option key={x.district_cd} value={x.district_cd}>{x.district_name}</option>)}</SelectField>
       <SelectField label="Block" required value={String(form.block_cd || '')} onChange={changeBlock} disabled={!form.district_cd}><option value="">Select block</option>{options.blocks.map((x) => <option key={x.block_cd} value={x.block_cd}>{x.block_name}</option>)}</SelectField>
-      <SelectField label="Cluster" required value={String(form.cluster_cd || '')} onChange={changeCluster} disabled={!form.block_cd}><option value="">Select cluster</option>{options.clusters.map((x) => <option key={x.cluster_cd} value={x.cluster_cd}>{x.cluster_name}</option>)}</SelectField>
-      <div><Input label="Search School / UDISE" value={schoolSearch} onChange={(e) => setSchoolSearch(e.target.value)} disabled={!form.cluster_cd} /><div className="mt-2"><SelectField label="School / UDISE" required value={String(form.udise_code || '')} onChange={changeSchool} disabled={!form.cluster_cd}><option value="">Select school</option>{options.schools.map((x) => <option key={x.udise_code} value={x.udise_code}>{x.udise_code} - {x.school_name}</option>)}</SelectField></div></div>
+      <div><Input label="Search School / UDISE" value={schoolSearch} onChange={(e) => setSchoolSearch(e.target.value)} disabled={!form.block_cd} /><div className="mt-2"><SelectField label="School / UDISE" required value={String(form.udise_code || '')} onChange={changeSchool} disabled={!form.block_cd}><option value="">Select school</option>{options.schools.map((x) => <option key={x.udise_code} value={x.udise_code}>{x.udise_code} - {x.school_name}</option>)}</SelectField></div></div>
       <Input label="Aadhaar" inputMode="numeric" value={form.vt_aadhar} onChange={change('vt_aadhar')} maxLength={12} />
       <Input label="PAN" value={form.vtp_pan || ''} onChange={change('vtp_pan')} maxLength={10} className="uppercase" />
       <SelectField label="Trade" required value={form.trade || ''} onChange={change('trade')}><option value="">Select trade</option>{options.trades.map((x) => <option key={x.trade} value={x.trade}>{x.trade}</option>)}</SelectField>

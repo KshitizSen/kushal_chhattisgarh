@@ -254,17 +254,6 @@ const ManageDEO = () => {
               <option key={block.block_cd} value={block.block_cd}>{block.block_name}</option>
             ))}
           </select>
-          <select
-            value={selectedCluster}
-            onChange={(event) => setSelectedCluster(event.target.value)}
-            disabled={!selectedBlock}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-          >
-            <option value="">All Clusters</option>
-            {clusters.map((cluster) => (
-              <option key={cluster.cluster_cd} value={cluster.cluster_cd}>{cluster.cluster_name}</option>
-            ))}
-          </select>
         </div>
       </Card>
 

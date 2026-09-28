@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CheckCircle, Pencil, Plus, RefreshCw, Search, Smartphone, Trash2, Users, XCircle } from 'lucide-react';
+import { CheckCircle, Pencil, Plus, RefreshCw, Search, Smartphone, Users, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import Card from '../../components/common/Card';
@@ -19,7 +19,7 @@ const formatDate = (value) => {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('en-GB');
 };
 
-const VtStaffList = () => {
+const VtStaffList = ({ initialTab = 'list', hideTabs = false }) => {
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -28,9 +28,8 @@ const VtStaffList = () => {
   const [pageSize, setPageSize] = useState(10);
   const [pagination, setPagination] = useState({ currentPage: 1, pageSize: 10, totalItems: 0, totalPages: 1 });
   const [formModal, setFormModal] = useState({ open: false, mode: 'add', staffId: null });
-  const [deleteTarget, setDeleteTarget] = useState(null);
-  const [deleting, setDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState('list');
+  const [statusUpdatingId, setStatusUpdatingId] = useState(null);
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [mobileRequests, setMobileRequests] = useState([]);
   const [mobileRequestLoading, setMobileRequestLoading] = useState(false);
   const [mobileSearch, setMobileSearch] = useState('');
@@ -116,19 +115,16 @@ const VtStaffList = () => {
   const closeForm = () => setFormModal({ open: false, mode: 'add', staffId: null });
   const handleSaved = () => { closeForm(); fetchStaff(); };
 
-  const handleDelete = async () => {
-    if (!deleteTarget?.id) return;
-    setDeleting(true);
+  const handleStatusChange = async (row, isActive) => {
+    setStatusUpdatingId(row.id);
     try {
-      const response = await api.delete(`/vtp/vt-staff/${deleteTarget.id}`);
-      toast.success(response.data?.message || 'VT registration deleted successfully.');
-      setDeleteTarget(null);
-      if (staff.length === 1 && currentPage > 1) setCurrentPage((page) => page - 1);
-      else fetchStaff();
+      const response = await api.patch(`/vtp/vt-staff/${row.id}/status`, { is_active: isActive });
+      toast.success(response.data?.message || 'VT status updated successfully.');
+      setStaff((current) => current.map((item) => item.id === row.id ? { ...item, is_active: isActive } : item));
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Unable to delete VT registration.');
+      toast.error(error?.response?.data?.message || 'Unable to update VT status.');
     } finally {
-      setDeleting(false);
+      setStatusUpdatingId(null);
     }
   };
 
@@ -136,7 +132,6 @@ const VtStaffList = () => {
     { key: 'serial', header: 'S.No.' },
     { key: 'district_name', header: 'District', render: display },
     { key: 'block_name', header: 'Block', render: display },
-    { key: 'cluster_name', header: 'Cluster', render: display },
     { key: 'school_name', header: 'School', render: (value, row) => <div><p>{display(value)}</p><p className="text-xs text-gray-500">UDISE: {display(row.udise_code)}</p></div> },
     { key: 'vt_name', header: 'VT Name', render: display },
     { key: 'trade', header: 'Trade Name', render: display },
@@ -146,11 +141,14 @@ const VtStaffList = () => {
     { key: 'vtp_pan', header: 'PAN', render: display },
     { key: 'vt_aadhar', header: 'Aadhaar', render: (value) => display(String(value || '')) },
     {
-      key: 'actions', header: 'Action', render: (_, row) => <div className="flex gap-2 whitespace-nowrap">
+      key: 'actions', header: 'Action', render: (_, row) => <div className="flex items-center gap-2 whitespace-nowrap">
         <Button variant="secondary" size="sm" leftIcon={<Pencil className="h-4 w-4" />}
           onClick={() => setFormModal({ open: true, mode: 'edit', staffId: row.id })}>Update</Button>
-        <Button variant="danger" size="sm" leftIcon={<Trash2 className="h-4 w-4" />}
-          onClick={() => setDeleteTarget(row)}>Delete</Button>
+        <select value={row.is_active === false ? 'inactive' : 'active'} disabled={statusUpdatingId === row.id}
+          onChange={(event) => handleStatusChange(row, event.target.value === 'active')}
+          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800">
+          <option value="active">Active</option><option value="inactive">Inactive</option>
+        </select>
       </div>,
     },
   ];
@@ -178,8 +176,8 @@ const VtStaffList = () => {
   return <div className="space-y-6">
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">VT's List</h1>
-        <p className="text-gray-600 dark:text-gray-400">Manage VT staff mapped to your VTP organization</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{activeTab === 'list' ? "VT's List" : "VT's Mobile Updation Requests"}</h1>
+        <p className="text-gray-600 dark:text-gray-400">{activeTab === 'list' ? 'Manage VT staff mapped to your VTP organization' : 'Approve or reject VT mobile number changes'}</p>
       </div>
       {activeTab === 'list' ? <div className="flex gap-2">
         <Button variant="success" leftIcon={<Plus className="h-4 w-4" />}
@@ -188,10 +186,10 @@ const VtStaffList = () => {
       </div> : <Button variant="primary" leftIcon={<RefreshCw className="h-4 w-4" />} onClick={fetchMobileRequests} loading={mobileRequestLoading}>Refresh Requests</Button>}
     </div>
 
-    <div className="flex w-fit gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
+    {!hideTabs && <div className="flex w-fit gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
       <button onClick={() => setActiveTab('list')} className={`rounded-lg px-5 py-2 text-sm font-medium ${activeTab === 'list' ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-700' : 'text-gray-600 dark:text-gray-300'}`}>VT's List</button>
       <button onClick={() => { setActiveTab('mobile-requests'); setMobilePage(1); }} className={`rounded-lg px-5 py-2 text-sm font-medium ${activeTab === 'mobile-requests' ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-700' : 'text-gray-600 dark:text-gray-300'}`}>VT's Mobile Updation Requests</button>
-    </div>
+    </div>}
 
     {activeTab === 'list' && <Card variant="elevated">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -250,10 +248,6 @@ const VtStaffList = () => {
       </div>
     </Modal>
 
-    <Modal isOpen={Boolean(deleteTarget)} onClose={() => !deleting && setDeleteTarget(null)} title="Delete VT" size="sm" closeOnOverlayClick={!deleting}
-      footer={<><Button variant="ghost" onClick={() => setDeleteTarget(null)} disabled={deleting}>Cancel</Button><Button variant="danger" onClick={handleDelete} loading={deleting} leftIcon={<Trash2 className="h-4 w-4" />}>Delete</Button></>}>
-      <p className="text-gray-700 dark:text-gray-300">Are you sure you want to delete <strong>{deleteTarget?.vt_name}</strong>? This action will only complete when no protected related records prevent deletion.</p>
-    </Modal>
   </div>;
 };
 

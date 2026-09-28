@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Search, Filter, UserPlus, Edit, Trash2, MoreVertical, Download } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -263,7 +263,7 @@ const ManageUsers = () => {
               >
                 <option value="admin">Administrator</option>
                 <option value="vtp">VT Provider (VTP)</option>
-                <option value="principal">Principal/Head Master</option>
+                <option value="principal">Principle</option>
               </select>
               {errors.role && (
                 <p className="mt-1 text-sm text-danger-500">{errors.role.message}</p>

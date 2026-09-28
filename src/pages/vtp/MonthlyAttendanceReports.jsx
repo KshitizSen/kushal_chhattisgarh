@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FileText, Download, CheckCircle, XCircle, Clock, AlertCircle, FileSpreadsheet,
   RefreshCw, Search, Filter, ShieldCheck, ShieldX, ShieldAlert,
@@ -16,7 +16,7 @@ import Loader from '../../components/common/Loader';
 import Pagination from '../../components/common/Pagination';
 import ApprovalSourceBadge from '../../components/common/ApprovalSourceBadge';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MONTHS = [
   'January','February','March','April','May','June',
   'July','August','September','October','November','December',
@@ -35,7 +35,7 @@ const ApprovalPill = ({ status, short }) => {
   const s = map[status] || { variant: 'default', Icon: ShieldAlert };
   const { variant, Icon } = s;
   const label = short
-    ? (status === 'approved' ? '✓' : status === 'rejected' ? '✕' : '…')
+    ? (status === 'approved' ? 'âœ“' : status === 'rejected' ? 'âœ•' : 'â€¦')
     : (status === 'approved' ? 'Approved' : status === 'rejected' ? 'Rejected' : 'Pending');
   return (
     <Badge variant={variant} size="sm" outline>
@@ -49,7 +49,7 @@ const hasRequiredApprovals = (report) => (
   report?.hm_approval_status === 'approved' && report?.deo_approval_status === 'approved'
 );
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MonthlyAttendanceReports = () => {
   const [reports, setReports]             = useState([]);
   const [counts, setCounts]               = useState({ total: 0, pending_my_action: 0, approved: 0, rejected: 0 });
@@ -69,7 +69,7 @@ const MonthlyAttendanceReports = () => {
   const [rejectModal, setRejectModal]   = useState({ open: false, report: null });
   const [remarks, setRemarks]           = useState('');
 
-  // ── Fetch reports ─────────────────────────────────────────────────────────
+  // â”€â”€ Fetch reports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const fetchReports = useCallback(async () => {
     setLoading(true);
     try {
@@ -103,7 +103,7 @@ const MonthlyAttendanceReports = () => {
   useEffect(() => { fetchReports(); fetchCounts(); }, [fetchReports, fetchCounts]);
   useEffect(() => { setCurrentPage(1); }, [selectedMonth, selectedYear, statusFilter]);
 
-  // ── Client-side search ────────────────────────────────────────────────────
+  // â”€â”€ Client-side search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const filteredReports = useMemo(() => {
     if (!searchQuery.trim()) return reports;
     const q = searchQuery.toLowerCase();
@@ -115,7 +115,7 @@ const MonthlyAttendanceReports = () => {
     );
   }, [reports, searchQuery]);
 
-  // ── Download PDF ──────────────────────────────────────────────────────────
+  // â”€â”€ Download PDF â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleDownload = async (report) => {
     setDownloadLoading(report.user_id);
     try {
@@ -172,12 +172,12 @@ const MonthlyAttendanceReports = () => {
     }
   };
 
-  // ── Approve ───────────────────────────────────────────────────────────────
+  // â”€â”€ Approve â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleApprove = async () => {
     const report = approveModal.report;
     if (!report) return;
     if (!hasRequiredApprovals(report)) {
-      toast.error('HM and DEO approval is required before VTP approval.');
+      toast.error('Principle and DEO approval is required before VTP approval.');
       return;
     }
     setActionLoading(true);
@@ -188,7 +188,7 @@ const MonthlyAttendanceReports = () => {
         status: 'approved', remarks: remarks.trim(),
       });
       if (res.data?.status) {
-        toast.success('Report approved — workflow complete!');
+        toast.success('Report approved â€” workflow complete!');
         setApproveModal({ open: false, report: null }); setRemarks('');
         fetchReports(); fetchCounts();
       } else {
@@ -201,12 +201,12 @@ const MonthlyAttendanceReports = () => {
     }
   };
 
-  // ── Reject ────────────────────────────────────────────────────────────────
+  // â”€â”€ Reject â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleReject = async () => {
     const report = rejectModal.report;
     if (!report) return;
     if (!hasRequiredApprovals(report)) {
-      toast.error('HM and DEO approval is required before VTP rejection.');
+      toast.error('Principle and DEO approval is required before VTP rejection.');
       return;
     }
     setActionLoading(true);
@@ -230,15 +230,15 @@ const MonthlyAttendanceReports = () => {
     }
   };
 
-  // ── Table columns ─────────────────────────────────────────────────────────
+  // â”€â”€ Table columns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const columns = [
     {
       key: 'vt_name',
       header: 'VT / School',
       render: (_, row) => (
         <div>
-          <p className="font-medium text-gray-900 dark:text-white">{row.vt_name || '—'}</p>
-          <p className="text-xs text-gray-500">{row.school_name || '—'}</p>
+          <p className="font-medium text-gray-900 dark:text-white">{row.vt_name || 'â€”'}</p>
+          <p className="text-xs text-gray-500">{row.school_name || 'â€”'}</p>
           <p className="text-xs text-gray-400">{row.block_name}, {row.district_name}</p>
         </div>
       ),
@@ -247,7 +247,7 @@ const MonthlyAttendanceReports = () => {
       key: 'trade',
       header: 'Trade',
       render: (value) => (
-        <span className="text-sm text-gray-700 dark:text-gray-300">{value || '—'}</span>
+        <span className="text-sm text-gray-700 dark:text-gray-300">{value || 'â€”'}</span>
       ),
     },
     {
@@ -256,7 +256,7 @@ const MonthlyAttendanceReports = () => {
       render: (_, row) => (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-gray-500 w-8">HM (Head Master):</span>
+            <span className="text-xs text-gray-500 w-8">Principle:</span>
             <ApprovalPill status={row.hm_approval_status} />
             <ApprovalSourceBadge type={row.hm_approval_type} />
           </div>
@@ -320,7 +320,7 @@ const MonthlyAttendanceReports = () => {
                 )}
                 {!upstreamApproved && (
                   <p className="max-w-36 text-xs leading-4 text-amber-600 dark:text-amber-400">
-                    HM and DEO approval required.
+                    Principle and DEO approval required.
                   </p>
                 )}
               </>
@@ -434,7 +434,7 @@ const MonthlyAttendanceReports = () => {
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <p className="text-yellow-800 dark:text-yellow-200">
             <span className="font-semibold">{counts.pending_my_action}</span> report
-            {counts.pending_my_action !== 1 ? 's have' : ' has'} passed both HM (Head Master) and DEO approval and need{counts.pending_my_action !== 1 ? '' : 's'} your final VTP approval.
+            {counts.pending_my_action !== 1 ? 's have' : ' has'} passed both Principle and DEO approval and need{counts.pending_my_action !== 1 ? '' : 's'} your final VTP approval.
           </p>
         </motion.div>
       )}
@@ -501,7 +501,7 @@ const MonthlyAttendanceReports = () => {
       <Card variant="elevated">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Reports — {MONTHS[selectedMonth - 1]} {selectedYear}
+            Reports â€” {MONTHS[selectedMonth - 1]} {selectedYear}
           </h2>
           <Badge variant="primary" outline>{totalItems} record{totalItems !== 1 ? 's' : ''}</Badge>
         </div>
@@ -528,7 +528,7 @@ const MonthlyAttendanceReports = () => {
         )}
       </Card>
 
-      {/* ── Final Approve Modal ────────────────────────────────────────────────── */}
+      {/* â”€â”€ Final Approve Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Modal
         isOpen={approveModal.open}
         onClose={() => { setApproveModal({ open: false, report: null }); setRemarks(''); }}
@@ -558,7 +558,7 @@ const MonthlyAttendanceReports = () => {
           {approveModal.report && (
             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-2">
               <p className="font-semibold text-gray-900 dark:text-white">{approveModal.report.vt_name}</p>
-              <p className="text-sm text-gray-500">{approveModal.report.school_name} · {approveModal.report.trade}</p>
+              <p className="text-sm text-gray-500">{approveModal.report.school_name} Â· {approveModal.report.trade}</p>
               <div className="flex gap-2 flex-wrap mt-1">
                 <ApprovalPill status={approveModal.report.hm_approval_status} />
                 <ApprovalPill status={approveModal.report.deo_approval_status} />
@@ -578,7 +578,7 @@ const MonthlyAttendanceReports = () => {
         </div>
       </Modal>
 
-      {/* ── Reject Modal ───────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Reject Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Modal
         isOpen={rejectModal.open}
         onClose={() => { setRejectModal({ open: false, report: null }); setRemarks(''); }}

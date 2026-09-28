@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import {
   CalendarDays,
   CheckCircle,
@@ -314,7 +314,7 @@ const LeaveManagement = () => {
               )}
               {row.cancellation_status === 'pending' && row.cancellation_vtp_status === 'approved' && (
                 <Badge variant="warning" outline size="sm" className="w-full justify-center">
-                  Awaiting HM Approval
+                  Awaiting Principle Approval
                 </Badge>
               )}
               {row.cancellation_status === 'approved' && (
@@ -663,7 +663,7 @@ const LeaveManagement = () => {
           <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl">
             <p className="font-semibold text-amber-900 dark:text-amber-200">Approve cancellation for this date?</p>
             <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-              Attendance and leave balance will update only after both VTP and HM approve.
+              Attendance and leave balance will update only after both VTP and Principle approve.
             </p>
           </div>
           {selectedLeave && (
@@ -671,7 +671,7 @@ const LeaveManagement = () => {
               <div className="flex justify-between gap-4"><span className="text-gray-500">Vocational Trainer</span><span className="font-semibold text-right">{selectedLeave.teacher_name}</span></div>
               <div className="flex justify-between gap-4"><span className="text-gray-500">Cancellation Date</span><span className="font-medium">{fmtDate(selectedLeave.cancellation_date)}</span></div>
               <div className="flex justify-between gap-4"><span className="text-gray-500">Reason</span><span className="font-medium text-right">{selectedLeave.cancellation_reason || '—'}</span></div>
-              <div className="flex justify-between gap-4"><span className="text-gray-500">HM Status</span><StatusBadge status={selectedLeave.cancellation_hm_status} /></div>
+              <div className="flex justify-between gap-4"><span className="text-gray-500">Principle Status</span><StatusBadge status={selectedLeave.cancellation_hm_status} /></div>
             </div>
           )}
           <ApprovalRemarksField value={remarks} onChange={setRemarks} disabled={actionLoading} />

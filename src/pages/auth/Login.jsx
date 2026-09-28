@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,10 +14,10 @@ import AuthInput from '../../components/auth/AuthInput';
 import RoleSelector from '../../components/auth/RoleSelector';
 import api from '../../services/api';
 
-// ─── Roles excluded from the login selector ───────────────────────────────────
+// â”€â”€â”€ Roles excluded from the login selector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const EXCLUDED_ROLES = ['programmer', 'super_admin', 'vocational_teacher'];
 
-// ─── Map backend role name → frontend route key ───────────────────────────────
+// â”€â”€â”€ Map backend role name â†’ frontend route key â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // headmaster is shown as "Principal" in UI but maps to /principal/dashboard
 const BACKEND_TO_FRONTEND_ROLE = {
   headmaster: 'principal',
@@ -26,14 +26,14 @@ const BACKEND_TO_FRONTEND_ROLE = {
   deo: 'deo',
 };
 
-// ─── Validation schema ────────────────────────────────────────────────────────
+// â”€â”€â”€ Validation schema â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const loginSchema = z.object({
   email: z.string().min(1, 'Required field'),
   password: z.string().min(1, 'Required field'),
   role_id: z.number({ required_error: 'Please select a role', invalid_type_error: 'Please select a role' }),
 });
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,11 +57,11 @@ const Login = () => {
 
   const selectedRoleId = watch('role_id');
 
-  // ── Derive the selected role object ─────────────────────────────────────────
+  // â”€â”€ Derive the selected role object â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const selectedRole = roles.find((r) => r.id === selectedRoleId) || null;
   const isHeadmaster = selectedRole?.name === 'headmaster';
 
-  // ── Fetch roles from API on mount ────────────────────────────────────────────
+  // â”€â”€ Fetch roles from API on mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -85,7 +85,7 @@ const Login = () => {
     fetchRoles();
   }, [setValue]);
 
-  // ── Submit ───────────────────────────────────────────────────────────────────
+  // â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
@@ -102,7 +102,7 @@ const Login = () => {
       if (result.status) {
         const { user, tokens, headmaster_details, deo_details, vtp_details } = result.data;
 
-        // Map backend role name → frontend route key
+        // Map backend role name â†’ frontend route key
         const frontendRole = BACKEND_TO_FRONTEND_ROLE[user.role] || user.role;
 
         const loggedInUser = {
@@ -138,7 +138,7 @@ const Login = () => {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
 
-          {/* Email / Teacher Code — switches label for headmaster */}
+          {/* Email / Teacher Code â€” switches label for headmaster */}
           <AnimatePresence mode="wait">
             {isHeadmaster ? (
               <motion.div
@@ -149,7 +149,7 @@ const Login = () => {
                 transition={{ duration: 0.2 }}
               >
                 <AuthInput
-                  label="HM (Head Master) Code"
+                  label="Principle Code"
                   type="text"
                   icon={Code}
                   error={errors.email?.message}
@@ -177,7 +177,7 @@ const Login = () => {
             )}
           </AnimatePresence>
 
-          {/* Password / Mobile — switches label for headmaster */}
+          {/* Password / Mobile â€” switches label for headmaster */}
           <AnimatePresence mode="wait">
             {isHeadmaster ? (
               <motion.div
@@ -226,7 +226,7 @@ const Login = () => {
             )}
           </AnimatePresence>
 
-          {/* Role Selector — dynamic from API */}
+          {/* Role Selector â€” dynamic from API */}
           <Controller
             name="role_id"
             control={control}
@@ -279,7 +279,7 @@ const Login = () => {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Signing in…
+                Signing inâ€¦
               </>
             ) : (
               <>

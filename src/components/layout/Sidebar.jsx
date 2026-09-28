@@ -11,16 +11,13 @@ import {
   BarChart3,
   Home,
   LogOut,
-  Shield,
   Building2,
   UserCheck,
   Clock,
   CalendarCheck,
   Briefcase,
-  CalendarDays,
   FileText,
   CheckCircle,
-  ShieldCheck,
   Route,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
@@ -98,10 +95,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: '/vtp/vt-list', label: "VT's List", icon: <Users className="h-5 w-5" /> },
           { path: '/vtp/schools', label: 'Schools List', icon: <School className="h-5 w-5" /> },
           { path: '/vtp/trades', label: 'Trades List', icon: <BookOpen className="h-5 w-5" /> },
-          { path: '/vtp/vt-approvals', label: 'Register Approvals', icon: <ShieldCheck className="h-5 w-5" /> },
-          { path: '/vtp/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
           { path: '/vtp/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },
-          { path: '/vtp/device-change-requests', label: 'Device Requests', icon: <Shield className="h-5 w-5" /> },
         ],
       },
       {
@@ -118,16 +112,13 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
           { path: '/principal/attendance-status', label: 'Attendance Status', icon: <CalendarCheck className="h-5 w-5" /> },
-          { path: '/principal/teacher-approval', label: 'Register Approvals', icon: <UserCheck className="h-5 w-5" /> },
           { path: '/principal/vocational-training-approval', label: 'VT Status', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/principal/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },
-          { path: '/principal/device-change-requests', label: 'Device Requests', icon: <Shield className="h-5 w-5" /> },
         ],
       },
       {
         title: 'Staff Management',
         items: [
-          { path: '/principal/leave-management', label: 'Leave Management', icon: <CalendarDays className="h-5 w-5" /> },
           { path: '/principal/school-timing', label: 'School Timing', icon: <Clock className="h-5 w-5" /> },
           // { path: '/principal/school-overview', label: 'School Overview', icon: <Home className="h-5 w-5" /> },
         ],
@@ -136,7 +127,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         title: 'Operations',
         items: [
           // { path: '/principal/staff-management', label: 'All Staff', icon: <Users className="h-5 w-5" /> },
-          { path: '/principal/activities', label: 'Activities', icon: <Briefcase className="h-5 w-5" /> },
+          // { path: '/principal/activities', label: 'Activities', icon: <Briefcase className="h-5 w-5" /> },
           { path: '/principal/holidays', label: 'Holidays', icon: <School className="h-5 w-5" /> },
         ],
       },

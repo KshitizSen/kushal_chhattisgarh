@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshCw, Smartphone } from 'lucide-react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
@@ -68,7 +68,7 @@ const DeviceChangeRequests = () => {
       <div className="flex gap-2">{['pending', 'approved', 'rejected', 'all'].map((item) => <button key={item} onClick={() => setFilter(item)} className={`rounded-full px-4 py-2 text-sm capitalize ${filter === item ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200'}`}>{item}</button>)}</div>
       {error && <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</div>}
       <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        <table className="min-w-full text-left text-sm"><thead className="bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-300"><tr>{['VT', 'School / VTP', 'Reason', 'HM Status', 'VTP Status', 'Action'].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
+        <table className="min-w-full text-left text-sm"><thead className="bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-300"><tr>{['VT', 'School / VTP', 'Reason', 'Principle Status', 'VTP Status', 'Action'].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {!loading && requests.map((request) => <tr key={request.id}>
               <td className="px-4 py-3"><div className="font-medium text-gray-900 dark:text-white">{request.name}</div><div className="text-xs text-gray-500">{request.phone}</div></td>

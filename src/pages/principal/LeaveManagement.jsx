@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import {
   CalendarDays,
   CheckCircle,
@@ -283,8 +283,8 @@ const LeaveManagement = () => {
             {value?.charAt(0) || '?'}
           </div>
           <div>
-            <p className="font-medium text-gray-900 dark:text-white">{value || '—'}</p>
-            <p className="text-xs text-gray-500">{row.vt_phone || '—'}</p>
+            <p className="font-medium text-gray-900 dark:text-white">{value || 'â€”'}</p>
+            <p className="text-xs text-gray-500">{row.vt_phone || 'â€”'}</p>
           </div>
         </div>
       ),
@@ -771,7 +771,7 @@ const LeaveManagement = () => {
           <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
             <p className="font-medium text-amber-900 dark:text-amber-200">Approve cancellation for this date?</p>
             <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-              Attendance will be enabled only after both HM and VTP approve.
+              Attendance will be enabled only after both Principle and VTP approve.
             </p>
           </div>
           {selectedLeave && (
@@ -840,7 +840,7 @@ const LeaveManagement = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Reason:</span>
-                <span className="font-medium max-w-xs text-right">{selectedLeave.reason || '—'}</span>
+                <span className="font-medium max-w-xs text-right">{selectedLeave.reason || 'â€”'}</span>
               </div>
 
               {/* Leave Balance Check */}

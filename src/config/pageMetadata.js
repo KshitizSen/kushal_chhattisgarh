@@ -30,7 +30,7 @@ const pageMetadata = [
   { path: '/principal/school-overview', title: 'School Overview', description: 'View your school and vocational training summary.' },
   { path: '/principal/staff-management', title: 'Staff Management', description: 'Manage vocational staff associated with your school.' },
   { path: '/principal/school-timing', title: 'School Timing', description: 'Configure school opening, closing and grace time.' },
-  { path: '/principal/activities', title: 'Activities Management', description: 'Assign and track VT activities.' },
+  // { path: '/principal/activities', title: 'Activities Management', description: 'Assign and track VT activities.' },
   { path: '/principal/leave-management', title: 'Leave Management', description: 'Review and manage vocational teacher leave requests.' },
   { path: '/principal/holidays', title: 'Holiday Management', description: 'Manage government and school-specific holidays.' },
   { path: '/principal/reports', title: 'Monthly VT Approval Reports', description: 'Review monthly attendance reports for your school.' },

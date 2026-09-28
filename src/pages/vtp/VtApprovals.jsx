@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CheckCircle,
   XCircle,
@@ -185,7 +185,7 @@ const VtApprovals = () => {
     },
     {
       key: 'vt_approval_status',
-      header: 'HM (Head Master) (Principal)',
+      header: 'Principal',
       render: (value) => <ApprovalPill status={value} />,
     },
     {
@@ -423,7 +423,7 @@ const VtApprovals = () => {
                 Are you sure you want to approve this teacher?
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Account becomes active only after <strong>both</strong> Headmaster and VTP approve.
+                Account becomes active only after <strong>both</strong> Principle and VTP approve.
               </p>
             </div>
           </div>
@@ -463,7 +463,7 @@ const VtApprovals = () => {
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-500">HM (Head Master) Status:</span>
+                  <span className="text-gray-500">Principle Status:</span>
                   <ApprovalPill status={selectedVt.vt_approval_status} />
                 </div>
                 <div>

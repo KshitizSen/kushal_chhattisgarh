@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+﻿/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AlertCircle,
@@ -1074,22 +1074,6 @@ const Attendance = () => {
             ))}
           </select>
         </div>
-        <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Cluster</label>
-          <select
-            value={selectedCluster}
-            onChange={(event) => setSelectedCluster(event.target.value)}
-            disabled={!selectedBlock || loadingClusters}
-            className="w-full rounded-[1.25rem] border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-          >
-            <option value="">All Clusters</option>
-            {clusters.map((cluster) => (
-              <option key={cluster.cluster_cd} value={cluster.cluster_cd}>
-                {cluster.cluster_name}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.25rem] border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900">
@@ -1222,8 +1206,8 @@ const Attendance = () => {
                               </p>
                               {!isSchoolActionAllowed(school) && (
                                 <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
-                                  {/* Approve/Reject All tab tak disabled rahega jab tak is school ke sabhi teachers ka HM (Head Master) Status Approved na ho. */}
-                                  Approve/Reject All will remain disabled until all teachers of this school have HM (Head Master) Status Approved.
+                                  {/* Approve/Reject All tab tak disabled rahega jab tak is school ke sabhi teachers ka Principle Status Approved na ho. */}
+                                  Approve/Reject All will remain disabled until all teachers of this school have Principle Status Approved.
                                 </p>
                               )}
                             </div>
@@ -1281,7 +1265,7 @@ const Attendance = () => {
                                   </div>
                                   <div className="flex items-center gap-3 sm:ml-auto">
                                     <div className="flex flex-col items-end gap-1">
-                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">HM (Head Master) Status</span>
+                                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">Principle Status</span>
                                       <StatusPill status={vt.hmApprovalStatus} />
                                     </div>
                                     <div className="flex flex-col items-end gap-1">
@@ -1303,7 +1287,7 @@ const Attendance = () => {
                                             ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Approve'
-                                              : 'HM (Head Master) approval pending'
+                                              : 'Principle approval pending'
                                         }
                                         variant="approve"
                                         disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}
@@ -1316,7 +1300,7 @@ const Attendance = () => {
                                             ? 'VT account is not linked'
                                             : normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) === 'approved'
                                               ? 'Reject'
-                                              : 'HM (Head Master) approval pending'
+                                              : 'Principle approval pending'
                                         }
                                         variant="reject"
                                         disabled={normalizeApprovalStatus(vt.hm_approval_status ?? vt.hmApprovalStatus) !== 'approved' || !vt.userId}

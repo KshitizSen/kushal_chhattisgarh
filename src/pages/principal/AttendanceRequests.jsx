@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import {
   CalendarDays,
   CheckCircle,
@@ -64,8 +64,8 @@ const AttendanceRequests = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [remarks, setRemarks] = useState('');
 
-  // ── Tab state ─────────────────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState('onduty'); // 'onduty' | 'regularization'
+  // â”€â”€ Tab state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const [activeTab, setActiveTab] = useState(initialTab); // 'onduty' | 'regularization'
 
   // ── Build payload ─────────────────────────────────────────────────────
   const buildPayload = useCallback((limit = 20, p = page, status = statusFilter) => {
@@ -287,7 +287,7 @@ const AttendanceRequests = () => {
     },
     {
       key: 'hm_status',
-      header: 'HM (Head Master) Status',
+      header: 'Principle Status',
       render: (_, row) => <div className="flex flex-col items-start gap-1"><StatusBadge status={row.hm_status || row.status || 'pending'} /><ApprovalSourceBadge type={row.hm_approval_type} /></div>,
     },
     {
@@ -408,7 +408,7 @@ const AttendanceRequests = () => {
       )}
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
+      {!hideTabs && <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
         <button
           onClick={() => setActiveTab('onduty')}
           className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${activeTab === 'onduty'
@@ -429,7 +429,7 @@ const AttendanceRequests = () => {
           <CalendarDays className="h-4 w-4" />
           Regularization Requests
         </button>
-      </div>
+      </div>}
 
       {/* Filters */}
       <Card variant="elevated">
@@ -579,13 +579,13 @@ const AttendanceRequests = () => {
                 <span className="text-gray-500">{activeTab === 'onduty' ? 'Duration:' : 'Date:'}</span>
                 <span className="font-medium">
                   {activeTab === 'onduty'
-                    ? `${fmtDate(selectedRequest.from_date)} → ${fmtDate(selectedRequest.to_date)}`
+                    ? `${fmtDate(selectedRequest.from_date)} â†’ ${fmtDate(selectedRequest.to_date)}`
                     : fmtDate(selectedRequest.date)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Reason:</span>
-                <span className="font-medium max-w-xs text-right">{selectedRequest.reason || '—'}</span>
+                <span className="font-medium max-w-xs text-right">{selectedRequest.reason || 'â€”'}</span>
               </div>
             </div>
           )}
@@ -638,7 +638,7 @@ const AttendanceRequests = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Reason for Request:</span>
-                <span className="font-medium max-w-xs text-right">{selectedRequest.reason || '—'}</span>
+                <span className="font-medium max-w-xs text-right">{selectedRequest.reason || 'â€”'}</span>
               </div>
             </div>
           )}

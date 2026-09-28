@@ -4,7 +4,7 @@ A multi-role web application for managing education and VT programs in Chhattisg
 
 ## Features
 
-- Three distinct user roles: Admin, Vocational Teacher Provider (VTP), Head Master/Principal
+- Three distinct user roles: Admin, Vocational Trainer Provider (VTP), Head Master/Principal
 - Role-based access control
 - Dashboard with analytics for each role
 - Student, staff, and school management

@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+﻿/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BookOpen, Building2, ChevronLeft, ChevronRight, RefreshCw, Route, School, Search, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -119,7 +119,7 @@ const AttendanceTracking = () => {
     return [
       ...common,
       { key: 'report_period', label: 'Report Month' },
-      { key: 'hm_approval_status', label: 'HM Status' },
+      { key: 'hm_approval_status', label: 'Principle Status' },
       { key: 'vtp_approval_status', label: 'VTP Status' },
       { key: 'deo_approval_status', label: 'DEO Status' },
     ];

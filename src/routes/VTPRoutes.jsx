@@ -1,13 +1,10 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/vtp/Dashboard';
-import VtApprovals from '../pages/vtp/VtApprovals';
 import VtStaffList from '../pages/vtp/VtStaffList';
-import LeaveManagement from '../pages/vtp/LeaveManagement';
-import AttendanceRequests from '../pages/vtp/AttendanceRequests';
+import VocationalTrainingRequests from '../pages/common/VocationalTrainingRequests';
 import MonthlyAttendanceReports from '../pages/vtp/MonthlyAttendanceReports';
 import ProtectedRoute from './ProtectedRoute';
-import DeviceChangeRequests from '../pages/common/DeviceChangeRequests';
 import SchoolsList from '../pages/vtp/SchoolsList';
 import TradesList from '../pages/vtp/TradesList';
 import AttendanceStatus from '../pages/vtp/AttendanceStatus';
@@ -24,25 +21,17 @@ const VTPRoutes = () => {
       <Route path="attendance-status" element={<ProtectedRoute allowedRoles={allowedRoles}><AttendanceStatus /></ProtectedRoute>} />
       <Route
         path="vt-approvals"
-        element={
-          <ProtectedRoute allowedRoles={allowedRoles}>
-            <VtApprovals />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/vtp/vocational-training-requests" replace />}
       />
       <Route
         path="leave-management"
-        element={
-          <ProtectedRoute allowedRoles={allowedRoles}>
-            <LeaveManagement />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/vtp/vocational-training-requests?tab=leave" replace />}
       />
       <Route
         path="vocational-training-requests"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
-            <AttendanceRequests />
+            <VocationalTrainingRequests />
           </ProtectedRoute>
         }
       />
@@ -58,7 +47,7 @@ const VTPRoutes = () => {
       />
       <Route
         path="device-change-requests"
-        element={<ProtectedRoute allowedRoles={allowedRoles}><DeviceChangeRequests /></ProtectedRoute>}
+        element={<Navigate to="/vtp/vocational-training-requests" replace />}
       />
       <Route
         path="monthly-reports"
