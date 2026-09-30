@@ -43,7 +43,7 @@ const calcDays = (from, to) => {
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
-const AttendanceRequests = () => {
+const AttendanceRequests = ({ initialTab = 'onduty', hideTabs = false }) => {
   const { user } = useAuthStore();
 
   // ── List & pagination state ───────────────────────────────────────────

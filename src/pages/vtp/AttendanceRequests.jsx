@@ -47,7 +47,7 @@ const fmtDateTime = (iso) =>
     : '—';
 
 // ── Component ─────────────────────────────────────────────────────────────────
-const AttendanceRequests = () => {
+const AttendanceRequests = ({ initialTab = 'onduty', hideTabs = false }) => {
   // ── List & pagination state ───────────────────────────────────────────
   const [requests, setRequests] = useState([]);
   const [counts, setCounts] = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });

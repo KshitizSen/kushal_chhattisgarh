@@ -302,10 +302,9 @@ const Attendance = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {[
           { label: 'Present',  value: summary.present,  color: 'green',  Icon: UserCheck },
-          { label: 'Late',     value: summary.late,     color: 'yellow', Icon: Clock },
           { label: 'Absent',   value: summary.absent,   color: 'red',    Icon: UserX },
           { label: 'On Leave', value: summary.leave,    color: 'blue',   Icon: AlertCircle },
         ].map(({ label, value, color, Icon }) => (

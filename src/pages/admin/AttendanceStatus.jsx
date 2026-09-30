@@ -3,6 +3,8 @@ import { AlertCircle, Briefcase, CalendarDays, CheckCircle, Users, XCircle } fro
 import Card, { StatCard } from '../../components/common/Card';
 import Table from '../../components/common/Table';
 import Pagination from '../../components/common/Pagination';
+import Button from '../../components/common/Button';
+import Modal from '../../components/common/Modal';
 import AttendanceStatusChart from '../../components/charts/AttendanceStatusChart';
 import api from '../../services/api';
 
@@ -15,6 +17,13 @@ const emptyData = {
 const selectClass = 'w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:disabled:bg-gray-800 sm:w-56';
 const formatCount = (value) => Number(value || 0).toLocaleString('en-IN');
 const emptyList = { total: 0, page: 1, limit: 10, total_pages: 1, rows: [] };
+const getIstDate = () => {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(new Date());
+  const value = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${value.year}-${value.month}-${value.day}`;
+};
 
 const statusLabels = {
   present: 'Present VTs',
@@ -41,6 +50,9 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
   const [listLoading, setListLoading] = useState(false);
   const [listError, setListError] = useState('');
   const [listRefreshKey, setListRefreshKey] = useState(0);
+  const [absentTarget, setAbsentTarget] = useState(null);
+  const [absentActionLoading, setAbsentActionLoading] = useState(false);
+  const [istToday, setIstToday] = useState(getIstDate);
   const listSectionRef = useRef(null);
   const basePath = scope === 'principal' ? '/headmaster' : `/${scope}`;
   const showDistrict = scope === 'admin' || scope === 'vtp';
@@ -51,6 +63,11 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
     const url = scope === 'admin' ? '/reports/location-master' : `${basePath}/attendance-status/options`;
     return (await api.get(url, { params, signal })).data;
   }, [basePath, scope]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setIstToday(getIstDate()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -146,6 +163,25 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
     { title: 'Total Absent', value: data.counts.total_absent, icon: <XCircle className="h-6 w-6" />, description: 'Absent or attendance not marked', statusKey: 'absent' },
   ], [data.counts]);
 
+  const canMarkCurrentDate = scope === 'principal' && data.as_of_date === istToday;
+  const handleMarkAbsent = async () => {
+    if (!absentTarget?.user_id || !canMarkCurrentDate) return;
+    setAbsentActionLoading(true);
+    setListError('');
+    try {
+      await api.patch(`/headmaster/attendance-status/vts/${absentTarget.user_id}/mark-absent`);
+      setAbsentTarget(null);
+      setIsLoading(true);
+      setListLoading(true);
+      setRefreshKey((value) => value + 1);
+      setListRefreshKey((value) => value + 1);
+    } catch (requestError) {
+      setListError(requestError.response?.data?.message || 'VT could not be marked absent.');
+    } finally {
+      setAbsentActionLoading(false);
+    }
+  };
+
   const listColumns = useMemo(() => [
     { key: 'serial', label: 'No.' },
     { key: 'district_name', label: 'District', render: (value) => value || '-' },
@@ -154,7 +190,24 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
     { key: 'school_name', label: 'School', render: (value) => value || '-' },
     { key: 'name', label: 'Name', render: (value) => value || '-' },
     { key: 'email', label: 'Email', render: (value) => value || '-' },
-  ], []);
+    ...(scope === 'principal' ? [{
+      key: 'action',
+      label: 'Action',
+      render: (_, row) => {
+        const isAbsent = row.attendance_status === 'absent';
+        return (
+          <Button
+            variant={isAbsent ? 'secondary' : 'danger'}
+            size="sm"
+            disabled={isAbsent || !canMarkCurrentDate || absentActionLoading}
+            onClick={() => setAbsentTarget(row)}
+          >
+            {isAbsent ? 'Absent Marked' : 'Mark Absent'}
+          </Button>
+        );
+      },
+    }] : []),
+  ], [absentActionLoading, canMarkCurrentDate, scope]);
 
   const chartTitle = `${data.chart.group_by === 'school' ? 'School' : data.chart.group_by === 'block' ? 'Block' : 'District'}-wise Attendance Status`;
   const handleDistrictChange = (event) => {
@@ -317,6 +370,22 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
           )}
         </section>
       )}
+
+      <Modal
+        isOpen={Boolean(absentTarget)}
+        onClose={() => !absentActionLoading && setAbsentTarget(null)}
+        title="Mark VT Absent"
+        size="sm"
+        closeOnOverlayClick={!absentActionLoading}
+        footer={<>
+          <Button variant="ghost" onClick={() => setAbsentTarget(null)} disabled={absentActionLoading}>Cancel</Button>
+          <Button variant="danger" onClick={handleMarkAbsent} loading={absentActionLoading}>Mark Absent</Button>
+        </>}
+      >
+        <p className="text-sm text-gray-700 dark:text-gray-300">
+          Mark <strong>{absentTarget?.name}</strong> absent for today? Any attendance already recorded for today will be replaced.
+        </p>
+      </Modal>
     </div>
   );
 };

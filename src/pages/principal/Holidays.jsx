@@ -3,7 +3,7 @@ import {
   Search, RefreshCw, Loader2, AlertCircle, CalendarDays,
   Plus, ChevronDown, RotateCcw, CalendarPlus,
   Calendar, User, Phone, School, FileText, MessageSquare,
-  ChevronLeft, ChevronRight, Star, List, X,
+  ChevronLeft, ChevronRight, Star, List, X, Pencil, Trash2, Save,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -64,6 +64,9 @@ const Holidays = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [editingHoliday, setEditingHoliday] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const [formData, setFormData] = useState({
     principal_name: '',
     principal_mobile_number: '',
@@ -180,14 +183,16 @@ const Holidays = () => {
   // ── Form handlers ──────────────────────────────────────────────────────────
   const validateForm = () => {
     const err = {};
-    if (!formData.principal_name.trim()) err.principal_name = 'Required';
-    if (!formData.principal_mobile_number) {
-      err.principal_mobile_number = 'Required';
-    } else if (!/^\d{10}$/.test(formData.principal_mobile_number.replace(/\D/g, ''))) {
-      err.principal_mobile_number = 'Must be 10 digits';
+    if (!editingHoliday) {
+      if (!formData.principal_name.trim()) err.principal_name = 'Required';
+      if (!formData.principal_mobile_number) {
+        err.principal_mobile_number = 'Required';
+      } else if (!/^\d{10}$/.test(formData.principal_mobile_number.replace(/\D/g, ''))) {
+        err.principal_mobile_number = 'Must be 10 digits';
+      }
+      if (!formData.udise_code) err.udise_code = 'Required';
+      if (!formData.school_name.trim()) err.school_name = 'Required';
     }
-    if (!formData.udise_code) err.udise_code = 'Required';
-    if (!formData.school_name.trim()) err.school_name = 'Required';
     if (!formData.holiday_description.trim()) err.holiday_description = 'Required';
     if (!formData.generated_holiday_date) err.generated_holiday_date = 'Required';
     setFormErrors(err);
@@ -199,33 +204,7 @@ const Holidays = () => {
     if (formErrors[field]) setFormErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    setFormSubmitting(true);
-    try {
-      const { data } = await api.post('/holidays/generated', formData);
-      if (data.success) {
-        toast.success(data.message || 'Holiday declared successfully!');
-        setFormData(prev => ({
-          ...prev,
-          holiday_description: '',
-          generated_holiday_date: '',
-          remarks: '',
-        }));
-        setFormErrors({});
-        fetchGenHolidays();
-      }
-    } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to declare holiday';
-      toast.error(msg);
-    } finally {
-      setFormSubmitting(false);
-    }
-  };
-
-  const handleReset = () => {
+  const resetHolidayFields = useCallback(() => {
     setFormData(prev => ({
       ...prev,
       holiday_description: '',
@@ -233,6 +212,68 @@ const Holidays = () => {
       remarks: '',
     }));
     setFormErrors({});
+    setEditingHoliday(null);
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setFormSubmitting(true);
+    try {
+      const request = editingHoliday
+        ? api.patch(`/holidays/generated/${editingHoliday.generated_holiday_id}`, {
+            holiday_description: formData.holiday_description,
+            generated_holiday_date: formData.generated_holiday_date,
+            remarks: formData.remarks,
+          })
+        : api.post('/holidays/generated', formData);
+      const { data } = await request;
+      if (data.success) {
+        toast.success(data.message || (editingHoliday ? 'Holiday updated successfully!' : 'Holiday declared successfully!'));
+        resetHolidayFields();
+        setSelectedHoliday(null);
+        await fetchGenHolidays();
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || (editingHoliday ? 'Failed to update holiday' : 'Failed to declare holiday');
+      toast.error(msg);
+    } finally {
+      setFormSubmitting(false);
+    }
+  };
+
+  const handleEdit = (holiday) => {
+    setEditingHoliday(holiday);
+    setFormData(prev => ({
+      ...prev,
+      holiday_description: holiday.holiday_description || '',
+      generated_holiday_date: holiday.generated_holiday_date?.slice(0, 10) || '',
+      remarks: holiday.remarks || '',
+    }));
+    setFormErrors({});
+    setFormOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+
+    const holidayId = deleteTarget.generated_holiday_id;
+    setDeletingId(holidayId);
+    try {
+      const { data } = await api.delete(`/holidays/generated/${holidayId}`);
+      if (data.success) {
+        toast.success(data.message || 'Holiday deleted successfully');
+        if (editingHoliday?.generated_holiday_id === holidayId) resetHolidayFields();
+        setSelectedHoliday(null);
+        setDeleteTarget(null);
+        await fetchGenHolidays();
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete holiday');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   // ── Format date for display ─────────────────────────────────────────────────
@@ -489,8 +530,8 @@ const Holidays = () => {
               <CalendarPlus className="h-5 w-5 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Declare School Holiday</h2>
-              <p className="text-xs text-gray-500 mt-0.5">Generate a custom holiday for your school</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{editingHoliday ? 'Update School Holiday' : 'Declare School Holiday'}</h2>
+              <p className="text-xs text-gray-500 mt-0.5">{editingHoliday ? 'Edit the selected school holiday' : 'Generate a custom holiday for your school'}</p>
             </div>
           </div>
           <motion.div animate={{ rotate: formOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
@@ -529,8 +570,12 @@ const Holidays = () => {
                     className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none" />
                 </div>
                 <div className="flex items-center gap-3 pt-2">
-                  <Button type="submit" variant="primary" loading={formSubmitting} leftIcon={<Plus className="h-4 w-4" />}>Generate Holiday</Button>
-                  <Button type="button" variant="ghost" onClick={handleReset} disabled={formSubmitting} leftIcon={<RotateCcw className="h-4 w-4" />}>Reset</Button>
+                  <Button type="submit" variant="primary" loading={formSubmitting} leftIcon={editingHoliday ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}>
+                    {editingHoliday ? 'Update Holiday' : 'Generate Holiday'}
+                  </Button>
+                  <Button type="button" variant="ghost" onClick={resetHolidayFields} disabled={formSubmitting} leftIcon={<RotateCcw className="h-4 w-4" />}>
+                    {editingHoliday ? 'Cancel' : 'Reset'}
+                  </Button>
                 </div>
               </form>
             </motion.div>
@@ -577,6 +622,7 @@ const Holidays = () => {
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Date</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Description</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Remarks</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -589,6 +635,16 @@ const Holidays = () => {
                           <td className="px-4 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">{formatDate(h.generated_holiday_date)}</td>
                           <td className="px-4 py-3 text-gray-700 dark:text-gray-300 max-w-xs truncate">{h.holiday_description}</td>
                           <td className="px-4 py-3 text-gray-500 dark:text-gray-400 max-w-xs truncate">{h.remarks || '—'}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-end gap-2">
+                              <Button type="button" variant="ghost" size="sm" leftIcon={<Pencil className="h-3.5 w-3.5" />} onClick={() => handleEdit(h)} disabled={deletingId === h.generated_holiday_id}>
+                                Edit
+                              </Button>
+                              <Button type="button" variant="danger" size="sm" leftIcon={<Trash2 className="h-3.5 w-3.5" />} onClick={() => setDeleteTarget(h)} loading={deletingId === h.generated_holiday_id}>
+                                Delete
+                              </Button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -599,6 +655,45 @@ const Holidays = () => {
           )}
         </div>
       )}
+
+      <AnimatePresence>
+        {deleteTarget && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            onClick={() => !deletingId && setDeleteTarget(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 12 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 12 }}
+              className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-900"
+              onClick={e => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-holiday-title"
+            >
+              <div className="flex items-start gap-3">
+                <div className="rounded-xl bg-red-50 p-2.5 dark:bg-red-900/20">
+                  <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <h3 id="delete-holiday-title" className="font-semibold text-gray-900 dark:text-white">Delete school holiday?</h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {deleteTarget.holiday_description} ({formatDate(deleteTarget.generated_holiday_date)}) will be permanently deleted.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <Button type="button" variant="ghost" onClick={() => setDeleteTarget(null)} disabled={!!deletingId}>Cancel</Button>
+                <Button type="button" variant="danger" onClick={handleDelete} loading={!!deletingId} leftIcon={<Trash2 className="h-4 w-4" />}>Delete</Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
