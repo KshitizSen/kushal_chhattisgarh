@@ -9,7 +9,6 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
-  RefreshCw,
   Search,
   Filter,
   UserCheck,
@@ -56,9 +55,9 @@ const weekRange = (dateStr) => {
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
-const Attendance = () => {
+const Attendance = ({ initialTab = 'today', embedded = false }) => {
   // ── Tab & date state ──────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState('today');   // today | date | week | month | date_range
+  const [activeTab, setActiveTab] = useState(initialTab);   // today | date | week | month | date_range
   const [selectedDate, setSelectedDate] = useState(todayStr());
   const [dateRangeFrom, setDateRangeFrom] = useState(todayStr());
   const [dateRangeTo, setDateRangeTo] = useState(todayStr());
@@ -282,7 +281,7 @@ const Attendance = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {!embedded && <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Approval of Vocational Trainer
@@ -291,15 +290,7 @@ const Attendance = () => {
             Track and manage VT records
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={fetchAttendance}
-          loading={loading}
-        >
-          Refresh
-        </Button>
-      </div>
+      </div>}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -327,7 +318,7 @@ const Attendance = () => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      {!embedded && <div className="border-b border-gray-200 dark:border-gray-700">
         <nav className="flex space-x-2 overflow-x-auto">
           {tabs.map((tab) => (
             <button
@@ -344,7 +335,7 @@ const Attendance = () => {
             </button>
           ))}
         </nav>
-      </div>
+      </div>}
 
       {/* Date Controls */}
       {(activeTab === 'date' || activeTab === 'week' || activeTab === 'month') && (

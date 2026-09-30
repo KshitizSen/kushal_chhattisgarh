@@ -7,7 +7,6 @@ import {
   Search,
   Filter,
   AlertCircle,
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
   Wallet,
@@ -351,14 +350,6 @@ const LeaveManagement = () => {
             Review and approve leave requests for your organization's teachers
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={() => loadData()}
-          loading={leaveLoading}
-        >
-          Refresh Data
-        </Button>
       </div>
 
       {/* Tab Navigation */}

@@ -1,6 +1,5 @@
 const pageMetadata = [
-  { path: '/admin/vocational-training-approval-tracking', title: 'VT Reports Approval Tracking', description: 'View all VTs and month-wise fully approved VT reports.' },
-  { path: '/admin/attendance-status', title: 'Attendance Status', description: 'Live current-day status of active vocational teachers.' },
+  { path: '/admin/attendance-status', title: 'Attendance Status', description: 'Monitor live attendance and VT report approval tracking.' },
   { path: '/admin/manage-schools', title: 'Manage Schools', description: 'View and manage VT-enabled schools.' },
   { path: '/admin/manage-vtp', title: 'Manage VTP Providers', description: 'Vocational coordinator and provider master list.' },
   { path: '/admin/manage-deo', title: 'Manage DEO', description: 'District education officer master list.' },
@@ -22,8 +21,7 @@ const pageMetadata = [
   { path: '/vtp/trades', title: 'Trades List', description: 'Unique trades mapped to your VTP organization.' },
   { path: '/vtp/dashboard', title: 'VTP Dashboard', description: 'Overview of schools, VT staff and trades mapped to your organization.' },
 
-  { path: '/principal/vocational-training-approval', title: 'VT Status', description: 'Review vocational teacher attendance and approval status.' },
-  { path: '/principal/attendance-status', title: 'Attendance Status', description: 'Live current-day status of vocational teachers mapped to your school.' },
+  { path: '/principal/attendance-status', title: 'Attendance Status', description: 'Monitor live and historical vocational teacher attendance.' },
   { path: '/principal/vocational-training-requests', title: 'VT Requests', description: 'Manage On Duty and regularization requests.' },
   { path: '/principal/device-change-requests', title: 'Device Change Requests', description: 'Approve or reject VT mobile device changes.' },
   { path: '/principal/teacher-approval', title: 'Registration Approvals', description: 'Review vocational teacher registration requests.' },
@@ -36,8 +34,7 @@ const pageMetadata = [
   { path: '/principal/reports', title: 'Monthly VT Approval Reports', description: 'Review monthly attendance reports for your school.' },
   { path: '/principal/dashboard', title: 'Principal Dashboard', description: 'School-level overview of vocational training operations.' },
 
-  { path: '/deo/vocational-training-approval', title: 'Approval of VT Reports', description: 'Review and approve VT reports across your district.' },
-  { path: '/deo/attendance-status', title: 'Attendance Status', description: 'Live current-day status of vocational teachers in your district.' },
+  { path: '/deo/attendance-status', title: 'Attendance Status', description: 'Monitor live attendance and approve VT reports across your district.' },
   { path: '/deo/monthly-reports', title: 'Monthly VT Approval Reports', description: 'Review monthly vocational teacher reports in your district.' },
   { path: '/deo/vt-schools', title: 'VT Schools', description: 'View vocational training schools in your district.' },
   { path: '/deo/vt-teachers', title: 'VT Teachers', description: 'View vocational teachers in your district.' },

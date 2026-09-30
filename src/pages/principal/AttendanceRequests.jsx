@@ -7,7 +7,6 @@ import {
   Search,
   Filter,
   AlertCircle,
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
   ClipboardList,
@@ -354,14 +353,6 @@ const AttendanceRequests = ({ initialTab = 'onduty', hideTabs = false }) => {
             Manage and approve VT requests
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={() => { fetchRequests(); fetchCounts(); }}
-          loading={loading}
-        >
-          Refresh
-        </Button>
       </div>
 
       {/* Stats Cards */}

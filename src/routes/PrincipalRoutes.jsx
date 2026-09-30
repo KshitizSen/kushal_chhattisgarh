@@ -3,7 +3,6 @@ import Dashboard from '../pages/principal/Dashboard';
 import SchoolOverview from '../pages/principal/SchoolOverview';
 import StaffManagement from '../pages/principal/StaffManagement';
 import SchoolTiming from '../pages/principal/SchoolTiming';
-import Attendance from '../pages/principal/Attendance';
 import Activities from '../pages/principal/Activities';
 import Holidays from '../pages/principal/Holidays';
 import Reports from '../pages/principal/Reports';
@@ -55,15 +54,13 @@ const PrincipalRoutes = () => {
       <Route
         path="vocational-training-approval"
         element={
-          <ProtectedRoute allowedRoles={allowedRoles}>
-            <Attendance />
-          </ProtectedRoute>
+          <Navigate to="/principal/attendance-status?view=today" replace />
         }
       />
       <Route path="attendance-status" element={<ProtectedRoute allowedRoles={allowedRoles}><AttendanceStatus /></ProtectedRoute>} />
       <Route
         path="attendance"
-        element={<Navigate to="/principal/vocational-training-approval" replace />}
+        element={<Navigate to="/principal/attendance-status?view=today" replace />}
       />
       <Route
         path="activities"

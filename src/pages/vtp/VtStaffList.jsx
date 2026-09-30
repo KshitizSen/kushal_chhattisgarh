@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CheckCircle, Pencil, Plus, RefreshCw, Search, Smartphone, Users, XCircle } from 'lucide-react';
+import { CheckCircle, Pencil, Plus, Search, Smartphone, Users, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import Card from '../../components/common/Card';
@@ -179,11 +179,10 @@ const VtStaffList = ({ initialTab = 'list', hideTabs = false }) => {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{activeTab === 'list' ? "VT's List" : "VT's Mobile Updation Requests"}</h1>
         <p className="text-gray-600 dark:text-gray-400">{activeTab === 'list' ? 'Manage VT staff mapped to your VTP organization' : 'Approve or reject VT mobile number changes'}</p>
       </div>
-      {activeTab === 'list' ? <div className="flex gap-2">
+      {activeTab === 'list' && <div className="flex gap-2">
         <Button variant="success" leftIcon={<Plus className="h-4 w-4" />}
           onClick={() => setFormModal({ open: true, mode: 'add', staffId: null })}>Add</Button>
-        <Button variant="primary" leftIcon={<RefreshCw className="h-4 w-4" />} onClick={fetchStaff} loading={loading}>Refresh List</Button>
-      </div> : <Button variant="primary" leftIcon={<RefreshCw className="h-4 w-4" />} onClick={fetchMobileRequests} loading={mobileRequestLoading}>Refresh Requests</Button>}
+      </div>}
     </div>
 
     {!hideTabs && <div className="flex w-fit gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800">

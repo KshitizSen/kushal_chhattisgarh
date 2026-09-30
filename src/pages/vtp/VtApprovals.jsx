@@ -5,7 +5,6 @@ import {
   Clock,
   Search,
   Filter,
-  RefreshCw,
   ShieldCheck,
   ShieldAlert,
   ShieldX,
@@ -264,14 +263,6 @@ const VtApprovals = () => {
             Review and approve VTs assigned to your VTP organization
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={fetchVts}
-          loading={loading}
-        >
-          Refresh List
-        </Button>
       </div>
 
       {/* Stats Cards */}

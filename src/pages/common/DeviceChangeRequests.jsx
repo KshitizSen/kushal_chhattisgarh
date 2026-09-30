@@ -1,5 +1,5 @@
 ﻿import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { RefreshCw, Smartphone } from 'lucide-react';
+import { Smartphone } from 'lucide-react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import Modal from '../../components/common/Modal';
@@ -63,7 +63,6 @@ const DeviceChangeRequests = () => {
     <div className="space-y-5 p-4 md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div><h1 className="flex items-center gap-2 text-2xl font-semibold text-gray-900 dark:text-white"><Smartphone className="h-6 w-6" />Device Change Requests</h1><p className="mt-1 text-sm text-gray-500">Approve or reject VT mobile device changes.</p></div>
-        <button onClick={loadRequests} disabled={loading} className="flex items-center gap-2 rounded-xl border px-4 py-2 text-sm"><RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />Refresh</button>
       </div>
       <div className="flex gap-2">{['pending', 'approved', 'rejected', 'all'].map((item) => <button key={item} onClick={() => setFilter(item)} className={`rounded-full px-4 py-2 text-sm capitalize ${filter === item ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200'}`}>{item}</button>)}</div>
       {error && <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</div>}

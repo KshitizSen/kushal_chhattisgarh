@@ -342,14 +342,6 @@ const Reports = () => {
             Generate and approve monthly VT reports for your school
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={() => { fetchReports(); fetchCounts(); }}
-          loading={loading}
-        >
-          Refresh
-        </Button>
       </div>
 
       {/* Month / Year selector */}

@@ -1,7 +1,7 @@
 ﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FileText, Download, CheckCircle, XCircle, Clock, AlertCircle, FileSpreadsheet,
-  RefreshCw, Search, Filter, ShieldCheck, ShieldX, ShieldAlert,
+  Search, Filter, ShieldCheck, ShieldX, ShieldAlert,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -50,7 +50,7 @@ const hasRequiredApprovals = (report) => (
 );
 
 // ── Component ─────────────────────────────────────────────────────────────────
-const MonthlyAttendanceReports = () => {
+const MonthlyAttendanceReports = ({ embedded = false }) => {
   const [reports, setReports]             = useState([]);
   const [counts, setCounts]               = useState({ total: 0, pending_my_action: 0, approved: 0, rejected: 0 });
   const [loading, setLoading]             = useState(true);
@@ -359,20 +359,12 @@ const MonthlyAttendanceReports = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+        {!embedded && <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Monthly VT Status Reports</h1>
           <p className="text-gray-600 dark:text-gray-400">
             Final approval of monthly VT reports across your VTP
           </p>
-        </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={() => { fetchReports(); fetchCounts(); }}
-          loading={loading}
-        >
-          Refresh
-        </Button>
+        </div>}
       </div>
 
       {/* Summary Cards */}

@@ -7,7 +7,6 @@ import {
   Search,
   Filter,
   AlertCircle,
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
   Eye,
@@ -342,14 +341,6 @@ const AttendanceRequests = ({ initialTab = 'onduty', hideTabs = false }) => {
             Manage and approve OnDuty and Regularization VT requests
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={() => { fetchRequests(); fetchCounts(); }}
-          loading={loading}
-        >
-          Refresh
-        </Button>
       </div>
 
       {!hideTabs && <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">

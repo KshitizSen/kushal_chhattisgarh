@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
-  Search, RefreshCw, Loader2, AlertCircle, CalendarDays,
+  Search, Loader2, AlertCircle, CalendarDays,
   Plus, ChevronDown, RotateCcw, CalendarPlus,
   Calendar, User, Phone, School, FileText, MessageSquare,
   ChevronLeft, ChevronRight, Star, List, X, Pencil, Trash2, Save,
@@ -301,15 +301,6 @@ const Holidays = () => {
           >
             {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
-          <Button
-            variant="ghost"
-            size="sm"
-            leftIcon={<RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />}
-            onClick={() => { fetchHolidays(year); fetchGenHolidays(); }}
-            disabled={loading}
-          >
-            Refresh
-          </Button>
         </div>
       </div>
 
@@ -593,9 +584,6 @@ const Holidays = () => {
               <School className="h-5 w-5 text-emerald-500" />
               School Declared Holidays
             </h2>
-            <Button variant="ghost" size="sm" leftIcon={<RefreshCw className={`h-4 w-4 ${genLoading ? 'animate-spin' : ''}`} />} onClick={fetchGenHolidays} disabled={genLoading}>
-              Refresh
-            </Button>
           </div>
 
           {genLoading ? (

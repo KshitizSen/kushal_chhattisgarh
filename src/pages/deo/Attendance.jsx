@@ -274,14 +274,13 @@ const ActionIcon = ({ icon: Icon, label, onClick, variant = 'default', disabled 
   );
 };
 
-const Attendance = () => {
+const Attendance = ({ embedded = false }) => {
   const [schools, setSchools] = useState([]);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth);
   const [selectedYear, setSelectedYear] = useState(getCurrentYear);
   const [dashboardCounts, setDashboardCounts] = useState(null);
-  const [countsLoading, setCountsLoading] = useState(false);
   const [countsError, setCountsError] = useState('');
   const [reportsLoading, setReportsLoading] = useState(false);
   const [reportsError, setReportsError] = useState('');
@@ -318,7 +317,6 @@ const Attendance = () => {
   const yearOptions = useMemo(() => buildYearOptions(), []);
 
   const fetchDashboardCounts = useCallback(async () => {
-    setCountsLoading(true);
     setCountsError('');
     try {
       const response = await api.get('/deo/dashboard-counts', {
@@ -336,7 +334,6 @@ const Attendance = () => {
       console.error('Failed to fetch DEO dashboard counts:', error);
       setCountsError('Dashboard counts could not be loaded.');
     } finally {
-      setCountsLoading(false);
     }
   }, [selectedMonth, selectedYear]);
 
@@ -544,11 +541,6 @@ const Attendance = () => {
 
   const allVisibleSelected = selectableFilteredSchools.length > 0
     && selectableFilteredSchools.every((school) => selectedSchoolCodes.includes(String(school.udise)));
-
-  const refreshPageData = useCallback(() => {
-    fetchDashboardCounts();
-    fetchSchoolReports();
-  }, [fetchDashboardCounts, fetchSchoolReports]);
 
   const handleMonthChange = (value) => {
     setSelectedMonth(value);
@@ -922,12 +914,12 @@ const Attendance = () => {
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+        {!embedded && <div>
           <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-white">Approval of VT Reports</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Review school-wise VT reports and VT approvals
           </p>
-        </div>
+        </div>}
         <div className="flex flex-wrap items-center gap-2">
           <select
             value={selectedMonth}
@@ -965,15 +957,6 @@ const Attendance = () => {
               </option>
             ))}
           </select>
-          <Button
-            variant="primary"
-            size="sm"
-            leftIcon={<RefreshCw className={`h-4 w-4 ${countsLoading || reportsLoading ? 'animate-spin' : ''}`} />}
-            onClick={refreshPageData}
-            disabled={countsLoading || reportsLoading}
-          >
-            Refresh
-          </Button>
         </div>
       </div>
 

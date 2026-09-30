@@ -1,7 +1,7 @@
 ﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FileText, Download, CheckCircle, XCircle, Clock, AlertCircle,
-  RefreshCw, Search, Filter, ShieldCheck, ShieldX, ShieldAlert, FileSpreadsheet,
+  Search, Filter, ShieldCheck, ShieldX, ShieldAlert, FileSpreadsheet,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -373,14 +373,6 @@ const MonthlyReports = () => {
             Review and approve monthly VT reports in your district
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={() => { fetchReports(); fetchCounts(); }}
-          loading={loading}
-        >
-          Refresh
-        </Button>
       </div>
 
       {/* Summary Cards */}

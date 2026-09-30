@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { RefreshCw, Search, School } from 'lucide-react';
+import { Search, School } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import Input from '../../components/common/Input';
 import Pagination from '../../components/common/Pagination';
@@ -67,7 +66,7 @@ const SchoolsList = () => {
   const data = rows.map((row, index) => ({ ...row, serial: (page - 1) * limit + index + 1 }));
 
   return <div className="space-y-6">
-    <div className="flex items-center justify-between"><div><h1 className="text-2xl font-bold">Schools List</h1><p className="text-gray-500">Schools mapped to your VTP organization</p></div><Button leftIcon={<RefreshCw className="h-4 w-4" />} onClick={loadSchools} loading={loading}>Refresh</Button></div>
+    <div><h1 className="text-2xl font-bold">Schools List</h1><p className="text-gray-500">Schools mapped to your VTP organization</p></div>
     <Card><div className="overflow-x-auto"><div className="flex min-w-max items-center gap-2"><div className="w-72"><Input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} leftIcon={<Search className="h-4 w-4" />} placeholder="Search school or UDISE..." /></div>
       <select className={`${selectClass} w-44`} value={district} onChange={(event) => { setDistrict(event.target.value); setPage(1); }}><option value="">All Districts</option>{options.districts.map((item) => <option key={item.district_cd} value={item.district_cd}>{item.district_name}</option>)}</select>
       <select className={`${selectClass} w-44`} value={block} disabled={!district} onChange={(event) => { setBlock(event.target.value); setPage(1); }}><option value="">All Blocks</option>{options.blocks.map((item) => <option key={item.block_cd} value={item.block_cd}>{item.block_name}</option>)}</select>

@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Clock,
-  RefreshCw,
   School,
   Users,
   BookOpen,
 } from 'lucide-react';
 import { StatCardGrid } from '../../components/common/Card';
-import Button from '../../components/common/Button';
 import api from '../../services/api';
 
 const initialCounts = {
@@ -67,15 +65,6 @@ const DeoDashboard = () => {
             Monitor schools, VT network and VT summaries
           </p>
         </div>
-        <Button
-          variant="primary"
-          size="sm"
-          leftIcon={<RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />}
-          loading={loading}
-          onClick={fetchDashboardCounts}
-        >
-          Refresh
-        </Button>
       </div>
 
       {error && (

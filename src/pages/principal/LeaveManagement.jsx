@@ -7,7 +7,6 @@ import {
   Search,
   Filter,
   AlertCircle,
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
   Wallet,
@@ -425,14 +424,6 @@ const LeaveManagement = () => {
             Manage and approve VT leave requests
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={() => { fetchLeaves(); fetchCounts(); }}
-          loading={loading}
-        >
-          Refresh
-        </Button>
       </div>
 
       {/* Stats Cards */}

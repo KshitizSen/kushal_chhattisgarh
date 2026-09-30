@@ -1,6 +1,6 @@
 ﻿/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { BookOpen, Building2, ChevronLeft, ChevronRight, RefreshCw, Route, School, Search, Users } from 'lucide-react';
+import { BookOpen, Building2, ChevronLeft, ChevronRight, Route, School, Search, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
@@ -23,8 +23,8 @@ const StatusBadge = ({ status }) => (
   </Badge>
 );
 
-const AttendanceTracking = () => {
-  const [activeTab, setActiveTab] = useState('all_vts');
+const AttendanceTracking = ({ initialView = 'all_vts', embedded = false }) => {
+  const [activeTab, setActiveTab] = useState(initialView);
   const [rows, setRows] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
@@ -140,17 +140,17 @@ const AttendanceTracking = () => {
 
   return (
     <div className="space-y-6">
-      <div>
+      {!embedded && <div>
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">VT Reports Approval Tracking</h1>
           <p className="text-gray-600 dark:text-gray-400">View all VTs and month-wise fully approved VT reports.</p>
         </div>
-      </div>
+      </div>}
 
-      <div className="inline-flex rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
+      {!embedded && <div className="inline-flex rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
         <button onClick={() => changeTab('all_vts')} className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${activeTab === 'all_vts' ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-900' : 'text-gray-600 dark:text-gray-300'}`}>Total VTs</button>
         <button onClick={() => changeTab('approved_vts')} className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${activeTab === 'approved_vts' ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-900' : 'text-gray-600 dark:text-gray-300'}`}>Approved VTs</button>
-      </div>
+      </div>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {summaryCards.map(({ label, value, Icon }) => <Card key={label} variant="filled"><div className="flex items-center justify-between"><div><p className="text-lg text-gray-500 dark:text-gray-400">{label}</p><p className="text-2xl font-bold">{value}</p></div><Icon className="h-7 w-7 text-primary-500" /></div></Card>)}
@@ -169,7 +169,6 @@ const AttendanceTracking = () => {
               <Button variant="ghost" size="sm" rightIcon={<ChevronRight className="h-4 w-4" />} onClick={() => shiftMonth(1)} disabled={isCurrentMonth}>Next</Button>
             </>}
             <select value={pageSize} onChange={(event) => { setPageSize(Number(event.target.value)); setCurrentPage(1); }} className="w-32 shrink-0 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">{PAGE_SIZE_OPTIONS.map((size) => <option key={size} value={size}>{size} / page</option>)}</select>
-            <Button variant="ghost" leftIcon={<RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />} onClick={loadRows} disabled={loading}>Refresh</Button>
           </div>
         </div>
       </Card>

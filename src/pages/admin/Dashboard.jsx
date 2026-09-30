@@ -71,7 +71,7 @@ const AdminDashboard = () => {
       value: isCountsLoading ? '...' : formatCount(dashboardCounts.total_vt_staff),
       icon: <Users className="w-6 h-6" />,
       description: 'VT staff',
-      to: '/admin/vocational-training-approval-tracking',
+      to: '/admin/attendance-status?view=all-vts',
     },
     {
       title: 'Total Trades',

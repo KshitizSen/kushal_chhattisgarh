@@ -8,8 +8,7 @@ import ManageDEO from '../pages/admin/ManageDEO';
 import Reports from '../pages/admin/Reports';
 import Settings from '../pages/admin/Settings';
 import ManageRoles from '../pages/admin/ManageRoles';
-import AttendanceTracking from '../pages/admin/AttendanceTracking';
-import AttendanceStatus from '../pages/admin/AttendanceStatus';
+import AttendanceStatusHub from '../pages/admin/AttendanceStatusHub';
 import TradesList from '../pages/admin/TradesList';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -54,7 +53,7 @@ const AdminRoutes = () => {
         path="attendance-status"
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
-            <AttendanceStatus />
+            <AttendanceStatusHub />
           </ProtectedRoute>
         }
       />
@@ -69,9 +68,7 @@ const AdminRoutes = () => {
       <Route 
         path="vocational-training-approval-tracking"
         element={
-          <ProtectedRoute allowedRoles={allowedRoles}>
-            <AttendanceTracking />
-          </ProtectedRoute>
+          <Navigate to="/admin/attendance-status?view=all-vts" replace />
         } 
       />
       <Route
@@ -84,7 +81,7 @@ const AdminRoutes = () => {
       />
       <Route
         path="attendance-tracking"
-        element={<Navigate to="/admin/vocational-training-approval-tracking" replace />}
+        element={<Navigate to="/admin/attendance-status?view=all-vts" replace />}
       />
       <Route 
         path="roles" 

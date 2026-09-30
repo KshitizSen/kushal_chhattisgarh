@@ -18,7 +18,6 @@ import {
   Briefcase,
   FileText,
   CheckCircle,
-  Route,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -67,7 +66,6 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: '/admin/manage-schools', label: 'Schools List', icon: <School className="h-5 w-5" /> },
           { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <Building2 className="h-5 w-5" /> },
           { path: '/admin/manage-deo', label: 'Manage DEO', icon: <UserCheck className="h-5 w-5" /> },
-          { path: '/admin/vocational-training-approval-tracking', label: 'VTs Approval Tracking', icon: <Route className="h-5 w-5" /> },
           { path: '/admin/trades', label: 'Trades List', icon: <BookOpen className="h-5 w-5" /> },
         ],
       },
@@ -112,7 +110,6 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
           { path: '/principal/attendance-status', label: 'Attendance Status', icon: <CalendarCheck className="h-5 w-5" /> },
-          { path: '/principal/vocational-training-approval', label: 'VT Status', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/principal/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },
         ],
       },
@@ -145,7 +142,6 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
           { path: '/deo/attendance-status', label: 'Attendance Status', icon: <CalendarCheck className="h-5 w-5" /> },
-          { path: '/deo/vocational-training-approval', label: 'Report Approvals', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/deo/vtps', label: "VTP's", icon: <Building2 className="h-5 w-5" /> },
           { path: '/deo/vt-schools', label: 'VT School', icon: <School className="h-5 w-5" /> },
           { path: '/deo/vt-teachers', label: 'VT Details', icon: <Users className="h-5 w-5" /> },

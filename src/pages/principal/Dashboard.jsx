@@ -107,7 +107,7 @@ const PrincipalDashboard = () => {
       icon:    <UserCheck className="h-6 w-6" />,
       color:   'bg-green-500',
       trend:   'up',
-      onClick: () => navigate('/principal/vocational-training-approval'),
+      onClick: () => navigate('/principal/attendance-status?view=today'),
     },
 
     {
@@ -117,7 +117,7 @@ const PrincipalDashboard = () => {
       icon:    <UserX className="h-6 w-6" />,
       color:   'bg-red-500',
       trend:   attCounts.absent > 0 ? 'down' : 'neutral',
-      onClick: () => navigate('/principal/vocational-training-approval'),
+      onClick: () => navigate('/principal/attendance-status?view=today'),
     },
     {
       title:   'Activities',

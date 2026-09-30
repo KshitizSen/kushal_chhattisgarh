@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BriefcaseBusiness, RefreshCw, School, Users } from 'lucide-react';
+import { BriefcaseBusiness, School, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
-import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import Loader from '../../components/common/Loader';
 
@@ -47,9 +46,6 @@ const VTPDashboard = () => {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">VTP Dashboard</h1>
         <p className="text-gray-600 dark:text-gray-400">Overview of schools, VT staff and trades mapped to your organization</p>
       </div>
-      <Button variant="primary" leftIcon={<RefreshCw className="h-4 w-4" />} onClick={fetchCounts} loading={loading}>
-        Refresh
-      </Button>
     </div>
 
     <div className="grid grid-cols-1 gap-5 md:grid-cols-3">

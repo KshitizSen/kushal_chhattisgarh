@@ -10,7 +10,6 @@ import {
   Clock,
   Briefcase,
   Phone,
-  RefreshCw,
   MapPin,
   School,
   CreditCard,
@@ -293,14 +292,6 @@ const TeacherApproval = () => {
             Manage VT registrations and approvals
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<RefreshCw className="h-4 w-4" />}
-          onClick={fetchPendingTeachers}
-          loading={loading}
-        >
-          Refresh List
-        </Button>
       </div>
 
       {/* Stats Cards */}
