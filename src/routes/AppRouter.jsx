@@ -18,7 +18,7 @@ const AppRouter = () => {
   if (!initialized) return null;
 
   return (
-    <Router>
+    
       <Routes>
         {/* Public Routes – redirect to dashboard if already logged in */}
         <Route
@@ -48,7 +48,7 @@ const AppRouter = () => {
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-    </Router>
+    
   );
 };
 
