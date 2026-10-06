@@ -92,6 +92,7 @@ const StaffManagement = () => {
 
   const filteredStaff = staffData.filter(staff => {
     const matchesSearch = (staff.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (staff.teacher_code?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (staff.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (staff.department?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchesDept = selectedDepartment === 'all' || staff.department === selectedDepartment;
@@ -148,6 +149,7 @@ const StaffManagement = () => {
 
   const tableColumns = [
     { key: 'name', label: 'Staff Name', sortable: true },
+    { key: 'teacher_code', label: 'Teacher Code', sortable: true },
     { key: 'department', label: 'Department', sortable: true },
     { key: 'designation', label: 'Designation', sortable: true },
     { key: 'experience', label: 'Experience', sortable: true },

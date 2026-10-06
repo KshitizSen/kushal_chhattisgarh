@@ -112,6 +112,7 @@ const AttendanceTracking = ({ initialView = 'all_vts', embedded = false }) => {
       { key: 'udise_code', label: 'UDISE Code' },
       { key: 'school_name', label: 'School' },
       { key: 'vt_name', label: 'VT Name' },
+      { key: 'teacher_code', label: 'Teacher Code' },
       { key: 'vtp_name', label: 'VTP Name' },
       { key: 'trade', label: 'Trade' },
     ];
@@ -185,6 +186,7 @@ const AttendanceTracking = ({ initialView = 'all_vts', embedded = false }) => {
               <td className="px-3.5 py-2.5">{display(row.udise_code)}</td>
               <td className="px-3.5 py-2.5">{display(row.school_name)}</td>
               <td className="px-3.5 py-2.5 font-medium">{display(row.vt_name)}</td>
+              <td className="px-3.5 py-2.5 font-medium text-primary-600">{display(row.teacher_code)}</td>
               <td className="px-3.5 py-2.5">{display(row.vtp_name)}</td>
               <td className="px-3.5 py-2.5">{display(row.trade)}</td>
               {activeTab === 'approved_vts' && <><td className="px-3.5 py-2.5 whitespace-nowrap">{row.report_period}</td><td className="px-3.5 py-2.5"><StatusBadge status={row.hm_approval_status} /></td><td className="px-3.5 py-2.5"><StatusBadge status={row.vtp_approval_status} /></td><td className="px-3.5 py-2.5"><StatusBadge status={row.deo_approval_status} /></td></>}

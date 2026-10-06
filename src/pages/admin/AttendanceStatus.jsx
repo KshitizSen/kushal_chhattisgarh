@@ -189,6 +189,7 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
     { key: 'udise_sch_code', label: 'UDISE Code', render: (value) => value || '-' },
     { key: 'school_name', label: 'School', render: (value) => value || '-' },
     { key: 'name', label: 'Name', render: (value) => value || '-' },
+    { key: 'teacher_code', label: 'Teacher Code', render: (value) => value || '-' },
     { key: 'email', label: 'Email', render: (value) => value || '-' },
     ...(scope === 'principal' ? [{
       key: 'action',

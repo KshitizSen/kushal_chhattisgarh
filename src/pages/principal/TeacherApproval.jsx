@@ -75,6 +75,7 @@ const TeacherApproval = () => {
     const q = searchQuery.toLowerCase();
     return (
       teacher.name?.toLowerCase().includes(q) ||
+      teacher.teacher_code?.toLowerCase().includes(q) ||
       teacher.email?.toLowerCase().includes(q) ||
       teacher.trade?.toLowerCase().includes(q) ||
       teacher.school_name?.toLowerCase().includes(q)
@@ -163,6 +164,7 @@ const TeacherApproval = () => {
           </div>
           <div>
             <p className="font-medium text-gray-900 dark:text-white">{value}</p>
+            <p className="text-xs font-semibold text-primary-600">{row.teacher_code || 'N/A'}</p>
             <p className="text-sm text-gray-500">{row.email}</p>
           </div>
         </div>
@@ -467,6 +469,7 @@ const TeacherApproval = () => {
                   <p className="font-semibold text-gray-900 dark:text-white">
                     {selectedTeacher.name}
                   </p>
+                  <p className="text-xs font-semibold text-primary-600">{selectedTeacher.teacher_code || 'N/A'}</p>
                   <p className="text-sm text-gray-500">{selectedTeacher.email}</p>
                 </div>
               </div>
@@ -558,6 +561,7 @@ const TeacherApproval = () => {
                   <p className="font-semibold text-gray-900 dark:text-white">
                     {selectedTeacher.name}
                   </p>
+                  <p className="text-xs font-semibold text-primary-600">{selectedTeacher.teacher_code || 'N/A'}</p>
                   <p className="text-sm text-gray-500">{selectedTeacher.email}</p>
                 </div>
               </div>

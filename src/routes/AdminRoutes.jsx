@@ -10,6 +10,7 @@ import Settings from '../pages/admin/Settings';
 import ManageRoles from '../pages/admin/ManageRoles';
 import AttendanceStatusHub from '../pages/admin/AttendanceStatusHub';
 import TradesList from '../pages/admin/TradesList';
+import VtUpdationApproval from '../pages/admin/VtUpdationApproval';
 import ProtectedRoute from './ProtectedRoute';
 
 const AdminRoutes = () => {
@@ -70,6 +71,10 @@ const AdminRoutes = () => {
         element={
           <Navigate to="/admin/attendance-status?view=all-vts" replace />
         } 
+      />
+      <Route
+        path="vt-updation-approval"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><VtUpdationApproval /></ProtectedRoute>}
       />
       <Route
         path="trades"

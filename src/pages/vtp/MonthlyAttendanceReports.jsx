@@ -109,6 +109,7 @@ const MonthlyAttendanceReports = ({ embedded = false }) => {
     const q = searchQuery.toLowerCase();
     return reports.filter(r =>
       r.vt_name?.toLowerCase().includes(q) ||
+      r.teacher_code?.toLowerCase().includes(q) ||
       r.school_name?.toLowerCase().includes(q) ||
       r.trade?.toLowerCase().includes(q) ||
       r.district_name?.toLowerCase().includes(q)
@@ -238,6 +239,7 @@ const MonthlyAttendanceReports = ({ embedded = false }) => {
       render: (_, row) => (
         <div>
           <p className="font-medium text-gray-900 dark:text-white">{row.vt_name || '—'}</p>
+          <p className="text-xs font-semibold text-primary-600">{row.teacher_code || '—'}</p>
           <p className="text-xs text-gray-500">{row.school_name || '—'}</p>
           <p className="text-xs text-gray-400">{row.block_name}, {row.district_name}</p>
         </div>
@@ -550,6 +552,7 @@ const MonthlyAttendanceReports = ({ embedded = false }) => {
           {approveModal.report && (
             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-2">
               <p className="font-semibold text-gray-900 dark:text-white">{approveModal.report.vt_name}</p>
+              <p className="text-xs font-semibold text-primary-600">{approveModal.report.teacher_code || '—'}</p>
               <p className="text-sm text-gray-500">{approveModal.report.school_name} · {approveModal.report.trade}</p>
               <div className="flex gap-2 flex-wrap mt-1">
                 <ApprovalPill status={approveModal.report.hm_approval_status} />
@@ -598,6 +601,7 @@ const MonthlyAttendanceReports = ({ embedded = false }) => {
           {rejectModal.report && (
             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
               <p className="font-semibold text-gray-900 dark:text-white">{rejectModal.report.vt_name}</p>
+              <p className="text-xs font-semibold text-primary-600">{rejectModal.report.teacher_code || '—'}</p>
               <p className="text-sm text-gray-500">{rejectModal.report.school_name}</p>
             </div>
           )}

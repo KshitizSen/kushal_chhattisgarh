@@ -580,6 +580,7 @@ const Attendance = ({ embedded = false }) => {
           id: vt.vt_staff_id || vt.user_id || `${udiseCode}-${vt.vt_mob || vt.vt_name}`,
           userId: vt.user_id,
           vtStaffId: vt.vt_staff_id,
+          teacherCode: vt.teacher_code,
           name: vt.vt_name || 'VT name not available',
           trade: vt.trade || 'Trade not available',
           phone: vt.vt_mob || 'Mobile not available',
@@ -1243,6 +1244,7 @@ const Attendance = ({ embedded = false }) => {
                                     </span>
                                     <span className="min-w-0">
                                       <span className="block truncate text-sm font-semibold text-gray-900 dark:text-white">{vt.name}</span>
+                                      <span className="block truncate text-xs font-semibold text-primary-600">{vt.teacherCode || '—'}</span>
                                       <span className="block truncate text-xs text-gray-500">{vt.trade} | {vt.phone}</span>
                                     </span>
                                   </div>

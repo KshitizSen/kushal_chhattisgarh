@@ -164,10 +164,12 @@ const AttendanceRequests = ({ initialTab = 'onduty', hideTabs = false }) => {
     const name = r.teacher_name || r.vt_name || r.user_name || '';
     const reason = r.reason || '';
     const phone = r.vt_phone || r.phone || '';
+    const teacherCode = r.teacher_code || '';
     return (
       name.toLowerCase().includes(q) ||
       reason.toLowerCase().includes(q) ||
-      phone.toString().includes(q)
+      phone.toString().includes(q) ||
+      teacherCode.toLowerCase().includes(q)
     );
   });
 
@@ -238,6 +240,7 @@ const AttendanceRequests = ({ initialTab = 'onduty', hideTabs = false }) => {
             </div>
             <div>
               <p className="font-medium text-gray-900 dark:text-white">{name}</p>
+              <p className="text-xs font-semibold text-primary-600">{row.teacher_code || '—'}</p>
               <p className="text-xs text-gray-500">{phone}</p>
             </div>
           </div>

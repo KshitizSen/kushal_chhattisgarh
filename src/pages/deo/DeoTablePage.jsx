@@ -62,13 +62,14 @@ const calcWorkHours = (checkIn, checkOut) => {
   return `${Math.floor(diff / 60)}h ${Math.round(diff % 60)}m`;
 };
 
-const personCell = (name, subtitle) => (
+const personCell = (name, subtitle, teacherCode) => (
   <div className="flex items-center gap-3">
     <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 font-semibold text-primary-600">
       {name?.charAt(0) || '?'}
     </div>
     <div>
       <p className="font-medium text-gray-900 dark:text-white">{name || '-'}</p>
+      {teacherCode && <p className="text-xs font-semibold text-primary-600">{teacherCode}</p>}
       <p className="text-xs text-gray-500">{subtitle || '-'}</p>
     </div>
   </div>
@@ -215,7 +216,7 @@ const pageConfig = {
     }),
     columns: [
       { key: 'seno', header: 'Se no', render: (value) => <span className="text-sm text-gray-500 dark:text-gray-400">{value}</span> },
-      { key: 'vt_name', header: 'VT Name', render: (value, row) => personCell(value, row.trade) },
+      { key: 'vt_name', header: 'VT Name', render: (value, row) => personCell(value, row.trade, row.teacher_code) },
       { key: 'school_name', header: 'School', render: schoolCell },
       { key: 'vtp_name', header: 'VTP' },
       { key: 'phone', header: 'Phone' },

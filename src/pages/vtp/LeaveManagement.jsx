@@ -174,6 +174,7 @@ const LeaveManagement = () => {
           </div>
           <div>
             <p className="font-medium text-gray-900 dark:text-white">{value || '—'}</p>
+            <p className="text-xs font-semibold text-primary-600">{row.teacher_code || '—'}</p>
             <p className="text-xs text-gray-500">{row.vt_phone || '—'}</p>
           </div>
         </div>
@@ -544,6 +545,7 @@ const LeaveManagement = () => {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">{value || row.vt_name || '—'}</p>
+                          <p className="text-xs font-semibold text-primary-600">{row.teacherCode || '—'}</p>
                           <p className="text-xs text-gray-500">{row.trade || '—'}</p>
                           {row.phone && <p className="text-xs text-gray-400">{row.phone}</p>}
                         </div>

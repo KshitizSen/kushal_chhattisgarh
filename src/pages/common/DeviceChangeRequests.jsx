@@ -70,7 +70,7 @@ const DeviceChangeRequests = () => {
         <table className="min-w-full text-left text-sm"><thead className="bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-300"><tr>{['VT', 'School / VTP', 'Reason', 'Principle Status', 'VTP Status', 'Action'].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {!loading && requests.map((request) => <tr key={request.id}>
-              <td className="px-4 py-3"><div className="font-medium text-gray-900 dark:text-white">{request.name}</div><div className="text-xs text-gray-500">{request.phone}</div></td>
+              <td className="px-4 py-3"><div className="font-medium text-gray-900 dark:text-white">{request.name}</div><div className="text-xs font-semibold text-primary-600">{request.teacher_code || '—'}</div><div className="text-xs text-gray-500">{request.phone}</div></td>
               <td className="px-4 py-3"><div>{request.school_name || request.udise_code || '-'}</div><div className="text-xs text-gray-500">{request.vtp_name || request.vtp_id || '-'}</div></td>
               <td className="max-w-xs px-4 py-3 text-gray-600">{request.reason || '-'}</td>
               <td className="px-4 py-3"><span className={`rounded-full px-2 py-1 text-xs capitalize ${badgeClass(request.hm_status)}`}>{request.hm_status}</span></td>
@@ -92,6 +92,7 @@ const DeviceChangeRequests = () => {
         <div className="space-y-4">
           <div className="rounded-2xl bg-gray-50 p-4 dark:bg-gray-800">
             <p className="font-semibold text-gray-900 dark:text-white">{actionModal.request?.name}</p>
+            <p className="text-xs font-semibold text-primary-600">{actionModal.request?.teacher_code || '—'}</p>
             <p className="text-sm text-gray-500">{actionModal.request?.phone}</p>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{actionModal.request?.school_name || actionModal.request?.udise_code || '-'}</p>
           </div>

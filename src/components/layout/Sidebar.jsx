@@ -18,6 +18,7 @@ import {
   Briefcase,
   FileText,
   CheckCircle,
+  MapPinCheck,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -67,6 +68,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <Building2 className="h-5 w-5" /> },
           { path: '/admin/manage-deo', label: 'Manage DEO', icon: <UserCheck className="h-5 w-5" /> },
           { path: '/admin/trades', label: 'Trades List', icon: <BookOpen className="h-5 w-5" /> },
+          { path: '/admin/vt-updation-approval', label: 'VT Updation Approval', icon: <MapPinCheck className="h-5 w-5" /> },
         ],
       },
       {

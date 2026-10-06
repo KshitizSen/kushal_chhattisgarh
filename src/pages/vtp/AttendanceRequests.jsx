@@ -157,12 +157,14 @@ const AttendanceRequests = ({ initialTab = 'onduty', hideTabs = false }) => {
     const phone = r.mobile || r.phone || '';
     const udise = r.udise_code || '';
     const trade = r.trade || '';
+    const teacherCode = r.teacher_code || '';
     return (
       name.toLowerCase().includes(q) ||
       reason.toLowerCase().includes(q) ||
       phone.toString().includes(q) ||
       udise.toString().includes(q) ||
-      trade.toLowerCase().includes(q)
+      trade.toLowerCase().includes(q) ||
+      teacherCode.toLowerCase().includes(q)
     );
   });
 
@@ -240,6 +242,7 @@ const AttendanceRequests = ({ initialTab = 'onduty', hideTabs = false }) => {
             </div>
             <div>
               <p className="font-medium text-gray-900 dark:text-white">{name}</p>
+              <p className="text-xs font-semibold text-primary-600">{row.teacher_code || '—'}</p>
               <p className="text-xs text-gray-500">{phone}</p>
             </div>
           </div>

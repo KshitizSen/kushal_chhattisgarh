@@ -86,6 +86,7 @@ const VtApprovals = () => {
     const q = searchQuery.toLowerCase();
     return vts.filter(v =>
       v.name?.toLowerCase().includes(q) ||
+      v.teacher_code?.toLowerCase().includes(q) ||
       v.email?.toLowerCase().includes(q) ||
       v.trade?.toLowerCase().includes(q) ||
       String(v.phone || '').includes(q) ||
@@ -149,6 +150,7 @@ const VtApprovals = () => {
           </div>
           <div>
             <p className="font-medium text-gray-900 dark:text-white">{value || '—'}</p>
+            <p className="text-xs font-semibold text-primary-600">{row.teacher_code || '—'}</p>
             <p className="text-xs text-gray-500">{row.email || '—'}</p>
             <p className="text-xs text-gray-400">{row.phone || '—'}</p>
           </div>
@@ -427,6 +429,7 @@ const VtApprovals = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">{selectedVt.name}</p>
+                  <p className="text-xs font-semibold text-primary-600">{selectedVt.teacher_code || 'N/A'}</p>
                   <p className="text-sm text-gray-500">{selectedVt.email}</p>
                 </div>
               </div>
@@ -514,6 +517,7 @@ const VtApprovals = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">{selectedVt.name}</p>
+                  <p className="text-xs font-semibold text-primary-600">{selectedVt.teacher_code || 'N/A'}</p>
                   <p className="text-sm text-gray-500">{selectedVt.email}</p>
                 </div>
               </div>

@@ -130,6 +130,7 @@ const VtStaffList = ({ initialTab = 'list', hideTabs = false }) => {
 
   const columns = [
     { key: 'serial', header: 'S.No.' },
+    { key: 'teacher_code', header: 'Teacher Code', render: display },
     { key: 'district_name', header: 'District', render: display },
     { key: 'block_name', header: 'Block', render: display },
     { key: 'school_name', header: 'School', render: (value, row) => <div><p>{display(value)}</p><p className="text-xs text-gray-500">UDISE: {display(row.udise_code)}</p></div> },
@@ -155,6 +156,7 @@ const VtStaffList = ({ initialTab = 'list', hideTabs = false }) => {
 
   const mobileRequestColumns = [
     { key: 'serial', header: 'S.No.' },
+    { key: 'teacher_code', header: 'Teacher Code', render: display },
     { key: 'vt_name', header: 'VT Name', render: display },
     { key: 'school_name', header: 'School', render: (value, row) => <div><p>{display(value)}</p><p className="text-xs text-gray-500">UDISE: {display(row.udise_code)}</p></div> },
     { key: 'current_mobile_number', header: 'Current Mobile', render: (value) => display(String(value || '')) },

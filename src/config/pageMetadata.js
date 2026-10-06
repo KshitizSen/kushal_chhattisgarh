@@ -5,6 +5,7 @@ const pageMetadata = [
   { path: '/admin/manage-deo', title: 'Manage DEO', description: 'District education officer master list.' },
   { path: '/admin/manage-users', title: 'Manage Users', description: 'Manage system users and access.' },
   { path: '/admin/trades', title: 'Trades List', description: 'Unique vocational trades and mapped providers.' },
+  { path: '/admin/vt-updation-approval', title: 'VT Updation Approval', description: 'Review VT district, block and school mapping change requests.' },
   { path: '/admin/roles', title: 'Role & Permission', description: 'Configure roles and their system permissions.' },
   { path: '/admin/reports', title: 'Reports & Analytics', description: 'Review system reports and performance insights.' },
   { path: '/admin/settings', title: 'Settings', description: 'Manage application preferences and configuration.' },
