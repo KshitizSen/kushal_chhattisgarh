@@ -16,7 +16,6 @@ import {
   Building2,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import Card from '../../components/common/Card';
@@ -29,7 +28,6 @@ import Loader from '../../components/common/Loader';
 import ApprovalRemarksField from '../../components/common/ApprovalRemarksField';
 
 const TeacherApproval = () => {
-  const navigate = useNavigate();
   const [pendingTeachers, setPendingTeachers] = useState([]);
   const [counts, setCounts] = useState({ total: 0, pending: 0, accepted: 0, rejected: 0 });
   const [loading, setLoading] = useState(true);
@@ -96,33 +94,11 @@ const TeacherApproval = () => {
         setRemarks('');
         fetchPendingTeachers();
       } else {
-        // ── School timing gate ──────────────────────────────────────
-        if (res.data?.code === 'SCHOOL_TIMING_NOT_SET') {
-          setIsApproveModalOpen(false);
-          setSelectedTeacher(null);
-          toast.error(
-            'School timing is not set up. Redirecting you to School Timing setup…',
-            { duration: 4000 }
-          );
-          setTimeout(() => navigate('/principal/school-timing'), 1500);
-        } else {
-          toast.error(res.data?.message || 'Failed to approve');
-        }
+        toast.error(res.data?.message || 'Failed to approve');
       }
     } catch (err) {
       const errData = err?.response?.data;
-      // ── School timing gate (axios throws on 4xx) ────────────────
-      if (errData?.code === 'SCHOOL_TIMING_NOT_SET') {
-        setIsApproveModalOpen(false);
-        setSelectedTeacher(null);
-        toast.error(
-          'School timing is not set up. Redirecting you to School Timing setup…',
-          { duration: 4000 }
-        );
-        setTimeout(() => navigate('/principal/school-timing'), 1500);
-      } else {
-        toast.error(errData?.message || 'Failed to approve teacher');
-      }
+      toast.error(errData?.message || 'Failed to approve teacher');
     } finally {
       setActionLoading(false);
     }

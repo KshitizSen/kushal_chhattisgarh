@@ -13,7 +13,6 @@ import {
   LogOut,
   Building2,
   UserCheck,
-  Clock,
   CalendarCheck,
   Briefcase,
   FileText,
@@ -113,13 +112,6 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
           { path: '/principal/attendance-status', label: 'Attendance Status', icon: <CalendarCheck className="h-5 w-5" /> },
           { path: '/principal/vocational-training-requests', label: 'VT Requests', icon: <CheckCircle className="h-5 w-5" /> },
-        ],
-      },
-      {
-        title: 'Staff Management',
-        items: [
-          { path: '/principal/school-timing', label: 'School Timing', icon: <Clock className="h-5 w-5" /> },
-          // { path: '/principal/school-overview', label: 'School Overview', icon: <Home className="h-5 w-5" /> },
         ],
       },
       {

@@ -48,6 +48,10 @@ const VTPDashboard = () => {
       </div>
     </div>
 
+    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200 sm:text-base">
+      <span className="font-bold">NOTE:</span> It is mandatory for VTs to make entries on the UDISE portal.
+    </div>
+
     <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
       {cards.map(({ title, value, Icon, color, background, to }) => <Link key={title} to={to} className="block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary-500"><Card variant="elevated">
         <div className="flex items-center justify-between gap-4">

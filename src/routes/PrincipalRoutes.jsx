@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/principal/Dashboard';
 import SchoolOverview from '../pages/principal/SchoolOverview';
 import StaffManagement from '../pages/principal/StaffManagement';
-import SchoolTiming from '../pages/principal/SchoolTiming';
 import Activities from '../pages/principal/Activities';
 import Holidays from '../pages/principal/Holidays';
 import Reports from '../pages/principal/Reports';
@@ -42,14 +41,6 @@ const PrincipalRoutes = () => {
       <Route
         path="teacher-approval"
         element={<Navigate to="/principal/vocational-training-requests" replace />}
-      />
-      <Route
-        path="school-timing"
-        element={
-          <ProtectedRoute allowedRoles={allowedRoles}>
-            <SchoolTiming />
-          </ProtectedRoute>
-        }
       />
       <Route
         path="vocational-training-approval"
