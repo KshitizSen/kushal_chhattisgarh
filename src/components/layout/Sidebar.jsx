@@ -14,10 +14,12 @@ import {
   Building2,
   UserCheck,
   CalendarCheck,
+  Clock3,
   Briefcase,
   FileText,
   CheckCircle,
   MapPinCheck,
+  CircleHelp,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -46,6 +48,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const dashboardPath = user?.role ? `/${user.role}/dashboard` : '/';
+  const guideRole = user?.role === 'vocational_teacher_provider' ? 'vtp' : user?.role;
+  const guidePath = guideRole ? `/${guideRole}/guide` : '/';
 
   // Role-specific navigation items
   const getNavSections = () => {
@@ -62,6 +66,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
         items: [
           { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
           { path: '/admin/attendance-status', label: 'Attendance Status', icon: <CalendarCheck className="h-5 w-5" /> },
+          { path: '/admin/daily-attendance', label: 'Daily Check-In/Out', icon: <Clock3 className="h-5 w-5" /> },
           // { path: '/admin/manage-users', label: 'Manage Users', icon: <Users className="h-5 w-5" /> },
           { path: '/admin/manage-schools', label: 'Schools List', icon: <School className="h-5 w-5" /> },
           { path: '/admin/manage-vtp', label: 'Manage VTP', icon: <Building2 className="h-5 w-5" /> },
@@ -241,6 +246,20 @@ const Sidebar = ({ collapsed = false, onToggleCollapse, onClose }) => {
       </nav>
 
       <div className="border-t border-gray-200 p-2.5 dark:border-gray-800">
+        {guideRole && (
+          <div className="mb-2 border-b border-gray-200 pb-2 dark:border-gray-800">
+            {!collapsed && <p className="mb-1 px-2.5 text-xs font-semibold uppercase tracking-wider text-gray-400">Help &amp; Guide</p>}
+            <NavLink
+              to={guidePath}
+              onClick={onClose}
+              title={collapsed ? 'User Guide' : undefined}
+              className={() => `flex items-center rounded-lg px-2.5 py-2 transition-all ${collapsed ? 'justify-center' : 'gap-3'} ${isPathActive(location.pathname, guidePath) ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'}`}
+            >
+              <CircleHelp className="h-5 w-5" />
+              {!collapsed && <span className="font-medium">User Guide</span>}
+            </NavLink>
+          </div>
+        )}
         <button
           onClick={handleLogout}
           title={collapsed ? 'Logout' : undefined}

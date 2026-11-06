@@ -37,6 +37,7 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
   const [blocks, setBlocks] = useState([]);
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedBlock, setSelectedBlock] = useState('');
+  const [selectedDate, setSelectedDate] = useState(getIstDate);
   const [data, setData] = useState(emptyData);
   const [isLoading, setIsLoading] = useState(true);
   const [isBlocksLoading, setIsBlocksLoading] = useState(false);
@@ -50,6 +51,12 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
   const [listLoading, setListLoading] = useState(false);
   const [listError, setListError] = useState('');
   const [listRefreshKey, setListRefreshKey] = useState(0);
+  const [districtData, setDistrictData] = useState(emptyList);
+  const [districtPage, setDistrictPage] = useState(1);
+  const [districtLimit, setDistrictLimit] = useState(10);
+  const [districtLoading, setDistrictLoading] = useState(scope === 'admin');
+  const [districtError, setDistrictError] = useState('');
+  const [districtRefreshKey, setDistrictRefreshKey] = useState(0);
   const [absentTarget, setAbsentTarget] = useState(null);
   const [absentActionLoading, setAbsentActionLoading] = useState(false);
   const [istToday, setIstToday] = useState(getIstDate);
@@ -104,7 +111,7 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
-    getStatus({ district_cd: selectedDistrict, block_cd: selectedBlock, signal: controller.signal })
+    getStatus({ district_cd: selectedDistrict, block_cd: selectedBlock, date: scope === 'admin' ? selectedDate : undefined, signal: controller.signal })
       .then((result) => { if (active) setData({ ...emptyData, ...(result.data || {}) }); })
       .catch((requestError) => {
         if (active && requestError.code !== 'ERR_CANCELED') {
@@ -117,7 +124,7 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
       active = false;
       controller.abort();
     };
-  }, [getStatus, selectedDistrict, selectedBlock, refreshKey]);
+  }, [getStatus, selectedDistrict, selectedBlock, selectedDate, scope, refreshKey]);
 
   useEffect(() => {
     if (!selectedStatus) return undefined;
@@ -127,6 +134,7 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
       status: selectedStatus,
       district_cd: selectedDistrict,
       block_cd: selectedBlock,
+      date: scope === 'admin' ? selectedDate : undefined,
       page: listPage,
       limit: listLimit,
       signal: controller.signal,
@@ -145,7 +153,26 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
       active = false;
       controller.abort();
     };
-  }, [getVts, selectedStatus, selectedDistrict, selectedBlock, listPage, listLimit, listRefreshKey]);
+  }, [getVts, selectedStatus, selectedDistrict, selectedBlock, selectedDate, scope, listPage, listLimit, listRefreshKey]);
+
+  useEffect(() => {
+    if (scope !== 'admin') return undefined;
+    const controller = new AbortController();
+    let active = true;
+    api.get('/admin/attendance-status/district-summary', {
+      params: { district_cd: selectedDistrict, block_cd: selectedBlock, date: selectedDate, page: districtPage, limit: districtLimit },
+      signal: controller.signal,
+    })
+      .then((response) => { if (active) setDistrictData({ ...emptyList, ...(response.data?.data || {}) }); })
+      .catch((requestError) => {
+        if (active && requestError.code !== 'ERR_CANCELED') {
+          setDistrictError(requestError.response?.data?.message || 'District attendance summary could not be loaded.');
+          setDistrictData({ ...emptyList, page: districtPage, limit: districtLimit });
+        }
+      })
+      .finally(() => { if (active) setDistrictLoading(false); });
+    return () => { active = false; controller.abort(); };
+  }, [scope, selectedDistrict, selectedBlock, selectedDate, districtPage, districtLimit, districtRefreshKey]);
 
   useEffect(() => {
     if (!selectedStatus) return undefined;
@@ -210,6 +237,16 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
     }] : []),
   ], [absentActionLoading, canMarkCurrentDate, scope]);
 
+  const districtColumns = useMemo(() => [
+    { key: 'serial', label: 'Sr. No.' },
+    { key: 'district_name', label: 'District Name', render: (value) => value || '-' },
+    { key: 'total_present', label: 'Total Present', render: formatCount },
+    { key: 'on_duty', label: 'On Duty', render: formatCount },
+    { key: 'on_leave', label: 'On Leave', render: formatCount },
+    { key: 'total_absent', label: 'Total Absent', render: formatCount },
+    { key: 'total_percentage', label: 'Total Percentage', render: (value) => `${Number(value || 0).toFixed(2)}%` },
+  ], []);
+
   const chartTitle = `${data.chart.group_by === 'school' ? 'School' : data.chart.group_by === 'block' ? 'Block' : 'District'}-wise Attendance Status`;
   const handleDistrictChange = (event) => {
     const value = event.target.value;
@@ -223,6 +260,8 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
     setSelectedStatus('');
     setListData(emptyList);
     setListPage(1);
+    setDistrictPage(1);
+    setDistrictLoading(scope === 'admin');
   };
 
   const handleBlockChange = (event) => {
@@ -232,12 +271,31 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
     setSelectedStatus('');
     setListData(emptyList);
     setListPage(1);
+    setDistrictPage(1);
+    setDistrictLoading(scope === 'admin');
+  };
+
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value || istToday);
+    setError('');
+    setIsLoading(true);
+    setSelectedStatus('');
+    setListData(emptyList);
+    setListPage(1);
+    setDistrictPage(1);
+    setDistrictLoading(true);
+    setDistrictError('');
   };
 
   const handleRefresh = () => {
     setError('');
     setIsLoading(true);
     setRefreshKey((value) => value + 1);
+    if (scope === 'admin') {
+      setDistrictLoading(true);
+      setDistrictError('');
+      setDistrictRefreshKey((value) => value + 1);
+    }
     if (selectedStatus) {
       setListLoading(true);
       setListError('');
@@ -271,6 +329,10 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
     ...row,
     serial: (listData.page - 1) * listData.limit + index + 1,
   }));
+  const districtRows = districtData.rows.map((row, index) => ({
+    ...row,
+    serial: (districtData.page - 1) * districtData.limit + index + 1,
+  }));
 
   return (
     <div className="space-y-5">
@@ -289,6 +351,10 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
               <option value="">{isBlocksLoading ? 'Loading Blocks...' : 'All Blocks'}</option>
               {blocks.map((block) => <option key={block.block_cd} value={block.block_cd}>{block.block_name}</option>)}
             </select>
+          </label>}
+          {scope === 'admin' && <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="sr-only">Attendance Date</span>
+            <input aria-label="Attendance Date" type="date" className={selectClass} value={selectedDate} max={istToday} onChange={handleDateChange} />
           </label>}
         </div>
         {locationError && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{locationError}</p>}
@@ -330,12 +396,28 @@ const AttendanceStatus = ({ scope = 'admin' }) => {
         )}
       </Card>
 
+      {scope === 'admin' && <section className="space-y-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">District Attendance Summary</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">District-wise attendance for {selectedDate}.</p>
+          </div>
+          <select aria-label="District rows per page" value={districtLimit} onChange={(event) => { setDistrictLimit(Number(event.target.value)); setDistrictPage(1); setDistrictLoading(true); }} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white">
+            {[10, 25, 50, 100].map((size) => <option key={size} value={size}>{size} / page</option>)}
+          </select>
+        </div>
+
+        {districtError && <div className="flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200"><span>{districtError}</span><button type="button" className="font-semibold underline" onClick={() => { setDistrictLoading(true); setDistrictError(''); setDistrictRefreshKey((value) => value + 1); }}>Retry</button></div>}
+        {districtLoading ? <Card><div className="py-12 text-center text-sm text-gray-500 dark:text-gray-400">Loading district summary...</div></Card> : <Table columns={districtColumns} data={districtRows} keyExtractor={(row) => row.district_cd} emptyState={<Card><div className="py-12 text-center text-gray-500 dark:text-gray-400">No district attendance data found.</div></Card>} />}
+        {!districtLoading && !districtError && <Pagination currentPage={districtData.page} totalPages={districtData.total_pages} totalItems={districtData.total} pageSize={districtData.limit} onPageChange={(page) => { setDistrictPage(page); setDistrictLoading(true); }} />}
+      </section>}
+
       {selectedStatus && (
         <section ref={listSectionRef} className="scroll-mt-24 space-y-4" aria-live="polite">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{statusLabels[selectedStatus]}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Current-day VT details for the selected attendance status.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">VT details for {data.as_of_date || selectedDate} and the selected attendance status.</p>
             </div>
             <select aria-label="Rows per page" value={listLimit} onChange={handleListLimitChange} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white">
               {[10, 25, 50, 100].map((size) => <option key={size} value={size}>{size} / page</option>)}

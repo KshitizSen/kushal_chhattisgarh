@@ -1,5 +1,7 @@
 const pageMetadata = [
+  { path: '/admin/guide', title: 'Admin User Guide', description: 'Admin login ke available modules aur working steps.' },
   { path: '/admin/attendance-status', title: 'Attendance Status', description: 'Monitor live attendance and VT report approval tracking.' },
+  { path: '/admin/daily-attendance', title: 'Daily Check-In/Out', description: 'Review date-wise VT check-in and check-out details.' },
   { path: '/admin/manage-schools', title: 'Manage Schools', description: 'View and manage VT-enabled schools.' },
   { path: '/admin/manage-vtp', title: 'Manage VTP Providers', description: 'Vocational coordinator and provider master list.' },
   { path: '/admin/manage-deo', title: 'Manage DEO', description: 'District education officer master list.' },
@@ -11,6 +13,7 @@ const pageMetadata = [
   { path: '/admin/settings', title: 'Settings', description: 'Manage application preferences and configuration.' },
   { path: '/admin/dashboard', title: 'Admin Dashboard', description: ({ user }) => `Welcome back, ${user?.name || 'Admin'}. Here's what's happening with your system today.` },
 
+  { path: '/vtp/guide', title: 'VTP User Guide', description: 'VTP login ke available modules aur working steps.' },
   { path: '/vtp/vocational-training-requests', title: 'VT Requests', description: 'Manage and approve On Duty and regularization requests.' },
   { path: '/vtp/attendance-status', title: 'Attendance Status', description: 'Live current-day status of vocational teachers mapped to your VTP.' },
   { path: '/vtp/device-change-requests', title: 'Device Change Requests', description: 'Approve or reject VT mobile device changes.' },
@@ -22,6 +25,7 @@ const pageMetadata = [
   { path: '/vtp/trades', title: 'Trades List', description: 'Unique trades mapped to your VTP organization.' },
   { path: '/vtp/dashboard', title: 'VTP Dashboard', description: 'Overview of schools, VT staff and trades mapped to your organization.' },
 
+  { path: '/principal/guide', title: 'Principal User Guide', description: 'Principal login ke available modules aur working steps.' },
   { path: '/principal/attendance-status', title: 'Attendance Status', description: 'Monitor live and historical vocational teacher attendance.' },
   { path: '/principal/vocational-training-requests', title: 'VT Requests', description: 'Manage On Duty and regularization requests.' },
   { path: '/principal/device-change-requests', title: 'Device Change Requests', description: 'Approve or reject VT mobile device changes.' },
@@ -34,6 +38,7 @@ const pageMetadata = [
   { path: '/principal/reports', title: 'Monthly VT Approval Reports', description: 'Review monthly attendance reports for your school.' },
   { path: '/principal/dashboard', title: 'Principal Dashboard', description: 'School-level overview of vocational training operations.' },
 
+  { path: '/deo/guide', title: 'DEO User Guide', description: 'DEO login ke available modules aur working steps.' },
   { path: '/deo/attendance-status', title: 'Attendance Status', description: 'Monitor live attendance and approve VT reports across your district.' },
   { path: '/deo/monthly-reports', title: 'Monthly VT Approval Reports', description: 'Review monthly vocational teacher reports in your district.' },
   { path: '/deo/vt-schools', title: 'VT Schools', description: 'View vocational training schools in your district.' },

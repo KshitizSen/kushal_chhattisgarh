@@ -5,9 +5,9 @@ export const getAdminDashboardCounts = async () => {
   return response.data;
 };
 
-export const getAdminAttendanceStatus = async ({ district_cd = '', block_cd = '', signal } = {}) => {
+export const getAdminAttendanceStatus = async ({ district_cd = '', block_cd = '', date = '', signal } = {}) => {
   const response = await api.get('/admin/attendance-status', {
-    params: { district_cd, block_cd },
+    params: { district_cd, block_cd, date },
     signal,
   });
   return response.data;
@@ -17,12 +17,29 @@ export const getAdminAttendanceStatusVts = async ({
   status,
   district_cd = '',
   block_cd = '',
+  date = '',
   page = 1,
   limit = 10,
   signal,
 } = {}) => {
   const response = await api.get('/admin/attendance-status/vts', {
-    params: { status, district_cd, block_cd, page, limit },
+    params: { status, district_cd, block_cd, date, page, limit },
+    signal,
+  });
+  return response.data;
+};
+
+export const getAdminAttendanceDistrictSummary = async ({ date = '', district_cd = '', block_cd = '', page = 1, limit = 10, signal } = {}) => {
+  const response = await api.get('/admin/attendance-status/district-summary', {
+    params: { date, district_cd, block_cd, page, limit },
+    signal,
+  });
+  return response.data;
+};
+
+export const getAdminDailyAttendance = async ({ date = '', district_cd = '', block_cd = '', page = 1, limit = 10, signal } = {}) => {
+  const response = await api.get('/admin/attendance-status/daily', {
+    params: { date, district_cd, block_cd, page, limit },
     signal,
   });
   return response.data;

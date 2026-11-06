@@ -9,15 +9,21 @@ import Reports from '../pages/admin/Reports';
 import Settings from '../pages/admin/Settings';
 import ManageRoles from '../pages/admin/ManageRoles';
 import AttendanceStatusHub from '../pages/admin/AttendanceStatusHub';
+import DailyAttendance from '../pages/admin/DailyAttendance';
 import TradesList from '../pages/admin/TradesList';
 import VtUpdationApproval from '../pages/admin/VtUpdationApproval';
 import ProtectedRoute from './ProtectedRoute';
+import UserGuide from '../pages/common/UserGuide';
 
 const AdminRoutes = () => {
   const allowedRoles = ['admin'];
 
   return (
     <Routes>
+      <Route
+        path="guide"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><UserGuide /></ProtectedRoute>}
+      />
       <Route 
         path="dashboard" 
         element={
@@ -57,6 +63,10 @@ const AdminRoutes = () => {
             <AttendanceStatusHub />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="daily-attendance"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><DailyAttendance /></ProtectedRoute>}
       />
       <Route 
         path="manage-deo" 

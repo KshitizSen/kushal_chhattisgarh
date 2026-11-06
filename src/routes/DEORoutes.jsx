@@ -6,12 +6,17 @@ import VTTeachers from '../pages/deo/VTTeachers';
 import MonthlyReports from '../pages/deo/MonthlyReports';
 import ProtectedRoute from './ProtectedRoute';
 import AttendanceStatus from '../pages/deo/AttendanceStatus';
+import UserGuide from '../pages/common/UserGuide';
 
 const DEORoutes = () => {
   const allowedRoles = ['deo'];
 
   return (
     <Routes>
+      <Route
+        path="guide"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><UserGuide /></ProtectedRoute>}
+      />
       <Route
         path="dashboard"
         element={

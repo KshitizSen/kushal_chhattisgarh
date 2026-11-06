@@ -8,12 +8,17 @@ import Reports from '../pages/principal/Reports';
 import VocationalTrainingRequests from '../pages/common/VocationalTrainingRequests';
 import ProtectedRoute from './ProtectedRoute';
 import AttendanceStatus from '../pages/principal/AttendanceStatus';
+import UserGuide from '../pages/common/UserGuide';
 
 const PrincipalRoutes = () => {
   const allowedRoles = ['principal'];
 
   return (
     <Routes>
+      <Route
+        path="guide"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><UserGuide /></ProtectedRoute>}
+      />
       <Route
         path="dashboard"
         element={

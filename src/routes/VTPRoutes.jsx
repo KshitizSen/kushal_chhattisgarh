@@ -8,12 +8,17 @@ import ProtectedRoute from './ProtectedRoute';
 import SchoolsList from '../pages/vtp/SchoolsList';
 import TradesList from '../pages/vtp/TradesList';
 import AttendanceStatus from '../pages/vtp/AttendanceStatus';
+import UserGuide from '../pages/common/UserGuide';
 
 const VTPRoutes = () => {
   const allowedRoles = ['vtp', 'vocational_teacher_provider'];
 
   return (
     <Routes>
+      <Route
+        path="guide"
+        element={<ProtectedRoute allowedRoles={allowedRoles}><UserGuide /></ProtectedRoute>}
+      />
       <Route
         path="dashboard"
         element={<ProtectedRoute allowedRoles={allowedRoles}><Dashboard /></ProtectedRoute>}
